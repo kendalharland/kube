@@ -149,8 +149,12 @@ int main(void) {
 
   // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit
   // <-> 100 units
-  glm::mat4 Projection =
-      glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+  glm::mat4 Projection = glm::perspective(
+      glm::radians(45.0f), // The vertical field of View (zoom)
+      4.0f / 3.0f,         // Aspect ratio. Depends on the size of your window.
+      0.1f,                // Near clipping plane.
+      100.0f               // Far clipping plane.
+  );
 
   // Camera matrix
   glm::mat4 View = glm::lookAt(
@@ -175,11 +179,11 @@ int main(void) {
     glPushMatrix();
 
     // transform camera
-    float cameraAngleX = 0;
-    float cameraAngleY = 0;
-    glTranslatef(0, 0, -10.0f);
-    glRotatef(cameraAngleX, 1, 0, 0);
-    glRotatef(cameraAngleY, 0, 1, 0);
+    // float cameraAngleX = 0;
+    // float cameraAngleY = 0;
+    // glTranslatef(0, 0, -10.0f);
+    // glRotatef(cameraAngleX, 1, 0, 0);
+    // glRotatef(cameraAngleY, 0, 1, 0);
 
     glUseProgram(programID);
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
