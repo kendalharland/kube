@@ -13,6 +13,10 @@ TARGET := kube
 
 .PHONY: all clean help
 
+kube: clean
+	@echo "=== Building $(TARGET) ($(config)) ==="
+	$(CXX) src/main.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS)
+
 clean:
 	@echo "=== Removing kube ==="
 	rm -rf $(TARGET) ./*.o
@@ -20,10 +24,6 @@ clean:
 format:
 	@echo "=== Formatting code ==="
 	find src -regex '.*\.\(c\|h\|cpp\|hpp\)' -exec clang-format -style=file -i {} \;
-
-kube: clean
-	@echo "=== Building $(TARGET) ($(config)) ==="
-	$(CXX) src/main.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS)
 
 run: kube
 	@echo "=== Running $(TARGET) ($(config)) ==="
@@ -33,9 +33,9 @@ help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  all (default)"
+	@echo "  kube (default)"
 	@echo "  clean"
-	@echo "  kube"
+	@echo "  format"
 	@echo "  run"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"
