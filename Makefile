@@ -6,9 +6,9 @@ ifeq ($(config),debug)
 endif
 
 CXX := clang++
-CXXFLAGS += -std=c++20 -L/usr/local/lib -L/usr/lib -L/usr/lib65
+CXXFLAGS += -std=c++20
 
-LIBS := -lglfw -lGLEW -lGL -lm -lpthread -ldl -lrt -lX11 
+LIBS := -lglfw -lGLEW -lGL -lm
 TARGET := kube
 
 .PHONY: all clean help
@@ -39,4 +39,3 @@ help:
 	@echo "  run"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"
-
