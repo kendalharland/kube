@@ -14,55 +14,57 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <iostream>
 #include <raylib.h>
+
+#include "cube.hpp"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 800
 #define TITLE "Kube"
 #define TARGET_FPS 60
 
+#define TILE_SIZE 1.f
+#define CUBE_SIZE 1.f
+
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
   SetTargetFPS(TARGET_FPS);
 
+  Camera camera = {0};
+  camera.position = (Vector3){10.0f, 10.0f, 10.0f}; // position
+  camera.target = (Vector3){0.0f, 0.0f, 0.0f};      // looking at point
+  camera.up = (Vector3){0.0f, 2.0f, 0.0f}; // up vector (rot towards target)
+  camera.fovy = 45.0f;                     // field-of-view Y
+  camera.type = CAMERA_PERSPECTIVE;        // mode type
+
+  Ray ray = {0};
+
+  Vector3 origin = camera.target;
+  origin.y += CUBE_SIZE / 2.f;
+  kube::Cube cube(origin, CUBE_SIZE, WHITE);
+
+  SetCameraMode(camera, CAMERA_FREE);
   // Detect window close button or ESC key
   while (!WindowShouldClose()) {
+    UpdateCamera(&camera);
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+      ray = GetMouseRay(GetMousePosition(), camera);
+    }
+
     BeginDrawing();
     ClearBackground(RAYWHITE);
+    BeginMode3D(camera);
 
-    DrawText("some basic shapes available on raylib", 20, 20, 20, DARKGRAY);
+    cube.Draw();
+    DrawRay(ray, MAROON);
+    DrawGrid(10, TILE_SIZE);
 
-    DrawCircle(SCREEN_WIDTH / 4, 120, 35, DARKBLUE);
-
-    DrawRectangle(SCREEN_WIDTH / 4 * 2 - 60, 100, 120, 60, RED);
-    DrawRectangleLines(SCREEN_WIDTH / 4 * 2 - 40, 320, 80, 60,
-                       ORANGE); // NOTE: Uses QUADS internally, not lines
-    DrawRectangleGradientH(SCREEN_WIDTH / 4 * 2 - 90, 170, 180, 130, MAROON,
-                           GOLD);
-
-    DrawTriangle((Vector2){SCREEN_WIDTH / 4 * 3, 80},
-                 (Vector2){SCREEN_WIDTH / 4 * 3 - 60, 150},
-                 (Vector2){SCREEN_WIDTH / 4 * 3 + 60, 150}, VIOLET);
-
-    DrawPoly((Vector2){SCREEN_WIDTH / 4 * 3, 320}, 6, 80, 0, BROWN);
-
-    DrawCircleGradient(SCREEN_WIDTH / 4, 220, 60, GREEN, SKYBLUE);
-
-    // NOTE: We draw all LINES based shapes together to optimize internal
-    // drawing, this way, all LINES are rendered in a single draw pass
-    DrawLine(18, 42, SCREEN_WIDTH - 18, 42, BLACK);
-    DrawCircleLines(SCREEN_WIDTH / 4, 340, 80, DARKBLUE);
-    DrawTriangleLines((Vector2){SCREEN_WIDTH / 4 * 3, 160},
-                      (Vector2){SCREEN_WIDTH / 4 * 3 - 20, 230},
-                      (Vector2){SCREEN_WIDTH / 4 * 3 + 20, 230}, DARKBLUE);
+    EndMode3D();
     EndDrawing();
-    //----------------------------------------------------------------------------------
   }
 
-  // De-Initialization
-  //--------------------------------------------------------------------------------------
   CloseWindow(); // Close window and OpenGL context
-  //--------------------------------------------------------------------------------------
 
   return 0;
 }

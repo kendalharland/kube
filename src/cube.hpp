@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <raylib.h>
+
 namespace kube {
 
 // Generic, drawable cube geometry.
@@ -25,14 +27,15 @@ public:
   Cube();
 
   // Constructs a cube at the position (x,y,z) having the given side length.
-  Cube(float x = 0, float y = 0, float z = 0, float length = 0)
-      : _x(x), _y(y), _z(z), _length(length) {}
+  Cube(Vector3 center, float length, Color color)
+      : _center(center), _color(color), _length(length) {}
+
+  void Draw() { DrawCube(_center, _length, _length, _length, _color); }
 
 private:
-  float _x;
-  float _y;
-  float _z;
+  Vector3 _center;
   float _length;
+  Color _color;
 };
 
 } // namespace kube
