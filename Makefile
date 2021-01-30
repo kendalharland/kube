@@ -6,9 +6,9 @@ ifeq ($(config),debug)
 endif
 
 CXX := clang++
-CXXFLAGS += -std=c++20 -L/usr/local/lib
+CXXFLAGS += -std=c++20 -L/usr/local/lib -L/usr/lib -L/usr/lib65
 
-LIBS := -lGL -lraylib -lm -lpthread -ldl -lrt -lX11
+LIBS := -lglfw -lGLEW -lGL -lm -lpthread -ldl -lrt -lX11 
 TARGET := kube
 
 .PHONY: all clean help
@@ -23,7 +23,7 @@ format:
 
 kube: clean
 	@echo "=== Building $(TARGET) ($(config)) ==="
-	$(CXX) $(CXXFLAGS) -o $(TARGET) src/main.cpp $(LIBS)
+	$(CXX) src/main.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS)
 
 run: kube
 	@echo "=== Running $(TARGET) ($(config)) ==="

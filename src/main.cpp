@@ -14,8 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <iostream>
-#include <raylib.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include "cube.hpp"
 
@@ -27,44 +31,68 @@
 #define TILE_SIZE 1.f
 #define CUBE_SIZE 1.f
 
+using namespace glm;
+
+GLFWwindow *window;
+
 int main(void) {
-  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
-  SetTargetFPS(TARGET_FPS);
-
-  Camera camera = {0};
-  camera.position = (Vector3){10.0f, 10.0f, 10.0f}; // position
-  camera.target = (Vector3){0.0f, 0.0f, 0.0f};      // looking at point
-  camera.up = (Vector3){0.0f, 2.0f, 0.0f}; // up vector (rot towards target)
-  camera.fovy = 45.0f;                     // field-of-view Y
-  camera.type = CAMERA_PERSPECTIVE;        // mode type
-
-  Ray ray = {0};
-
-  Vector3 origin = camera.target;
-  origin.y += CUBE_SIZE / 2.f;
-  kube::Cube cube(origin, CUBE_SIZE, WHITE);
-
-  SetCameraMode(camera, CAMERA_FREE);
-  // Detect window close button or ESC key
-  while (!WindowShouldClose()) {
-    UpdateCamera(&camera);
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-      ray = GetMouseRay(GetMousePosition(), camera);
-    }
-
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-    BeginMode3D(camera);
-
-    cube.Draw();
-    DrawRay(ray, MAROON);
-    DrawGrid(10, TILE_SIZE);
-
-    EndMode3D();
-    EndDrawing();
+  // Initialise GLFW
+  if (!glfwInit()) {
+    fprintf(stderr, "Failed to initialize GLFW\n");
+    getchar();
+    return -1;
   }
 
-  CloseWindow(); // Close window and OpenGL context
+  glfwWindowHint(GLFW_SAMPLES, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
+                 GL_TRUE); // To make MacOS happy; should not be needed
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+  // Open a window and create its OpenGL context
+  window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_WIDTH, TITLE, NULL, NULL);
+  if (window == NULL) {
+    fprintf(stderr,
+            "Failed to open GLFW window. If you have an Intel GPU, they are "
+            "not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
+    getchar();
+    glfwTerminate();
+    return -1;
+  }
+  glfwMakeContextCurrent(window);
+
+  // Initialize GLEW
+  if (glewInit() != GLEW_OK) {
+    fprintf(stderr, "Failed to initialize GLEW\n");
+    getchar();
+    glfwTerminate();
+    return -1;
+  }
+
+  // Ensure we can capture the escape key being pressed below
+  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+
+  // Dark blue background
+  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+
+  do {
+    // Clear the screen. It's not mentioned before Tutorial 02, but it can cause
+    // flickering, so it's there nonetheless.
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Draw nothing, see you in tutorial 2 !
+
+    // Swap buffers
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+
+  } // Check if the ESC key was pressed or the window was closed
+  while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
+         glfwWindowShouldClose(window) == 0);
+
+  // Close OpenGL window and terminate GLFW
+  glfwTerminate();
 
   return 0;
 }
