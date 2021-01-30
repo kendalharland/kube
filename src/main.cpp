@@ -55,7 +55,8 @@ static const GLfloat vertices[] = {
   -1,-1,-1,    1,-1,-1,    1,-1, 1,   -1,-1, 1, // v7,v4,v3,v2 (bottom)
    1,-1,-1,   -1,-1,-1,   -1, 1,-1,    1, 1,-1  // v4,v7,v6,v5 (back)
 };
-GLfloat normals[]  = {
+
+GLfloat normals[] = {
    0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1, // v0,v1,v2,v3 (front)
    1, 0, 0,   1, 0, 0,   1, 0, 0,   1, 0, 0, // v0,v3,v4,v5 (right)
    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0, // v0,v5,v6,v1 (top)
@@ -63,7 +64,8 @@ GLfloat normals[]  = {
    0,-1, 0,   0,-1, 0,   0,-1, 0,   0,-1, 0, // v7,v4,v3,v2 (bottom)
    0, 0,-1,   0, 0,-1,   0, 0,-1,   0, 0,-1  // v4,v7,v6,v5 (back)
 };
- GLfloat colors[]   = {
+
+GLfloat colors[] = {
   1, 1, 1,   1, 1, 0,   1, 0, 0,   1, 0, 1, // v0,v1,v2,v3 (front)
   1, 1, 1,   1, 0, 1,   0, 0, 1,   0, 1, 1, // v0,v3,v4,v5 (right)
   1, 1, 1,   0, 1, 1,   0, 1, 0,   1, 1, 0, // v0,v5,v6,v1 (top)
@@ -71,6 +73,7 @@ GLfloat normals[]  = {
   0, 0, 0,   0, 0, 1,   1, 0, 1,   1, 0, 0, // v7,v4,v3,v2 (bottom)
   0, 0, 1,   0, 0, 0,   0, 1, 0,   0, 1, 1  // v4,v7,v6,v5 (back)
 }; 
+
 GLubyte indices[]  = {
    0, 1, 2,   2, 3, 0, // front                        
    4, 5, 6,   6, 7, 4, // right                        
@@ -204,11 +207,11 @@ int main(void) {
     glTranslatef(-2, -2, 0); // move to bottom-left corner
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, indices);
     glPopMatrix();
-    glDisableClientState(GL_VERTEX_ARRAY); // disable vertex arrays
 
+    glDisableClientState(GL_VERTEX_ARRAY); // disable vertex arrays
     glDisableClientState(GL_COLOR_ARRAY);
     // glDisableClientState(GL_NORMAL_ARRAY);
-
+    glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
 
     // Restore initial MovelView matrix.
