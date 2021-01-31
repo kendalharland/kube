@@ -1,8 +1,9 @@
 ifndef config
-		config = release
+	config = release
 endif
 
 ifeq ($(config),debug)
+	CXXFLAGS += -g -O0
 endif
 
 CXX := clang++

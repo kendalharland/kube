@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#ifndef _MODEL_HPP
+#define _MODEL_HPP
+
 #include <glm/glm.hpp>
 
 #include "vertex_shader.hpp"
@@ -27,11 +30,10 @@ class Model {
   // Constructs a Model with the given center position.
   //
   // shader is used when drawing the model.
-  Model(glm::mat4 center, VertexShader &shader, const GLfloat *vertices,
-        int numVertices, const GLfloat *colors, int numColors,
-        const GLubyte *indices, int numIndices)
+  Model(glm::vec3 center, const GLfloat *vertices, int numVertices,
+        const GLfloat *colors, int numColors, const GLubyte *indices,
+        int numIndices)
       : _center(center),
-        _shader(shader),
         _vertices(vertices),
         _numVertices(numVertices),
         _colors(colors),
@@ -39,11 +41,16 @@ class Model {
         _indices(indices),
         _numIndices(numIndices) {}
 
-  void Draw(Camera camera) {
-    glm::mat4 projection = camera.Project(_center);
-    _shader.Draw(projection, _vertices, _numVertices, _colors, _numColors,
-                 _indices, _numIndices);
-  }
+  glm::vec3 Center() { return _center; }
+
+  const GLfloat *Vertices() { return _vertices; }
+  int NumVertices() { return _numVertices; }
+
+  const GLfloat *Colors() { return _colors; }
+  int NumColors() { return _numColors; }
+
+  const GLubyte *Indices() { return _indices; }
+  int NumIndices() { return _numIndices; }
 
  private:
   const GLfloat *_vertices;
@@ -55,8 +62,9 @@ class Model {
   const GLubyte *_indices;
   int _numIndices;
 
-  glm::mat4 _center;
-  VertexShader _shader;
+  glm::vec3 _center;
 };
 
 }  // namespace kube
+
+#endif  // _MODEL_HPP

@@ -18,16 +18,15 @@
 #define _VERTEX_SHADER_HPP
 
 #include <glm/glm.hpp>
-#include <iostream>
 
 #include "shader.hpp"
 
 namespace kube {
 
-class VertexShader {
+class ModelShader {
  public:
   // TODO: The shader files themselves should be the arguments?
-  VertexShader()
+  ModelShader()
       : _matrixID(0), _programID(0), _vertexBuffer(0), _colorBuffer(0) {
     _programID = LoadShaders("src/TransformVertexShader.vertexshader",
                              "src/ColorFragmentShader.fragmentshader");
@@ -36,7 +35,7 @@ class VertexShader {
     glGenBuffers(1, &_colorBuffer);
   }
 
-  ~VertexShader() {
+  ~ModelShader() {
     glDeleteBuffers(1, &_vertexBuffer);
     glDeleteBuffers(1, &_colorBuffer);
     glDeleteProgram(_programID);

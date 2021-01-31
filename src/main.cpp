@@ -26,6 +26,7 @@ using namespace glm;
 #include "camera.hpp"
 #include "model.hpp"
 #include "shader.hpp"
+#include "shapes.hpp"
 #include "vertex_shader.hpp"
 
 #define SCREEN_WIDTH 1000
@@ -36,54 +37,14 @@ using namespace glm;
 #define TILE_SIZE 1.f
 #define CUBE_SIZE 1.f
 
-GLFWwindow *window;
+GLFWwindow* window;
 
-// cube ///////////////////////////////////////////////////////////////////////
-//    v6----- v5
-//   /|      /|
-//  v1------v0|
-//  | |     | |
-//  | |v7---|-|v4
-//  |/      |/
-//  v2------v3
-
-// clang-format off
-static const GLfloat vertices[] = {
-   1, 1, 1,   -1, 1, 1,   -1,-1, 1,    1,-1, 1, // v0,v1,v2,v3 (front)
-   1, 1, 1,    1,-1, 1,    1,-1,-1,    1, 1,-1, // v0,v3,v4,v5 (right)
-   1, 1, 1,    1, 1,-1,   -1, 1,-1,   -1, 1, 1, // v0,v5,v6,v1 (top)
-  -1, 1, 1,   -1, 1,-1,   -1,-1,-1,   -1,-1, 1, // v1,v6,v7,v2 (left)
-  -1,-1,-1,    1,-1,-1,    1,-1, 1,   -1,-1, 1, // v7,v4,v3,v2 (bottom)
-   1,-1,-1,   -1,-1,-1,   -1, 1,-1,    1, 1,-1  // v4,v7,v6,v5 (back)
-};
-
-static const GLfloat normals[] = {
-   0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1, // v0,v1,v2,v3 (front)
-   1, 0, 0,   1, 0, 0,   1, 0, 0,   1, 0, 0, // v0,v3,v4,v5 (right)
-   0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0, // v0,v5,v6,v1 (top)
-  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0, // v1,v6,v7,v2 (left)
-   0,-1, 0,   0,-1, 0,   0,-1, 0,   0,-1, 0, // v7,v4,v3,v2 (bottom)
-   0, 0,-1,   0, 0,-1,   0, 0,-1,   0, 0,-1  // v4,v7,v6,v5 (back)
-};
-
-static const GLfloat colors[] = {
-  1, 1, 1,   1, 1, 0,   1, 0, 0,   1, 0, 1, // v0,v1,v2,v3 (front)
-  1, 1, 1,   1, 0, 1,   0, 0, 1,   0, 1, 1, // v0,v3,v4,v5 (right)
-  1, 1, 1,   0, 1, 1,   0, 1, 0,   1, 1, 0, // v0,v5,v6,v1 (top)
-  1, 1, 0,   0, 1, 0,   0, 0, 0,   1, 0, 0, // v1,v6,v7,v2 (left)
-  0, 0, 0,   0, 0, 1,   1, 0, 1,   1, 0, 0, // v7,v4,v3,v2 (bottom)
-  0, 0, 1,   0, 0, 0,   0, 1, 0,   0, 1, 1  // v4,v7,v6,v5 (back)
-}; 
-
-static const  GLubyte indices[]  = {
-   0, 1, 2,   2, 3, 0, // front                        
-   4, 5, 6,   6, 7, 4, // right                        
-   8, 9,10,  10,11, 8, // top                          
-  12,13,14,  14,15,12, // left                         
-  16,17,18,  18,19,16, // bottom                       
-  20,21,22,  22,23,20  // back
-};
-// clang-format on
+void DrawModel(kube::Camera camera, kube::Model* model,
+               kube::ModelShader& shader) {
+  glm::mat4 mvp = camera.Project(model->Center());
+  shader.Draw(mvp, model->Vertices(), model->NumVertices(), model->Colors(),
+              model->NumColors(), model->Indices(), model->NumIndices());
+}
 
 int main(void) {
   if (!glfwInit()) {
@@ -128,16 +89,14 @@ int main(void) {
   // Dark blue background
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-  // // TODO(kjharland): This should probably be moved to the Shader type
+  // // TODO(kjharland): This should probably be moved to the Shader type?.
   GLuint VertexArrayID;
   glGenVertexArrays(1, &VertexArrayID);
   glBindVertexArray(VertexArrayID);
 
   // Must come after the VertexArray above is created.
-  auto modelShader = kube::VertexShader();
-  auto model = kube::Model(glm::mat4(1.0f),  // Center
-                           modelShader, vertices, sizeof(vertices), colors,
-                           sizeof(colors), indices, sizeof(indices));
+  auto shader = kube::ModelShader();
+  auto cube = kube::Cube(glm::vec3(0.f));
 
   auto camera = kube::Camera(
       glm::vec3(4, 3, -3),  // Camera is at (4,3,-3), in World Space
@@ -152,7 +111,7 @@ int main(void) {
     // Save the initial ModelView matrix before modifying ModelView matrix.
     glPushMatrix();
 
-    model.Draw(camera);
+    DrawModel(camera, cube, shader);
 
     // Restore initial MovelView matrix.
     glPopMatrix();

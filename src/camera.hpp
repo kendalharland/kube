@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#ifndef _CAMERA_HPP
+#define _CAMERA_HPP
+
 #include <glm/glm.hpp>
 
 namespace kube {
@@ -26,7 +29,10 @@ class Camera {
       : _projection(glm::perspective(fov, aspectRatio, near, far)),
         _view(glm::lookAt(position, target, up)) {}
 
-  glm::mat4 Project(glm::mat4 model) { return _projection * _view * model; }
+  glm::mat4 Project(glm::vec3 position) {
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
+    return _projection * _view * model;
+  }
 
  private:
   glm::mat4 _projection;
@@ -34,3 +40,5 @@ class Camera {
 };
 
 };  // namespace kube
+
+#endif  // _CAMERA_HPP
