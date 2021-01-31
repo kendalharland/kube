@@ -178,20 +178,13 @@ int main(void) {
     // Save the initial ModelView matrix before modifying ModelView matrix.
     glPushMatrix();
 
-    // transform camera
-    // float cameraAngleX = 0;
-    // float cameraAngleY = 0;
-    // glTranslatef(0, 0, -10.0f);
-    // glRotatef(cameraAngleX, 1, 0, 0);
-    // glRotatef(cameraAngleY, 0, 1, 0);
-
     glUseProgram(programID);
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
 
-    // Create our shape
+    // // Create our shape
     // 1st attribute buffer : vertices.
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -202,19 +195,13 @@ int main(void) {
     glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-    // enable and specify pointers to vertex arrays
-    // glEnableClientState(GL_NORMAL_ARRAY);
-    // glNormalPointer(GL_FLOAT, 0, normals);
-
     glVertexPointer(3, GL_FLOAT, 0, vertices);
     glPushMatrix();
-    glTranslatef(-2, -2, 0); // move to bottom-left corner
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, indices);
     glPopMatrix();
 
     glDisableClientState(GL_VERTEX_ARRAY); // disable vertex arrays
     glDisableClientState(GL_COLOR_ARRAY);
-    // glDisableClientState(GL_NORMAL_ARRAY);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
 
