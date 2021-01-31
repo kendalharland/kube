@@ -24,8 +24,7 @@
 using namespace glm;
 
 #include "shader.hpp"
-
-#include "cube.hpp"
+#include "vertex_shader.hpp"
 
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 800
@@ -56,7 +55,7 @@ static const GLfloat vertices[] = {
    1,-1,-1,   -1,-1,-1,   -1, 1,-1,    1, 1,-1  // v4,v7,v6,v5 (back)
 };
 
-GLfloat normals[] = {
+static const GLfloat normals[] = {
    0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1, // v0,v1,v2,v3 (front)
    1, 0, 0,   1, 0, 0,   1, 0, 0,   1, 0, 0, // v0,v3,v4,v5 (right)
    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0, // v0,v5,v6,v1 (top)
@@ -65,7 +64,7 @@ GLfloat normals[] = {
    0, 0,-1,   0, 0,-1,   0, 0,-1,   0, 0,-1  // v4,v7,v6,v5 (back)
 };
 
-GLfloat colors[] = {
+static const GLfloat colors[] = {
   1, 1, 1,   1, 1, 0,   1, 0, 0,   1, 0, 1, // v0,v1,v2,v3 (front)
   1, 1, 1,   1, 0, 1,   0, 0, 1,   0, 1, 1, // v0,v3,v4,v5 (right)
   1, 1, 1,   0, 1, 1,   0, 1, 0,   1, 1, 0, // v0,v5,v6,v1 (top)
@@ -74,7 +73,7 @@ GLfloat colors[] = {
   0, 0, 1,   0, 0, 0,   0, 1, 0,   0, 1, 1  // v4,v7,v6,v5 (back)
 }; 
 
-GLubyte indices[]  = {
+static const  GLubyte indices[]  = {
    0, 1, 2,   2, 3, 0, // front                        
    4, 5, 6,   6, 7, 4, // right                        
    8, 9,10,  10,11, 8, // top                          
@@ -127,25 +126,13 @@ int main(void) {
   // Dark blue background
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-  GLuint programID = LoadShaders("src/TransformVertexShader.vertexshader",
-                                 "src/ColorFragmentShader.fragmentshader");
-
+  // // TODO(kjharland): This should probably be moved to the Shader type
   GLuint VertexArrayID;
   glGenVertexArrays(1, &VertexArrayID);
   glBindVertexArray(VertexArrayID);
 
-  GLuint vertexBuffer;
-  glGenBuffers(1, &vertexBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  GLuint colorBuffer;
-  glGenBuffers(1, &colorBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-
-  // Get a handle for our "MVP" uniform
-  GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+  // Must come after the VertexArray above is created.
+  kube::VertexShader shader;
 
   // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit
   // <-> 100 units
@@ -178,32 +165,8 @@ int main(void) {
     // Save the initial ModelView matrix before modifying ModelView matrix.
     glPushMatrix();
 
-    glUseProgram(programID);
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-
-    // // Create our shape
-    // 1st attribute buffer : vertices.
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-
-    // 2nd attribute buffer : colors
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-
-    glVertexPointer(3, GL_FLOAT, 0, vertices);
-    glPushMatrix();
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, indices);
-    glPopMatrix();
-
-    glDisableClientState(GL_VERTEX_ARRAY); // disable vertex arrays
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(0);
+    shader.Draw(MVP, vertices, sizeof(vertices), colors, sizeof(colors),
+                indices, sizeof(indices));
 
     // Restore initial MovelView matrix.
     glPopMatrix();
@@ -215,10 +178,7 @@ int main(void) {
          glfwWindowShouldClose(window) == 0);
 
   // Clean VBO
-  glDeleteBuffers(1, &vertexBuffer);
-  glDeleteBuffers(1, &colorBuffer);
   glDeleteVertexArrays(1, &VertexArrayID);
-  glDeleteProgram(programID);
 
   // Close OpenGL window and terminate GLFW
   glfwTerminate();

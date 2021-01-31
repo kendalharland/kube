@@ -14,28 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <raylib.h>
-
 namespace kube {
 
-// Generic, drawable cube geometry.
-class Cube {
+class Model {
 public:
-  // Default constructor.
+  Model() = delete;
+
+  // Constructs a Model with the given center position.
   //
-  // Creates a cube at (0, 0, 0) with 0 side length.
-  Cube();
+  // shader is used when drawing the model.
+  Model(glm::vec3 center, VertexShader shader)
+      : _center(center), _shader(shader) {}
 
-  // Constructs a cube at the position (x,y,z) having the given side length.
-  Cube(Vector3 center, float length, Color color)
-      : _center(center), _color(color), _length(length) {}
-
-  void Draw() { DrawCube(_center, _length, _length, _length, _color); }
+  void Draw() { _shader.DrawModel(*this); }
 
 private:
-  Vector3 _center;
-  float _length;
-  Color _color;
+  glm::vec3 _center;
+  VertexShader _shader;
 };
 
 } // namespace kube
