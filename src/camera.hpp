@@ -16,20 +16,21 @@
 
 #include <glm/glm.hpp>
 
-#include "cube.hpp"
-
 namespace kube {
 
-// Generic, drawable cube geometry.
-class PlayerCube {
+class Camera {
  public:
-  PlayerCube() = delete;
-  PlayerCube(Cube model) : _model(model) {}
+  Camera(glm::vec3 position, glm::vec3 target, float fov = glm::radians(45.0f),
+         float aspectRatio = 4.0f / 3.0f, float near = 0.1f, float far = 100.f,
+         glm::vec3 up = glm::vec3(0, 1, 0))
+      : _projection(glm::perspective(fov, aspectRatio, near, far)),
+        _view(glm::lookAt(position, target, up)) {}
 
-  void Draw() { _model.Draw(); }
+  glm::mat4 Project(glm::mat4 model) { return _projection * _view * model; }
 
  private:
-  Cube _model;
+  glm::mat4 _projection;
+  glm::mat4 _view;
 };
 
-}  // namespace kube
+};  // namespace kube

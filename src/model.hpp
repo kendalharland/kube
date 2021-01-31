@@ -14,23 +14,49 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <glm/glm.hpp>
+
+#include "vertex_shader.hpp"
+
 namespace kube {
 
 class Model {
-public:
+ public:
   Model() = delete;
 
   // Constructs a Model with the given center position.
   //
   // shader is used when drawing the model.
-  Model(glm::vec3 center, VertexShader shader)
-      : _center(center), _shader(shader) {}
+  Model(glm::mat4 center, VertexShader &shader, const GLfloat *vertices,
+        int numVertices, const GLfloat *colors, int numColors,
+        const GLubyte *indices, int numIndices)
+      : _center(center),
+        _shader(shader),
+        _vertices(vertices),
+        _numVertices(numVertices),
+        _colors(colors),
+        _numColors(numColors),
+        _indices(indices),
+        _numIndices(numIndices) {}
 
-  void Draw() { _shader.DrawModel(*this); }
+  void Draw(Camera camera) {
+    glm::mat4 projection = camera.Project(_center);
+    _shader.Draw(projection, _vertices, _numVertices, _colors, _numColors,
+                 _indices, _numIndices);
+  }
 
-private:
-  glm::vec3 _center;
+ private:
+  const GLfloat *_vertices;
+  int _numVertices;
+
+  const GLfloat *_colors;
+  int _numColors;
+
+  const GLubyte *_indices;
+  int _numIndices;
+
+  glm::mat4 _center;
   VertexShader _shader;
 };
 
-} // namespace kube
+}  // namespace kube

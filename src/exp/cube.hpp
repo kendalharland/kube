@@ -22,7 +22,7 @@ namespace kube {
 
 // Generic, drawable cube geometry.
 class Cube {
-public:
+ public:
   Cube() = delete;
 
   // Constructs a cube with the given side length.
@@ -30,7 +30,7 @@ public:
 
   void Draw() { DrawModel(model); }
 
-private:
+ private:
   Model _model;
   float _length;
 
@@ -80,4 +80,4 @@ private:
   //    0, 0,-1,   0, 0,-1,   0, 0,-1,   0, 0,-1  // v4,v7,v6,v5 (back)
   // };
 
-} // namespace kube
+}  // namespace kube

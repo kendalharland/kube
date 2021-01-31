@@ -14,12 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#ifndef _VERTEX_SHADER_HPP
+#define _VERTEX_SHADER_HPP
+
 #include <glm/glm.hpp>
+#include <iostream>
+
+#include "shader.hpp"
 
 namespace kube {
 
 class VertexShader {
-public:
+ public:
   // TODO: The shader files themselves should be the arguments?
   VertexShader()
       : _matrixID(0), _programID(0), _vertexBuffer(0), _colorBuffer(0) {
@@ -48,13 +54,13 @@ public:
     glEnableClientState(GL_COLOR_ARRAY);
 
     // 1st attribute buffer : vertices.
-    glEnableVertexAttribArray(_vertexArray); // vertices.
+    glEnableVertexAttribArray(_vertexArray);  // vertices.
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, numVertices, vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(_vertexArray, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
     // 2nd attribute buffer : colors.
-    glEnableVertexAttribArray(_colorArray); // colors.
+    glEnableVertexAttribArray(_colorArray);  // colors.
     glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
     glBufferData(GL_ARRAY_BUFFER, numColors, colors, GL_STATIC_DRAW);
     glVertexAttribPointer(_colorArray, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
@@ -68,7 +74,7 @@ public:
     glDisableVertexAttribArray(_colorArray);
   }
 
-private:
+ private:
   GLuint _programID;
   GLuint _matrixID;
   GLuint _vertexBuffer;
@@ -78,4 +84,6 @@ private:
   static const GLuint _colorArray = 1;
 };
 
-}; // namespace kube
+};  // namespace kube
+
+#endif  // _VERTEX_SHADER_HPP
