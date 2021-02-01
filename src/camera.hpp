@@ -26,17 +26,29 @@ class Camera {
   Camera(glm::vec3 position, glm::vec3 target, float fov = glm::radians(45.0f),
          float aspectRatio = 4.0f / 3.0f, float near = 0.1f, float far = 100.f,
          glm::vec3 up = glm::vec3(0, 1, 0))
-      : _projection(glm::perspective(fov, aspectRatio, near, far)),
-        _view(glm::lookAt(position, target, up)) {}
+      : _aspectRatio(aspectRatio),
+        _far(far),
+        _fov(fov),
+        _near(near),
+        _position(position),
+        _target(target),
+        _up(up) {}
 
-  glm::mat4 Project(glm::vec3 position) {
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
-    return _projection * _view * model;
+  glm::mat4 Project(glm::vec3 modelPos) {
+    auto projection = glm::perspective(_fov, _aspectRatio, _near, _far);
+    auto view = glm::lookAt(_position, _target, _up);
+    auto model = glm::translate(glm::mat4(1.0f), modelPos);
+    return projection * view * model;
   }
 
  private:
-  glm::mat4 _projection;
-  glm::mat4 _view;
+  float _aspectRatio;
+  float _far;
+  float _fov;
+  float _near;
+  glm::vec3 _position;
+  glm::vec3 _target;
+  glm::vec3 _up;
 };
 
 };  // namespace kube

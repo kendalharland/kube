@@ -96,7 +96,7 @@ int main(void) {
 
   // Must come after the VertexArray above is created.
   auto shader = kube::ModelShader();
-  auto cube = kube::Cube(glm::vec3(0.f));
+  auto model = kube::Cube(glm::vec3(0.f));
 
   auto camera = kube::Camera(
       glm::vec3(4, 3, -3),  // Camera is at (4,3,-3), in World Space
@@ -111,7 +111,7 @@ int main(void) {
     // Save the initial ModelView matrix before modifying ModelView matrix.
     glPushMatrix();
 
-    DrawModel(camera, cube, shader);
+    DrawModel(camera, model, shader);
 
     // Restore initial MovelView matrix.
     glPopMatrix();
