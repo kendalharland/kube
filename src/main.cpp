@@ -46,6 +46,16 @@ void DrawModel(kube::Camera camera, kube::Model* model,
               model->NumColors(), model->Indices(), model->NumIndices());
 }
 
+auto camera =
+    kube::Camera(glm::vec3(4, 3, -3),  // Camera is at (4,3,-3), in World Space
+                 glm::vec3(0, 0, 0)    // and looks at the origin
+    );
+
+void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+  std::cout << yoffset << "\n";
+  camera.Zoom(yoffset > 0);
+}
+
 int main(void) {
   if (!glfwInit()) {
     fprintf(stderr, "Failed to initialize GLFW\n");
@@ -86,6 +96,9 @@ int main(void) {
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
+  // Camera configuration
+  glfwSetScrollCallback(window, mouseScrollCallback);
+
   // Dark blue background
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
@@ -97,11 +110,6 @@ int main(void) {
   // Must come after the VertexArray above is created.
   auto shader = kube::ModelShader();
   auto model = kube::Cube(glm::vec3(0.f));
-
-  auto camera = kube::Camera(
-      glm::vec3(4, 3, -3),  // Camera is at (4,3,-3), in World Space
-      glm::vec3(0, 0, 0)    // and looks at the origin
-  );
 
   do {
     // Clear the screen. It's not mentioned before Tutorial 02, but it can cause

@@ -25,14 +25,15 @@ class Camera {
  public:
   Camera(glm::vec3 position, glm::vec3 target, float fov = glm::radians(45.0f),
          float aspectRatio = 4.0f / 3.0f, float near = 0.1f, float far = 100.f,
-         glm::vec3 up = glm::vec3(0, 1, 0))
+         glm::vec3 up = glm::vec3(0, 1, 0), float zoomSpeed = 4.f)
       : _aspectRatio(aspectRatio),
         _far(far),
         _fov(fov),
         _near(near),
         _position(position),
         _target(target),
-        _up(up) {}
+        _up(up),
+        _zoomSpeed(glm::radians(zoomSpeed)) {}
 
   glm::mat4 Project(glm::vec3 modelPos) {
     auto projection = glm::perspective(_fov, _aspectRatio, _near, _far);
@@ -41,11 +42,15 @@ class Camera {
     return projection * view * model;
   }
 
+  // TODO(kjharland): Clamp the camera at 0 2pi so it doesn't loop around.
+  void Zoom(bool in) { _fov = in ? _fov - _zoomSpeed : _fov + _zoomSpeed; }
+
  private:
   float _aspectRatio;
   float _far;
   float _fov;
   float _near;
+  float _zoomSpeed;
   glm::vec3 _position;
   glm::vec3 _target;
   glm::vec3 _up;
