@@ -21,6 +21,9 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>  // For debugging.
+
+#include "glm/gtx/string_cast.hpp"
 using namespace glm;
 
 #include "camera.hpp"
@@ -28,6 +31,12 @@ using namespace glm;
 #include "shader.hpp"
 #include "shapes.hpp"
 #include "vertex_shader.hpp"
+
+// Camera is at (4,3,-3), in World Space
+#define CAMERA_POS glm::vec3(0, 10, -25)
+
+// and looks at the origin
+#define CAMERA_TARGET glm::vec3()
 
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 800
@@ -37,22 +46,22 @@ using namespace glm;
 #define TILE_SIZE 1.f
 #define CUBE_SIZE 1.f
 
+#define IDENTITY_MAT4 glm::mat4(1.f)
+
 GLFWwindow* window;
+
+auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
 
 void DrawModel(kube::Camera camera, kube::Model* model,
                kube::ModelShader& shader) {
-  glm::mat4 mvp = camera.Project(model->Center());
+  glm::mat4 translation = glm::translate(IDENTITY_MAT4, model->Center());
+  glm::mat4 rotation = model->Rotation();
+  glm::mat4 mvp = camera.MVP(translation * rotation);
   shader.Draw(mvp, model->Vertices(), model->NumVertices(), model->Colors(),
               model->NumColors(), model->Indices(), model->NumIndices());
 }
 
-auto camera =
-    kube::Camera(glm::vec3(4, 3, -3),  // Camera is at (4,3,-3), in World Space
-                 glm::vec3(0, 0, 0)    // and looks at the origin
-    );
-
 void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-  std::cout << yoffset << "\n";
   camera.Zoom(yoffset > 0);
 }
 
@@ -102,22 +111,38 @@ int main(void) {
   // Dark blue background
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-  // // TODO(kjharland): This should probably be moved to the Shader type?.
+  // TODO(kjharland): This should probably be moved to the Shader type?.
   GLuint VertexArrayID;
   glGenVertexArrays(1, &VertexArrayID);
   glBindVertexArray(VertexArrayID);
 
   // Must come after the VertexArray above is created.
   auto shader = kube::ModelShader();
-  auto model = kube::Cube(glm::vec3(0.f));
+  auto model = kube::Cube(glm::vec3());
+
+  double currentTime = glfwGetTime();
+  double lastTime = currentTime;
+  double deltaTime = 0;
 
   do {
+    currentTime = glfwGetTime();
+    deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
+    // Save the initial ModelView matrix before modifying ModelView matrix.
+    glPushMatrix();
+
     // Clear the screen. It's not mentioned before Tutorial 02, but it can cause
     // flickering, so it's there nonetheless.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Save the initial ModelView matrix before modifying ModelView matrix.
-    glPushMatrix();
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+      model->RotateRight(deltaTime);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+      model->RotateLeft(deltaTime);
+    }
 
     DrawModel(camera, model, shader);
 

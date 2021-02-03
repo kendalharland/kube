@@ -17,6 +17,10 @@
 #ifndef _MODEL_HPP
 #define _MODEL_HPP
 
+#define ROTATIONS_PER_SEC 90.f
+
+static const glm::vec3 Y_AXIS = glm::vec3(0.f, 1.f, 0.f);
+
 #include <glm/glm.hpp>
 
 #include "vertex_shader.hpp"
@@ -34,14 +38,17 @@ class Model {
         const GLfloat *colors, int numColors, const GLubyte *indices,
         int numIndices)
       : _center(center),
-        _vertices(vertices),
-        _numVertices(numVertices),
         _colors(colors),
-        _numColors(numColors),
         _indices(indices),
-        _numIndices(numIndices) {}
+        _numColors(numColors),
+        _numIndices(numIndices),
+        _numVertices(numVertices),
+        _rotation(glm::mat4(1.f)),
+        _vertices(vertices) {}
 
-  glm::vec3 Center() { return _center; }
+  const glm::vec3 Center() { return _center; }
+
+  const glm::mat4 Rotation() { return _rotation; }
 
   const GLfloat *Vertices() { return _vertices; }
   int NumVertices() { return _numVertices; }
@@ -51,6 +58,16 @@ class Model {
 
   const GLubyte *Indices() { return _indices; }
   int NumIndices() { return _numIndices; }
+
+  void RotateRight(float t) {
+    auto angle = glm::radians(ROTATIONS_PER_SEC) * t;
+    _rotation = glm::rotate(_rotation, angle, -Y_AXIS);
+  }
+
+  void RotateLeft(float t) {
+    auto angle = glm::radians(ROTATIONS_PER_SEC) * t;
+    _rotation = glm::rotate(_rotation, angle, Y_AXIS);
+  }
 
  private:
   const GLfloat *_vertices;
@@ -63,6 +80,7 @@ class Model {
   int _numIndices;
 
   glm::vec3 _center;
+  glm::mat4 _rotation;
 };
 
 }  // namespace kube

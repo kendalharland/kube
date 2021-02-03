@@ -19,6 +19,8 @@
 
 #include <glm/glm.hpp>
 
+#define GLM_FORCE_RADIANS 1
+
 namespace kube {
 
 class Camera {
@@ -35,10 +37,9 @@ class Camera {
         _up(up),
         _zoomSpeed(glm::radians(zoomSpeed)) {}
 
-  glm::mat4 Project(glm::vec3 modelPos) {
+  glm::mat4 MVP(glm::mat4 model) {
     auto projection = glm::perspective(_fov, _aspectRatio, _near, _far);
     auto view = glm::lookAt(_position, _target, _up);
-    auto model = glm::translate(glm::mat4(1.0f), modelPos);
     return projection * view * model;
   }
 
