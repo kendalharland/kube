@@ -43,8 +43,8 @@ class Camera {
     return projection * view * model;
   }
 
-  // TODO(kjharland): Clamp the camera at 0 2pi so it doesn't loop around.
-  void Zoom(bool in) { _fov = in ? _fov - _zoomSpeed : _fov + _zoomSpeed; }
+  // TODO(kjharland): Clamp the camera between [0, 2π] so it doesn't flip.
+  void Zoom(bool in) { _fov += in ? -_zoomSpeed : _zoomSpeed; }
 
  private:
   float _aspectRatio;

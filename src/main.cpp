@@ -28,6 +28,7 @@ using namespace glm;
 
 #include "camera.hpp"
 #include "constants.hpp"
+#include "level.hpp"
 #include "model.hpp"
 #include "shader.hpp"
 #include "shapes.hpp"
