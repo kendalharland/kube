@@ -27,26 +27,11 @@
 using namespace glm;
 
 #include "camera.hpp"
+#include "constants.hpp"
 #include "model.hpp"
 #include "shader.hpp"
 #include "shapes.hpp"
 #include "vertex_shader.hpp"
-
-// Camera is at (4,3,-3), in World Space
-#define CAMERA_POS glm::vec3(-15, 10, -25)
-
-// and looks at the origin
-#define CAMERA_TARGET glm::vec3()
-
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 800
-#define TITLE "Kube"
-#define TARGET_FPS 60
-
-#define TILE_SIZE 1.f
-#define CUBE_SIZE 1.f
-
-#define IDENTITY_MAT4 glm::mat4(1.f)
 
 GLFWwindow* window;
 

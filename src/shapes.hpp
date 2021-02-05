@@ -19,9 +19,8 @@
 
 #include <glm/glm.hpp>
 
+#include "constants.hpp"
 #include "model.hpp"
-
-#define IDENTITY_MAT4 glm::mat4(1.f)
 
 namespace kube {
 
