@@ -56,7 +56,7 @@ void DrawModel(kube::Camera camera, kube::Model* model,
                kube::ModelShader& shader) {
   glm::mat4 translation = glm::translate(IDENTITY_MAT4, model->Center());
   glm::mat4 rotation = model->Rotation();
-  glm::mat4 scale = glm::mat4(model->Scale());
+  glm::mat4 scale = model->Scale();
   glm::mat4 mvp = camera.MVP(translation * rotation * scale);
   shader.Draw(mvp, model->Vertices(), model->NumVertices(), model->Colors(),
               model->NumColors(), model->Indices(), model->NumIndices());
@@ -119,7 +119,7 @@ int main(void) {
 
   // Must come after the VertexArray above is created.
   auto shader = kube::ModelShader();
-  auto playerCube = kube::Cube(glm::vec3(0, 0, 0), 10.f);
+  auto playerCube = kube::Cube(glm::vec3(0, 0, 0), 2.f);
   auto tile = kube::Cube(glm::vec3(0, -2, 0), 1.f);
 
   double currentTime = glfwGetTime();

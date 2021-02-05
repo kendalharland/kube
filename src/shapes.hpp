@@ -21,6 +21,8 @@
 
 #include "model.hpp"
 
+#define IDENTITY_MAT4 glm::mat4(1.f)
+
 namespace kube {
 
 // clang-format off
@@ -69,7 +71,7 @@ Model* Cube(glm::vec3 center, float length = 1.f) {
       .numColors = sizeof(colors),
       .numIndices = sizeof(indices),
       .numVertices = sizeof(vertices),
-      .scale = length,
+      .scale = glm::scale(IDENTITY_MAT4, glm::vec3(length)),
       .vertices = vertices,
   });
 }

@@ -35,7 +35,7 @@ class Model {
     int numIndices;
     int numVertices;
     glm::mat4 rotation = glm::mat4(1.f);
-    float scale = 1.f;
+    glm::mat4 scale = glm::mat4(1.f);
     const GLfloat *vertices;
   };
 
@@ -48,6 +48,8 @@ class Model {
 
   const glm::mat4 Rotation() { return _options.rotation; }
 
+  const glm::mat4 Scale() { return _options.scale; }
+
   const GLfloat *Vertices() { return _options.vertices; }
   int NumVertices() { return _options.numVertices; }
 
@@ -56,8 +58,6 @@ class Model {
 
   const GLubyte *Indices() { return _options.indices; }
   int NumIndices() { return _options.numIndices; }
-
-  const GLfloat Scale() { return _options.scale; }
 
   void RotateRight(float t) {
     auto angle = glm::radians(ROTATIONS_PER_SEC) * t;
