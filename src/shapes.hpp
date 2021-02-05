@@ -61,9 +61,17 @@ static const GLubyte indices[]  = {
 // clang-format on
 
 // Generic, drawable cube geometry.
-Model* Cube(glm::vec3 center) {
-  return new Model(center, vertices, sizeof(vertices), colors, sizeof(colors),
-                   &indices[0], sizeof(indices));
+Model* Cube(glm::vec3 center, float length = 1.f) {
+  return new Model({
+      .center = center,
+      .colors = colors,
+      .indices = &indices[0],
+      .numColors = sizeof(colors),
+      .numIndices = sizeof(indices),
+      .numVertices = sizeof(vertices),
+      .scale = length,
+      .vertices = vertices,
+  });
 }
 
 };  // namespace kube

@@ -33,7 +33,7 @@ using namespace glm;
 #include "vertex_shader.hpp"
 
 // Camera is at (4,3,-3), in World Space
-#define CAMERA_POS glm::vec3(0, 10, -25)
+#define CAMERA_POS glm::vec3(-15, 10, -25)
 
 // and looks at the origin
 #define CAMERA_TARGET glm::vec3()
@@ -56,7 +56,8 @@ void DrawModel(kube::Camera camera, kube::Model* model,
                kube::ModelShader& shader) {
   glm::mat4 translation = glm::translate(IDENTITY_MAT4, model->Center());
   glm::mat4 rotation = model->Rotation();
-  glm::mat4 mvp = camera.MVP(translation * rotation);
+  glm::mat4 scale = glm::mat4(model->Scale());
+  glm::mat4 mvp = camera.MVP(translation * rotation * scale);
   shader.Draw(mvp, model->Vertices(), model->NumVertices(), model->Colors(),
               model->NumColors(), model->Indices(), model->NumIndices());
 }
@@ -118,7 +119,8 @@ int main(void) {
 
   // Must come after the VertexArray above is created.
   auto shader = kube::ModelShader();
-  auto model = kube::Cube(glm::vec3());
+  auto playerCube = kube::Cube(glm::vec3(0, 0, 0), 10.f);
+  auto tile = kube::Cube(glm::vec3(0, -2, 0), 1.f);
 
   double currentTime = glfwGetTime();
   double lastTime = currentTime;
@@ -137,14 +139,15 @@ int main(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-      model->RotateRight(deltaTime);
+      playerCube->RotateRight(deltaTime);
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-      model->RotateLeft(deltaTime);
+      playerCube->RotateLeft(deltaTime);
     }
 
-    DrawModel(camera, model, shader);
+    DrawModel(camera, playerCube, shader);
+    DrawModel(camera, tile, shader);
 
     // Restore initial MovelView matrix.
     glPopMatrix();
