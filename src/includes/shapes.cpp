@@ -61,8 +61,8 @@ static const GLubyte indices[]  = {
 // clang-format on
 
 // Generic, drawable cube geometry.
-Model* Cube(glm::vec3 center, float length = 1.f) {
-  return new Model({
+Model Cube(glm::vec3 center, float length = 1.f) {
+  return Model({
       .center = center,
       .colors = colors,
       .indices = &indices[0],
