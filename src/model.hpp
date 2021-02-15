@@ -59,6 +59,10 @@ class Model {
   const GLubyte *Indices() { return _options.indices; }
   int NumIndices() { return _options.numIndices; }
 
+  void SetRotation(float radians) {
+    _options.rotation = glm::rotate(IDENTITY_MAT4, radians, Y_AXIS);
+  }
+
   void RotateRight(float t) {
     auto angle = glm::radians(ROTATIONS_PER_SEC) * t;
     _options.rotation = glm::rotate(_options.rotation, angle, -Y_AXIS);

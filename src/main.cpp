@@ -26,6 +26,7 @@
 #include "glm/gtx/string_cast.hpp"
 using namespace glm;
 
+#include "animation.hpp"
 #include "camera.hpp"
 #include "constants.hpp"
 #include "level.hpp"
@@ -112,6 +113,11 @@ int main(void) {
   double lastTime = currentTime;
   double deltaTime = 0;
 
+  kube::Animation animation;
+  kube::DoubleTween tween(0, 90);
+  bool animating = false;
+  double animationStartTime = 0;
+
   do {
     currentTime = glfwGetTime();
     deltaTime = currentTime - lastTime;
@@ -124,13 +130,33 @@ int main(void) {
     // flickering, so it's there nonetheless.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-      playerCube->RotateRight(deltaTime);
+    if (animating) {
+      animation.Update(deltaTime);
+      std::cout << "Progress: " << animation.Progress() << "\n";
+      double position = kube::SinCurve(animation.Progress());
+      double rotation = tween.Compute(position);
+      playerCube->SetRotation(rotation);
+      if (animation.IsComplete()) {
+        animating = false;
+        std::cout << "Animation complete\n";
+      }
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && !animating) {
+      animation = kube::Animation();
+      // TODO: This tween should start from the cube's current rotation.
+      tween = kube::DoubleTween(glm::radians(0.f), glm::radians(90.f));
+      animating = true;
+      std::cout << "Animating\n";
+      animationStartTime = currentTime;
     }
 
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-      playerCube->RotateLeft(deltaTime);
-    }
+    // if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+    //   playerCube->RotateRight(deltaTime);
+    // }
+
+    // if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+    //   playerCube->RotateLeft(deltaTime);
+    // }
 
     DrawModel(camera, playerCube, shader);
     DrawModel(camera, tile, shader);
