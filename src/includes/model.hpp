@@ -17,13 +17,19 @@
 #ifndef _MODEL_HPP
 #define _MODEL_HPP
 
+// #include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "constants.hpp"
+
 #define ROTATIONS_PER_SEC 90.f
 
 static const glm::vec3 Y_AXIS = glm::vec3(0.f, 1.f, 0.f);
 static const glm::vec3 X_AXIS = glm::vec3(1.f, 0.f, 0.f);
 static const glm::vec3 Z_AXIS = glm::vec3(0.f, 0.f, 1.f);
-
-#include <glm/glm.hpp>
 
 namespace kube {
 

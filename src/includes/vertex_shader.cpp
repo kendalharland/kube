@@ -19,7 +19,7 @@
 
 #include <glm/glm.hpp>
 
-#include "shader.hpp"
+#include "shader.cpp"
 
 namespace kube {
 

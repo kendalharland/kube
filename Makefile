@@ -7,7 +7,7 @@ ifeq ($(config),debug)
 endif
 
 CXX := clang++
-CXXFLAGS += -std=c++20
+CXXFLAGS += -std=c++20 -I./src/includes
 
 LIBS := -lglfw -lGLEW -lGL -lm
 TARGET := kube
@@ -16,7 +16,7 @@ TARGET := kube
 
 kube: clean
 	@echo "=== Building $(TARGET) ($(config)) ==="
-	$(CXX) src/main.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS)
+	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS)
 
 clean:
 	@echo "=== Removing kube ==="

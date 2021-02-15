@@ -17,10 +17,9 @@
 #ifndef _SHAPES_HPP
 #define _SHAPES_HPP
 
+#include <constants.hpp>
 #include <glm/glm.hpp>
-
-#include "constants.hpp"
-#include "model.hpp"
+#include <model.hpp>
 
 namespace kube {
 
