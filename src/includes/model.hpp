@@ -17,7 +17,6 @@
 #ifndef _MODEL_HPP
 #define _MODEL_HPP
 
-// #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>

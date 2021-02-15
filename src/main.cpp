@@ -125,8 +125,7 @@ int main(void) {
     // Save the initial ModelView matrix before modifying ModelView matrix.
     glPushMatrix();
 
-    // Clear the screen. It's not mentioned before Tutorial 02, but it can cause
-    // flickering, so it's there nonetheless.
+    // Clear the screen to avoid flickering.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     player.HandleInput(window);
