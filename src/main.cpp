@@ -114,8 +114,7 @@ int main(void) {
   double lastTime = currentTime;
   double deltaTime = 0;
 
-  kube::Animation animation;
-  kube::DoubleTween tween(0, 90);
+  kube::RotateAnimation* animation;
   bool animating = false;
 
   do {
@@ -131,30 +130,56 @@ int main(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (animating) {
-      animation.Update(deltaTime);
-      std::cout << "Progress: " << animation.Progress() << "\n";
-      double position = kube::SinCurve(animation.Progress());
-      double rotation = tween.Compute(position);
-      playerCube->SetRotation(rotation, Y_AXIS);
-      if (animation.IsComplete()) {
+      double rotation = animation->Update(deltaTime);
+      std::cout << "Progress: " << animation->Progress() << "\n";
+      playerCube->SetRotation(rotation, animation->Axis());
+      if (animation->IsComplete()) {
         animating = false;
+        free(animation);
+        animation = NULL;
         std::cout << "Animation complete\n";
       }
     }
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && !animating) {
-      animation = kube::Animation();
-      // TODO: This tween should start from the cube's current rotation.
-      tween = kube::DoubleTween(glm::radians(0.f), glm::radians(90.f));
       animating = true;
+
+      kube::DoubleTween tween(glm::radians(0.f), glm::radians(90.f));
+      animation = new kube::RotateAnimation(
+          kube::AnimationState(),
+          // TODO: This tween should start from the cube's current rotation.
+          tween, (kube::Curve&)kube::LinearCurve, X_AXIS);
+      std::cout << "Animating\n";
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && !animating) {
+      animating = true;
+
+      kube::DoubleTween tween(glm::radians(0.f), glm::radians(90.f));
+      animation = new kube::RotateAnimation(
+          kube::AnimationState(),
+          // TODO: This tween should start from the cube's current rotation.
+          tween, (kube::Curve&)kube::LinearCurve, -X_AXIS);
       std::cout << "Animating\n";
     }
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && !animating) {
-      animation = kube::Animation();
-      // TODO: This tween should start from the cube's current rotation.
-      tween = kube::DoubleTween(glm::radians(0.f), glm::radians(90.f));
       animating = true;
+      kube::DoubleTween tween(glm::radians(0.f), glm::radians(90.f));
+      animation = new kube::RotateAnimation(
+          kube::AnimationState(),
+          // TODO: This tween should start from the cube's current rotation.
+          tween, (kube::Curve&)kube::LinearCurve, Z_AXIS);
+      std::cout << "Animating\n";
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && !animating) {
+      animating = true;
+      kube::DoubleTween tween(glm::radians(0.f), glm::radians(90.f));
+      animation = new kube::RotateAnimation(
+          kube::AnimationState(),
+          // TODO: This tween should start from the cube's current rotation.
+          tween, (kube::Curve&)kube::LinearCurve, -Z_AXIS);
       std::cout << "Animating\n";
     }
 
@@ -177,6 +202,8 @@ int main(void) {
   }  // Check if the ESC key was pressed or the window was closed
   while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
          glfwWindowShouldClose(window) == 0);
+
+  free(animation);
 
   // Clean VBO
   glDeleteVertexArrays(1, &VertexArrayID);

@@ -17,6 +17,10 @@
 #ifndef _PLAYER_HPP
 #define _PLAYER_HPP
 
+#include <glm/glm.hpp>
+
+#include "animation.hpp"
+
 namespace kube {}  // namespace kube
 
 #endif  // _PLAYER_HPP
