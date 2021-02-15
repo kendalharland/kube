@@ -24,7 +24,11 @@
  *
  * Flutter uses an `Animation` type to keep track of the animation state, which
  * is represented by the closed interval [0, 1] where 0 == not started and 1 ==
- * complete. The animation always moves forward, from 0 to 1.
+ * complete. The animation always moves forward, from 0 to 1.  The animation is
+ * updated incrementally based on the amount of time that has passed (deltaTime)
+ * which is assumed to be mapped from clock-time to wall time by the caller. If
+ * we want the animation to complete faster, we can multiple deltaTime by some
+ * constant.
  *
  * Tweens are used to map real-world values to the positions on the animation
  * interval. For example a tween from the color red to the color blue would

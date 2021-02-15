@@ -20,6 +20,7 @@
 #define ROTATIONS_PER_SEC 90.f
 
 static const glm::vec3 Y_AXIS = glm::vec3(0.f, 1.f, 0.f);
+static const glm::vec3 X_AXIS = glm::vec3(1.f, 0.f, 0.f);
 
 #include <glm/glm.hpp>
 
@@ -59,8 +60,8 @@ class Model {
   const GLubyte *Indices() { return _options.indices; }
   int NumIndices() { return _options.numIndices; }
 
-  void SetRotation(float radians) {
-    _options.rotation = glm::rotate(IDENTITY_MAT4, radians, Y_AXIS);
+  void SetRotation(float radians, glm::vec3 axis) {
+    _options.rotation = glm::rotate(IDENTITY_MAT4, radians, axis);
   }
 
   void RotateRight(float t) {

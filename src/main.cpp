@@ -31,6 +31,7 @@ using namespace glm;
 #include "constants.hpp"
 #include "level.hpp"
 #include "model.hpp"
+#include "player.hpp"
 #include "shader.hpp"
 #include "shapes.hpp"
 #include "vertex_shader.hpp"
@@ -116,7 +117,6 @@ int main(void) {
   kube::Animation animation;
   kube::DoubleTween tween(0, 90);
   bool animating = false;
-  double animationStartTime = 0;
 
   do {
     currentTime = glfwGetTime();
@@ -135,19 +135,27 @@ int main(void) {
       std::cout << "Progress: " << animation.Progress() << "\n";
       double position = kube::SinCurve(animation.Progress());
       double rotation = tween.Compute(position);
-      playerCube->SetRotation(rotation);
+      playerCube->SetRotation(rotation, Y_AXIS);
       if (animation.IsComplete()) {
         animating = false;
         std::cout << "Animation complete\n";
       }
     }
+
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && !animating) {
       animation = kube::Animation();
       // TODO: This tween should start from the cube's current rotation.
       tween = kube::DoubleTween(glm::radians(0.f), glm::radians(90.f));
       animating = true;
       std::cout << "Animating\n";
-      animationStartTime = currentTime;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && !animating) {
+      animation = kube::Animation();
+      // TODO: This tween should start from the cube's current rotation.
+      tween = kube::DoubleTween(glm::radians(0.f), glm::radians(90.f));
+      animating = true;
+      std::cout << "Animating\n";
     }
 
     // if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
