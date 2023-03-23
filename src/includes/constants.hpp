@@ -22,9 +22,11 @@
 #define TITLE "Kube"
 
 // Camera is at (4,3,-3), in World Space
-#define CAMERA_POS glm::vec3(-15, 10, -25)
 // and looks at the origin
+
+#define CAMERA_POS glm::vec3(-15, 10, -25)
 #define CAMERA_TARGET glm::vec3()
+
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 800
 #define TARGET_FPS 60

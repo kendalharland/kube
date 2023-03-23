@@ -23,23 +23,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>  // For debugging.
 
-// TODO: Delete?
-#include "glm/gtx/string_cast.hpp"
 using namespace glm;
 
 #include <player.h>
+#include <window.h>
 
 #include <animation.hpp>
 #include <camera.cpp>
 #include <constants.hpp>
-#include <level.cpp>
 #include <model.hpp>
 #include <shapes.cpp>
 #include <vertex_shader.cpp>
-
-GLFWwindow* window;
-
-auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
 
 void DrawModel(kube::Camera camera, kube::Model* model,
                kube::ModelShader& shader) {
@@ -51,63 +45,17 @@ void DrawModel(kube::Camera camera, kube::Model* model,
               model->NumColors(), model->Indices(), model->NumIndices());
 }
 
-void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-  camera.Zoom(yoffset > 0);
-}
-
 int main(void) {
-  if (!glfwInit()) {
-    fprintf(stderr, "Failed to initialize GLFW\n");
-    getchar();
-    return -1;
-  }
+  kube::Window* window = kube::Window::GetInstance();
+  window->Init(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
 
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
-                 GL_TRUE);  // To make MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  // Open a window and create its OpenGL context
-  window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_WIDTH, TITLE, NULL, NULL);
-  if (window == NULL) {
-    fprintf(stderr,
-            "Failed to open GLFW window. If you have an Intel GPU, they are "
-            "not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
-    getchar();
-    glfwTerminate();
-    return -1;
-  }
-  glfwMakeContextCurrent(window);
-
-  // Initialize GLEW
-  if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "Failed to initialize GLEW\n");
-    getchar();
-    glfwTerminate();
-    return -1;
-  }
-
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
-
-  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_FALSE);
-
-  // Camera configuration
-  glfwSetScrollCallback(window, mouseScrollCallback);
-
-  // Dark blue background
-  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
-  // TODO(kjharland): This should probably be moved to the Shader type?.
-  GLuint VertexArrayID;
-  glGenVertexArrays(1, &VertexArrayID);
-  glBindVertexArray(VertexArrayID);
+  auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
+  window->SetScrollCallback([&camera = camera](double xoffset, double yoffset) {
+    camera.Zoom(yoffset > 0);
+  });
 
   // Must come after the VertexArray above is created.
   auto shader = kube::ModelShader();
-  auto tile = kube::Cube(glm::vec3(0, -2, 0), 1.f);
 
   double currentTime = glfwGetTime();
   double lastTime = currentTime;
@@ -122,32 +70,15 @@ int main(void) {
     deltaTime = currentTime - lastTime;
     lastTime = currentTime;
 
-    // Save the initial ModelView matrix before modifying ModelView matrix.
-    glPushMatrix();
-
-    // Clear the screen to avoid flickering.
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    player.HandleInput(window);
+    window->Clear();
+    player.HandleInput(window->inner());
     player.Update(deltaTime);
-
     DrawModel(camera, &model, shader);
-    DrawModel(camera, &tile, shader);
-
-    // Restore initial MovelView matrix.
-    glPopMatrix();
-
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+    window->Update();
   }  // Check if the ESC key was pressed or the window was closed
-  while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-         glfwWindowShouldClose(window) == 0);
+  while (!window->ShouldClose());
 
-  // Clean VBO
-  glDeleteVertexArrays(1, &VertexArrayID);
-
-  // Close OpenGL window and terminate GLFW
-  glfwTerminate();
+  window->Close();
 
   return 0;
 }

@@ -1,3 +1,9 @@
+
+# To install dependencies:
+# * libglfw: https://www.glfw.org/
+# * libGLEW: https://glew.sourceforge.net/
+# * libGL: https://dri.freedesktop.org/wiki/libGL/
+
 ifndef config
 	config = release
 endif
@@ -9,6 +15,7 @@ endif
 CXX := clang++
 CXXFLAGS += -std=c++20 -I./src/includes
 
+INC := -Llib
 LIBS := -lglfw -lGLEW -lGL -lm
 TARGET := kube
 
@@ -16,7 +23,7 @@ TARGET := kube
 
 kube: clean
 	@echo "=== Building $(TARGET) ($(config)) ==="
-	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS)
+	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS) $(INC)
 
 clean:
 	@echo "=== Removing kube ==="
