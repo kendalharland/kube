@@ -17,9 +17,9 @@
 #ifndef _VERTEX_SHADER_HPP
 #define _VERTEX_SHADER_HPP
 
-#include <glm/glm.hpp>
+#include <shader.h>
 
-#include "shader.cpp"
+#include <glm/glm.hpp>
 
 namespace kube {
 
@@ -28,8 +28,8 @@ class ModelShader {
   // TODO: The shader files themselves should be the arguments?
   ModelShader()
       : _matrixID(0), _programID(0), _vertexBuffer(0), _colorBuffer(0) {
-    _programID = LoadShaders("src/TransformVertexShader.vertexshader",
-                             "src/ColorFragmentShader.fragmentshader");
+    _programID = LoadShaders("src/shaders/TransformVertexShader.vertexshader",
+                             "src/shaders/ColorFragmentShader.fragmentshader");
     _matrixID = glGetUniformLocation(_programID, "MVP");
     glGenBuffers(1, &_vertexBuffer);
     glGenBuffers(1, &_colorBuffer);
