@@ -22,72 +22,26 @@
 
 namespace kube {
 
-void Window::Init(int width, int height, const char* title) {
-  if (!glfwInit()) {
-    throw "Failed to initialize GLFW\n";
+void Window::Open(int width, int height, const char* title) {
+  if (is_open_) {
+    throw "Window::Open called twice";
   }
-
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  // GL_TRUE makes MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  // Open a window and create its OpenGL context
-  _window = glfwCreateWindow(width, height, title, NULL, NULL);
-  if (_window == NULL) {
-    glfwTerminate();
-    throw(
-        "Failed to open GLFW window. If you have an Intel GPU, they are "
-        "not 3.3 compatible. Try version 2.1");
-  }
-
-  glfwMakeContextCurrent(_window);
-
-  glfwSetScrollCallback(_window, Window::GLFWScrollCallback);
-
-  if (glewInit() != GLEW_OK) {
-    glfwTerminate();
-    throw "Failed to initialize GLEW\n";
-  }
-
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
-  glfwSetInputMode(_window, GLFW_STICKY_KEYS, GL_FALSE);
-
-  // Dark blue background
-  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-  glGenVertexArrays(1, &_vertex_array_id);
-  glBindVertexArray(_vertex_array_id);
+  is_open_ = true;
+  opengl_->CreateWindow(width, height, title);
 };
 
 void Window::SetScrollCallback(std::function<void(double, double)> callback) {
   scroll_callback_ = callback;
 }
 
-void Window::Clear() {
-  // Save the initial ModelView matrix before modifying ModelView matrix.
-  glPushMatrix();
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-};
+void Window::Clear() { opengl_->Clear(); };
 
-void Window::Update() {
-  // Restore initial ModelView matrix.
-  glPopMatrix();
-  glfwSwapBuffers(_window);
-  glfwPollEvents();
-};
+void Window::Update() { opengl_->Update(); };
 
 bool Window::ShouldClose() {
-  return glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS ||
-         glfwWindowShouldClose(_window) == 1;
+  return opengl_->IsKeyPressed(GLFW_KEY_ESCAPE) || opengl_->WindowShouldClose();
 };
 
-void Window::Close() {
-  // Clean VBO
-  glDeleteVertexArrays(1, &_vertex_array_id);
-  glfwTerminate();
-}
+void Window::Close() { opengl_->CloseWindow(); }
 
 }  // namespace kube

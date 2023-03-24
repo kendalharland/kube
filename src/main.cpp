@@ -49,7 +49,7 @@ int main(void) {
   auto window = kube::Window::GetInstance();
   auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
 
-  window->Init(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
+  window->Open(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
   window->SetScrollCallback([&camera = camera](double xoffset, double yoffset) {
     camera.Zoom(yoffset > 0);
   });

@@ -28,21 +28,20 @@ namespace kube {
 
 class Window : public Singleton<Window> {
  private:
-  IMPLEMENT_SINGLETON(Window)
+  SINGLETON(Window) : opengl_(OpenGLContext::GetInstance()), is_open_(false) {}
 
  public:
-  void Init(int width, int height, const char* title);
+  void Open(int width, int height, const char* title);
   void Clear();
   void Update();
   void SetScrollCallback(std::function<void(double, double)> callback);
   bool ShouldClose();
   void Close();
-  GLFWwindow* inner() { return _window; }
+  GLFWwindow* inner() { return opengl_->window_; }
 
  private:
-  OpenGLView* _view;
-  GLFWwindow* _window;
-  GLuint _vertex_array_id;
+  bool is_open_;
+  OpenGLContext* opengl_;
   std::function<void(double, double)> scroll_callback_;
 
   static void GLFWScrollCallback(GLFWwindow* window, double xoffset,
