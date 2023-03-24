@@ -22,8 +22,6 @@
 
 namespace kube {
 
-Window* Window::instance_ = nullptr;
-
 void Window::Init(int width, int height, const char* title) {
   if (!glfwInit()) {
     throw "Failed to initialize GLFW\n";

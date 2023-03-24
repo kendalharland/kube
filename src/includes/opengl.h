@@ -14,45 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef _WINDOW_HPP
-#define _WINDOW_HPP
+#ifndef _OPENGL_HPP
+#define _OPENGL_HPP
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <opengl.h>
 #include <singleton.h>
 
 #include <functional>
+#include <glm/glm.hpp>
 
 namespace kube {
 
-class Window : public Singleton<Window> {
+class OpenGLView : public Singleton<OpenGLView> {
  private:
-  IMPLEMENT_SINGLETON(Window)
-
- public:
-  void Init(int width, int height, const char* title);
-  void Clear();
-  void Update();
-  void SetScrollCallback(std::function<void(double, double)> callback);
-  bool ShouldClose();
-  void Close();
-  GLFWwindow* inner() { return _window; }
-
- private:
-  OpenGLView* _view;
-  GLFWwindow* _window;
-  GLuint _vertex_array_id;
-  std::function<void(double, double)> scroll_callback_;
-
-  static void GLFWScrollCallback(GLFWwindow* window, double xoffset,
-                                 double yoffset) {
-    GetInstance()->scroll_callback_(xoffset, yoffset);
-  }
-
-  // TODO: delete singleton constructors and assignment operators.
+  IMPLEMENT_SINGLETON(OpenGLView)
 };
 
 };  // namespace kube
 
-#endif  // _WINDOW_HPP
+#endif  // _OPENGL_HPP

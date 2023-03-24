@@ -41,6 +41,8 @@ static const GLfloat vertices[] = {
   1,-1,-1,   -1,-1,-1,   -1, 1,-1,    1, 1,-1  // v4,v7,v6,v5 (back)
 };
 
+// Creates a cube whose vertices transition between the full visbile
+// spectrum of visibile colors.
 static const GLfloat colors[] = {
   1, 1, 1,   1, 1, 0,   1, 0, 0,   1, 0, 1, // v0,v1,v2,v3 (front)
   1, 1, 1,   1, 0, 1,   0, 0, 1,   0, 1, 1, // v0,v3,v4,v5 (right)

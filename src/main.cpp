@@ -46,10 +46,10 @@ void DrawModel(kube::Camera camera, kube::Model* model,
 }
 
 int main(void) {
-  kube::Window* window = kube::Window::GetInstance();
-  window->Init(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
-
+  auto window = kube::Window::GetInstance();
   auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
+
+  window->Init(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
   window->SetScrollCallback([&camera = camera](double xoffset, double yoffset) {
     camera.Zoom(yoffset > 0);
   });
@@ -70,9 +70,9 @@ int main(void) {
     deltaTime = currentTime - lastTime;
     lastTime = currentTime;
 
-    window->Clear();
     player.HandleInput(window->inner());
     player.Update(deltaTime);
+    window->Clear();
     DrawModel(camera, &model, shader);
     window->Update();
   }  // Check if the ESC key was pressed or the window was closed
