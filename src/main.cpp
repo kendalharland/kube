@@ -51,13 +51,6 @@ int main(void) {
   auto window = kube::Window::GetInstance();
   auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
 
-  auto vert = kube::Vertex{
-      .position = glm::vec3(1, 2, 3),
-      .color = glm::vec3(1, 1, 0),
-  };
-
-  std::cout << sizeof(vert.position) << std::endl;
-
   window->Open(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
   window->SetScrollCallback([&camera = camera](double xoffset, double yoffset) {
     camera.Zoom(yoffset > 0);

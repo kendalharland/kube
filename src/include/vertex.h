@@ -17,13 +17,40 @@
 #ifndef _VERTEX_H
 #define _VERTEX_H
 
+#include <shader.h>
+
 #include <glm/glm.hpp>
+#include <vector>
 
 namespace kube {
 
 struct Vertex {
-  glm::vec3 position;  // bytes  0-12
-  glm::vec3 color;     // bytes 13-24
+  glm::vec3 position;
+  glm::vec3 normal;
+  glm::vec2 tex_coords;
+};
+
+struct Texture {
+  unsigned int id;
+  std::string type;
+};
+
+class Mesh {
+ public:
+  // mesh data
+  std::vector<Vertex> vertices;
+  std::vector<unsigned int> indices;
+  std::vector<Texture> textures;
+
+  Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
+       std::vector<Texture> textures);
+  void Draw(Shader &shader);
+
+ private:
+  //  render data
+  unsigned int VAO, VBO, EBO;
+
+  void setupMesh();
 };
 
 };  // namespace kube

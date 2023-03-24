@@ -24,6 +24,8 @@
 
 namespace kube {
 
+class Shader {};
+
 GLuint CompileShader(std::string filename, uint gl_shader_type);
 
 GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename);
