@@ -20,9 +20,11 @@
 
 namespace kube {
 
-#define SINGLETON(IMPL)                                \
-  friend Singleton<IMPL>;                              \
-  static IMPL* CreateInstance() { return new IMPL(); } \
+#define SINGLETON(IMPL)           \
+  friend Singleton<IMPL>;         \
+  static IMPL* CreateInstance() { \
+    return new IMPL();            \
+  }                               \
   IMPL()
 
 template <typename Impl>

@@ -49,7 +49,7 @@ GLuint CompileShader(std::string filename, uint gl_shader_type) {
   reader.close();
 
   // Compile the shader.
-  char const *source = shader_code.c_str();
+  char const* source = shader_code.c_str();
   glShaderSource(shader_id, 1, &source, NULL);
   glCompileShader(shader_id);
 
@@ -69,7 +69,7 @@ GLuint CompileShader(std::string filename, uint gl_shader_type) {
   return shader_id;
 }
 
-GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename) {
+GLuint LoadShaders(const char* vertex_filename, const char* fragment_filename) {
   // Create the shaders
   GLuint vertex_shader_id = CompileShader(vertex_filename, GL_VERTEX_SHADER);
   GLuint fragment_shader_id =

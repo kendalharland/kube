@@ -25,8 +25,8 @@
 
 using namespace glm;
 
+#include <mesh.h>
 #include <player.h>
-#include <vertex.h>
 #include <window.h>
 
 #include <animation.hpp>
@@ -37,7 +37,8 @@ using namespace glm;
 #include <shapes.cpp>
 #include <vertex_shader.cpp>
 
-void DrawModel(kube::Camera camera, kube::DeprecatedModel* model,
+void DrawModel(kube::Camera camera,
+               kube::DeprecatedModel* model,
                kube::ModelShader& shader) {
   glm::mat4 translation = glm::translate(IDENTITY_MAT4, model->Center());
   glm::mat4 rotation = model->Rotation();

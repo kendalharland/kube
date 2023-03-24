@@ -43,8 +43,12 @@ class ModelShader {
 
   // TODO: Model and camera objects would cut down on the number of params,
   // here.
-  void Draw(glm::mat4 mvp, const GLfloat *vertices, int numVertices,
-            const GLfloat *colors, int numColors, const GLubyte *indices,
+  void Draw(glm::mat4 mvp,
+            const GLfloat* vertices,
+            int numVertices,
+            const GLfloat* colors,
+            int numColors,
+            const GLubyte* indices,
             int numIndices) {
     glUniformMatrix4fv(_matrixID, 1, GL_FALSE, &mvp[0][0]);
     glUseProgram(_programID);
@@ -56,13 +60,13 @@ class ModelShader {
     glEnableVertexAttribArray(_vertexArray);  // vertices.
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, numVertices, vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(_vertexArray, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+    glVertexAttribPointer(_vertexArray, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     // 2nd attribute buffer : colors.
     glEnableVertexAttribArray(_colorArray);  // colors.
     glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
     glBufferData(GL_ARRAY_BUFFER, numColors, colors, GL_STATIC_DRAW);
-    glVertexAttribPointer(_colorArray, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+    glVertexAttribPointer(_colorArray, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_BYTE, indices);
 

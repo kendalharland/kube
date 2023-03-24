@@ -25,10 +25,10 @@
  * Flutter uses an `Animation` type to keep track of the animation state, which
  * is represented by the closed interval [0, 1] where 0 == not started and 1 ==
  * complete. The animation always moves forward, from 0 to 1.  The animation is
- * updated incrementally based on the amount of time that has passed (deltaTime)
- * which is assumed to be mapped from clock-time to wall time by the caller. If
- * we want the animation to complete faster, we can multiple deltaTime by some
- * constant.
+ * updated incrementally based on the amount of time that has passed
+ * (deltaTime) which is assumed to be mapped from clock-time to wall time by
+ * the caller. If we want the animation to complete faster, we can multiple
+ * deltaTime by some constant.
  *
  * Tweens are used to map real-world values to the positions on the animation
  * interval. For example a tween from the color red to the color blue would
@@ -43,8 +43,8 @@
  * Curves determine *how* the animation moves along the Tween's range. For
  * example, a sin curve will oscillate between both endpoints. A exponential
  * curve will start slow, but increase in speed drastically with each step.  A
- * logrithmic curve will start fast, but taper off as it progresses, and perhaps
- * never complete depending on the limit of the curve.
+ * logrithmic curve will start fast, but taper off as it progresses, and
+ * perhaps never complete depending on the limit of the curve.
  *
  * This is a useful way for us to animate our cube movement. To recap, our cube
  * has two possible movements:
@@ -62,8 +62,8 @@
  * rolls. Instead, it rotates about either the x or z axis, depending on the
  * roll direction. The axis is also off center because of collision with the
  * ground: It's origin is the bottom edge of the the cube's face that is being
- * rolled over. Simply put, the path is an arc.  An arc can be expressed as many
- * separate transformations that are simultaneously applied to the cube to
+ * rolled over. Simply put, the path is an arc.  An arc can be expressed as
+ * many separate transformations that are simultaneously applied to the cube to
  * create the illusion of physics-based rolling.
  *
  * The transformations are:
@@ -83,9 +83,9 @@
  * in the world, to another. The "curve" determines the rate of movement, which
  * in this case is parabolic.
  *
- * The y or z coordinate's transformation is a loop, it moves upward and reaches
- * its peak midway through the roll, then gradually returns to its original
- * value.
+ * The y or z coordinate's transformation is a loop, it moves upward and
+ * reaches its peak midway through the roll, then gradually returns to its
+ * original value.
  *
  * The rotation is also continuous. The cube rotates a full 90 degrees during
  * the roll.
@@ -159,8 +159,10 @@ class RotateAnimation {
  public:
   RotateAnimation() = delete;
 
-  explicit RotateAnimation(AnimationState state, DoubleTween tween,
-                           Curve& curve, glm::vec3 axis)
+  explicit RotateAnimation(AnimationState state,
+                           DoubleTween tween,
+                           Curve& curve,
+                           glm::vec3 axis)
       : _animation(state), _tween(tween), _curve(curve), _axis(axis) {}
 
   double Update(double t) {

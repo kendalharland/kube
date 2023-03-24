@@ -34,8 +34,12 @@ void Player::SetModelRotation(double rotation, glm::vec3 axis) {
   _model->SetRotation(rotation, axis);
 }
 
-void Player::HandleInput(GLFWwindow* window) { _state->HandleInput(window); }
-void Player::Update(double dt) { _state = _state->Update(dt, this); }
+void Player::HandleInput(GLFWwindow* window) {
+  _state->HandleInput(window);
+}
+void Player::Update(double dt) {
+  _state = _state->Update(dt, this);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // PlayerIdleState

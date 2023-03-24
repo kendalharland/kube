@@ -44,7 +44,8 @@ class Window : public Singleton<Window> {
   OpenGLContext* opengl_;
   std::function<void(double, double)> scroll_callback_;
 
-  static void GLFWScrollCallback(GLFWwindow* window, double xoffset,
+  static void GLFWScrollCallback(GLFWwindow* window,
+                                 double xoffset,
                                  double yoffset) {
     GetInstance()->scroll_callback_(xoffset, yoffset);
   }

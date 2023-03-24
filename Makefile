@@ -1,4 +1,3 @@
-
 # To install dependencies:
 # * libglfw: https://www.glfw.org/
 # * libGLEW: https://glew.sourceforge.net/
@@ -14,10 +13,6 @@ endif
 
 SOURCE_ROOT := $(realpath ./)
 
-# Ideally this is a directory in the project but for some
-# reason clang++ can't find libraries unless its this specific
-# directory and the user has run `export LIBRARY_PATH=/usr/local/lib`
-# *shrug*.
 LIBRARY_PATH=$(SOURCE_ROOT)/src/lib/
 LIBS := -lglfw -lGLEW -lGL -lm -lassimp
 INC := -I./src/include
@@ -30,7 +25,7 @@ TARGET := kube
 
 .PHONY: all clean help format
 
-default: build
+default: run
 
 format:
 	@echo "=== Formatting code ==="
@@ -39,7 +34,7 @@ format:
 assimp:
 	@echo "=== Building third_party/assimp ==="
 	cd third_party/assimp; cmake CMakeLists.txt; make -j4
-	sudo cp -av third_party/assimp/bin/libassimp.so* $(LIBRARY_PATH)
+	cp -av third_party/assimp/bin/libassimp.so* $(LIBRARY_PATH)
 
 dependencies: assimp
 	@echo "=="

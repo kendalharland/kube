@@ -21,7 +21,9 @@
 
 namespace kube {
 
-void kube_log_internal(const char* file, int line, LogLevel level,
+void kube_log_internal(const char* file,
+                       int line,
+                       LogLevel level,
                        std::string_view message) {
   std::string lev;
   switch (level) {

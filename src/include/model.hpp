@@ -36,14 +36,14 @@ class DeprecatedModel {
  public:
   struct Options {
     glm::vec3 center;
-    const GLfloat *colors;
-    const GLubyte *indices;
+    const GLfloat* colors;
+    const GLubyte* indices;
     int numColors;
     int numIndices;
     int numVertices;
     glm::mat4 rotation = glm::mat4(1.f);
     glm::mat4 scale = glm::mat4(1.f);
-    const GLfloat *vertices;
+    const GLfloat* vertices;
   };
 
   DeprecatedModel() = delete;
@@ -57,13 +57,13 @@ class DeprecatedModel {
 
   const glm::mat4 Scale() { return _options.scale; }
 
-  const GLfloat *Vertices() { return _options.vertices; }
+  const GLfloat* Vertices() { return _options.vertices; }
   int NumVertices() { return _options.numVertices; }
 
-  const GLfloat *Colors() { return _options.colors; }
+  const GLfloat* Colors() { return _options.colors; }
   int NumColors() { return _options.numColors; }
 
-  const GLubyte *Indices() { return _options.indices; }
+  const GLubyte* Indices() { return _options.indices; }
   int NumIndices() { return _options.numIndices; }
 
   void SetRotation(float radians, glm::vec3 axis) {
