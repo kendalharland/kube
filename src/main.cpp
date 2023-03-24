@@ -26,6 +26,7 @@
 using namespace glm;
 
 #include <player.h>
+#include <vertex.h>
 #include <window.h>
 
 #include <animation.hpp>
@@ -34,7 +35,6 @@ using namespace glm;
 #include <model.hpp>
 #include <shapes.cpp>
 #include <vertex_shader.cpp>
-#include <vertex.h>
 
 void DrawModel(kube::Camera camera, kube::DeprecatedModel* model,
                kube::ModelShader& shader) {
@@ -51,8 +51,8 @@ int main(void) {
   auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
 
   auto vert = kube::Vertex{
-    position: glm::vec3(1,2,3),
-    color: glm::vec3(1,1,0),
+    position : glm::vec3(1, 2, 3),
+    color : glm::vec3(1, 1, 0),
   };
 
   std::cout << sizeof(vert.position) << std::endl;

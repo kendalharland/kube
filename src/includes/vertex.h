@@ -22,10 +22,10 @@
 namespace kube {
 
 struct Vertex {
-  glm::vec3 position; // bytes  0-12
-  glm::vec3 color;    // bytes 13-24
+  glm::vec3 position;  // bytes  0-12
+  glm::vec3 color;     // bytes 13-24
 };
 
-};  // namespace Kube
+};  // namespace kube
 
 #endif  // _VERTEX_H

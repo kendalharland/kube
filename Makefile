@@ -19,21 +19,33 @@ INC := -Llib
 LIBS := -lglfw -lGLEW -lGL -lm
 TARGET := kube
 
-.PHONY: all clean help
+.PHONY: all clean help format
 
-kube: clean
-	@echo "=== Building $(TARGET) ($(config)) ==="
-	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS) $(INC)
-
-clean:
-	@echo "=== Removing kube ==="
-	rm -rf $(TARGET) ./*.o
+default: build
 
 format:
 	@echo "=== Formatting code ==="
 	find src -regex '.*\.\(c\|h\|cpp\|hpp\)' -exec clang-format -style=file -i {} \;
 
-run: kube
+assimp:
+	@echo "=== Building third_party/assimp ==="
+	cd third_party/assimp; cmake CMakeLists.txt; make -j4
+
+dependencies: assimp
+	@echo "=="
+
+clean:
+	@echo "=== Removing kube ==="
+	rm -rf $(TARGET) ./*.o
+
+build: dependencies format
+	@echo "=== Building $(TARGET) ($(config)) ==="
+	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS) $(INC)
+
+clean-build: clean build
+	@echo "=== Performing a clean build ==="
+
+run: build
 	@echo "=== Running $(TARGET) ($(config)) ==="
 	./$(TARGET)
 
