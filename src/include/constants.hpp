@@ -36,4 +36,4 @@
 
 #define IDENTITY_MAT4 glm::mat4(1.f)
 
-#endif  // _CONSTANTS_HPP
+#endif // _CONSTANTS_HPP

@@ -16,13 +16,14 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <mesh.h>
 #include <opengl.h>
 
 #include <glm/glm.hpp>
 
 namespace kube {
 
-void OpenGLContext::CreateWindow(int width, int height, const char* title) {
+void OpenGLContext::CreateWindow(int width, int height, const char *title) {
   if (!glfwInit()) {
     throw "Failed to initialize GLFW\n";
   }
@@ -38,9 +39,8 @@ void OpenGLContext::CreateWindow(int width, int height, const char* title) {
   window_ = glfwCreateWindow(width, height, title, NULL, NULL);
   if (window_ == NULL) {
     glfwTerminate();
-    throw(
-        "Failed to open GLFW window. If you have an Intel GPU, they are "
-        "not 3.3 compatible. Try version 2.1");
+    throw("Failed to open GLFW window. If you have an Intel GPU, they are "
+          "not 3.3 compatible. Try version 2.1");
   }
 
   glfwMakeContextCurrent(window_);
@@ -88,4 +88,40 @@ bool OpenGLContext::WindowShouldClose() {
   return glfwWindowShouldClose(window_);
 }
 
-}  // namespace kube
+// clang-format off
+void OpenGLContext::SetupMesh(Mesh& mesh) {
+    unsigned int VAO; // vertex arrays
+    unsigned int VBO; // vertex buffer
+    unsigned int EBO; // element array buffer
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+  
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(Vertex), &mesh.vertices[0], GL_STATIC_DRAW);  
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0], GL_STATIC_DRAW);
+
+    // vertex positions
+    glEnableVertexAttribArray(0);	
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    // vertex normals
+    glEnableVertexAttribArray(1);	
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+    // vertex texture coords
+    glEnableVertexAttribArray(2);	
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+
+    glBindVertexArray(0);
+
+    mesh.SetVAO(VAO);
+    mesh.SetVBO(VBO);
+    mesh.SetEBO(EBO);
+}
+// clang-format on
+
+}; // namespace kube

@@ -25,23 +25,13 @@
 namespace kube {
 
 class Camera {
- public:
+public:
   // TODO: Replace these params with an options type.
-  Camera(glm::vec3 position,
-         glm::vec3 target,
-         float fov = glm::radians(45.0f),
-         float aspectRatio = 4.0f / 3.0f,
-         float near = 0.1f,
-         float far = 100.f,
-         glm::vec3 up = glm::vec3(0, 1, 0),
-         float zoomSpeed = 4.f)
-      : _aspectRatio(aspectRatio),
-        _far(far),
-        _fov(fov),
-        _near(near),
-        _position(position),
-        _target(target),
-        _up(up),
+  Camera(glm::vec3 position, glm::vec3 target, float fov = glm::radians(45.0f),
+         float aspectRatio = 4.0f / 3.0f, float near = 0.1f, float far = 100.f,
+         glm::vec3 up = glm::vec3(0, 1, 0), float zoomSpeed = 4.f)
+      : _aspectRatio(aspectRatio), _far(far), _fov(fov), _near(near),
+        _position(position), _target(target), _up(up),
         _zoomSpeed(glm::radians(zoomSpeed)) {}
 
   glm::mat4 MVP(glm::mat4 model) {
@@ -53,7 +43,7 @@ class Camera {
   // TODO(kjharland): Clamp the camera between [0, 2π] so it doesn't flip.
   void Zoom(bool in) { _fov += in ? -_zoomSpeed : _zoomSpeed; }
 
- private:
+private:
   float _aspectRatio;
   float _far;
   float _fov;
@@ -64,6 +54,6 @@ class Camera {
   glm::vec3 _up;
 };
 
-};  // namespace kube
+}; // namespace kube
 
-#endif  // _CAMERA_HPP
+#endif // _CAMERA_HPP

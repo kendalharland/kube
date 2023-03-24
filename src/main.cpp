@@ -21,7 +21,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iostream>  // For debugging.
+#include <iostream> // For debugging.
 
 using namespace glm;
 
@@ -37,9 +37,8 @@ using namespace glm;
 #include <shapes.cpp>
 #include <vertex_shader.cpp>
 
-void DrawModel(kube::Camera camera,
-               kube::DeprecatedModel* model,
-               kube::ModelShader& shader) {
+void DrawModel(kube::Camera camera, kube::DeprecatedModel *model,
+               kube::ModelShader &shader) {
   glm::mat4 translation = glm::translate(IDENTITY_MAT4, model->Center());
   glm::mat4 rotation = model->Rotation();
   glm::mat4 scale = model->Scale();
@@ -78,7 +77,7 @@ int main(void) {
     window->Clear();
     DrawModel(camera, &model, shader);
     window->Update();
-  }  // Check if the ESC key was pressed or the window was closed
+  } // Check if the ESC key was pressed or the window was closed
   while (!window->ShouldClose());
 
   window->Close();

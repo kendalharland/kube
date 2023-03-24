@@ -76,6 +76,6 @@ DeprecatedModel Cube(glm::vec3 center, float length = 1.f) {
   });
 }
 
-};  // namespace kube
+}; // namespace kube
 
-#endif  // _SHAPES_HPP
+#endif // _SHAPES_HPP

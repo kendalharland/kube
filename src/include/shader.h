@@ -28,8 +28,8 @@ class Shader {};
 
 GLuint CompileShader(std::string filename, uint gl_shader_type);
 
-GLuint LoadShaders(const char* vertex_filename, const char* fragment_filename);
+GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename);
 
-}  // namespace kube
+} // namespace kube
 
-#endif  // _SHADER_HPP
+#endif // _SHADER_HPP

@@ -27,19 +27,15 @@ namespace kube {
 // Player
 //
 
-Player::Player(DeprecatedModel* model, PlayerState* state)
+Player::Player(DeprecatedModel *model, PlayerState *state)
     : _model(model), _state(state) {}
 
 void Player::SetModelRotation(double rotation, glm::vec3 axis) {
   _model->SetRotation(rotation, axis);
 }
 
-void Player::HandleInput(GLFWwindow* window) {
-  _state->HandleInput(window);
-}
-void Player::Update(double dt) {
-  _state = _state->Update(dt, this);
-}
+void Player::HandleInput(GLFWwindow *window) { _state->HandleInput(window); }
+void Player::Update(double dt) { _state = _state->Update(dt, this); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // PlayerIdleState
@@ -47,34 +43,34 @@ void Player::Update(double dt) {
 
 PlayerIdleState::PlayerIdleState() {}
 
-void PlayerIdleState::HandleInput(GLFWwindow* window) {
+void PlayerIdleState::HandleInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
     // TODO: The tween should start from the cube's current rotation.
     _next = new PlayerRollingState(RotateAnimation(
         AnimationState(), DoubleTween(glm::radians(0.f), glm::radians(90.f)),
-        (Curve&)LinearCurve, X_AXIS));
+        (Curve &)LinearCurve, X_AXIS));
   }
 
   if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
     _next = new PlayerRollingState(RotateAnimation(
         AnimationState(), DoubleTween(glm::radians(0.f), glm::radians(90.f)),
-        (Curve&)LinearCurve, -X_AXIS));
+        (Curve &)LinearCurve, -X_AXIS));
   }
 
   if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
     _next = new PlayerRollingState(RotateAnimation(
         AnimationState(), DoubleTween(glm::radians(0.f), glm::radians(90.f)),
-        (Curve&)LinearCurve, Z_AXIS));
+        (Curve &)LinearCurve, Z_AXIS));
   }
 
   if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
     _next = new PlayerRollingState(RotateAnimation(
         AnimationState(), DoubleTween(glm::radians(0.f), glm::radians(90.f)),
-        (Curve&)LinearCurve, -Z_AXIS));
+        (Curve &)LinearCurve, -Z_AXIS));
   }
 }
 
-PlayerState* PlayerIdleState::Update(double dt, Player* player) {
+PlayerState *PlayerIdleState::Update(double dt, Player *player) {
   return _next;
 }
 
@@ -85,11 +81,11 @@ PlayerState* PlayerIdleState::Update(double dt, Player* player) {
 PlayerRollingState::PlayerRollingState(RotateAnimation animation)
     : _animation(animation) {}
 
-void PlayerRollingState::HandleInput(GLFWwindow* window) {
+void PlayerRollingState::HandleInput(GLFWwindow *window) {
   glfwGetKey(window, 0);
 }
 
-PlayerState* PlayerRollingState::Update(double dt, Player* player) {
+PlayerState *PlayerRollingState::Update(double dt, Player *player) {
   double rotation = _animation.Update(dt);
   player->SetModelRotation(rotation, _animation.Axis());
   if (_animation.IsComplete()) {
@@ -98,4 +94,4 @@ PlayerState* PlayerRollingState::Update(double dt, Player* player) {
   return this;
 };
 
-}  // namespace kube
+} // namespace kube

@@ -106,32 +106,32 @@
 namespace kube {
 
 class DoubleTween {
- public:
+public:
   DoubleTween() = delete;
 
   explicit DoubleTween(double a, double b) : _a(a), _b(b) {}
 
   double Compute(double t) { return (_b - _a) * t; }
 
- private:
+private:
   double _a;
   double _b;
 };
 
 class Curve {
- public:
+public:
   virtual double Value(double x) = 0;
 };
 
 class CurveFunction : public Curve {
- public:
+public:
   typedef double (*Function)(double);
 
   explicit CurveFunction(Function f) : _f(f) {}
 
   double Value(double x) { return _f(x); }
 
- private:
+private:
   Function _f;
 };
 
@@ -139,7 +139,7 @@ const CurveFunction SinCurve = CurveFunction(&sin);
 const CurveFunction LinearCurve = CurveFunction([](double t) { return t; });
 
 class AnimationState {
- public:
+public:
   bool IsComplete() { return _progress >= 1; }
 
   void Update(double delta) {
@@ -151,18 +151,16 @@ class AnimationState {
 
   double Progress() { return _progress; }
 
- private:
+private:
   double _progress = 0;
 };
 
 class RotateAnimation {
- public:
+public:
   RotateAnimation() = delete;
 
-  explicit RotateAnimation(AnimationState state,
-                           DoubleTween tween,
-                           Curve& curve,
-                           glm::vec3 axis)
+  explicit RotateAnimation(AnimationState state, DoubleTween tween,
+                           Curve &curve, glm::vec3 axis)
       : _animation(state), _tween(tween), _curve(curve), _axis(axis) {}
 
   double Update(double t) {
@@ -177,16 +175,16 @@ class RotateAnimation {
 
   double Progress() { return _animation.Progress(); }
 
- private:
+private:
   DoubleTween _tween;
   AnimationState _animation;
-  Curve& _curve;
+  Curve &_curve;
   glm::vec3 _axis;
 };
 
 // TODO: TranslationAnimation
 // TODO: RollAnimation which combines all of the above.
 
-}  // namespace kube
+} // namespace kube
 
-#endif  // _ANIMATION_HPP
+#endif // _ANIMATION_HPP

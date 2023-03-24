@@ -27,25 +27,24 @@
 namespace kube {
 
 class Window : public Singleton<Window> {
- private:
+private:
   SINGLETON(Window) : opengl_(OpenGLContext::GetInstance()), is_open_(false) {}
 
- public:
-  void Open(int width, int height, const char* title);
+public:
+  void Open(int width, int height, const char *title);
   void Clear();
   void Update();
   void SetScrollCallback(std::function<void(double, double)> callback);
   bool ShouldClose();
   void Close();
-  GLFWwindow* inner() { return opengl_->window_; }
+  GLFWwindow *inner() { return opengl_->window_; }
 
- private:
+private:
   bool is_open_;
-  OpenGLContext* opengl_;
+  OpenGLContext *opengl_;
   std::function<void(double, double)> scroll_callback_;
 
-  static void GLFWScrollCallback(GLFWwindow* window,
-                                 double xoffset,
+  static void GLFWScrollCallback(GLFWwindow *window, double xoffset,
                                  double yoffset) {
     GetInstance()->scroll_callback_(xoffset, yoffset);
   }
@@ -53,6 +52,6 @@ class Window : public Singleton<Window> {
   // TODO: delete singleton constructors and assignment operators.
 };
 
-};  // namespace kube
+}; // namespace kube
 
-#endif  // _WINDOW_HPP
+#endif // _WINDOW_HPP

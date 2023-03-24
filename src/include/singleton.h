@@ -20,32 +20,28 @@
 
 namespace kube {
 
-#define SINGLETON(IMPL)           \
-  friend Singleton<IMPL>;         \
-  static IMPL* CreateInstance() { \
-    return new IMPL();            \
-  }                               \
+#define SINGLETON(IMPL)                                                        \
+  friend Singleton<IMPL>;                                                      \
+  static IMPL *CreateInstance() { return new IMPL(); }                         \
   IMPL()
 
-template <typename Impl>
-class Singleton {
+template <typename Impl> class Singleton {
   friend Singleton<Impl>;
 
- public:
-  static Impl* GetInstance() {
+public:
+  static Impl *GetInstance() {
     if (instance_ == nullptr) {
       instance_ = Impl::CreateInstance();
     }
     return instance_;
   }
 
- private:
-  static Impl* instance_;
+private:
+  static Impl *instance_;
 };
 
-template <typename Impl>
-Impl* Singleton<Impl>::instance_ = nullptr;
+template <typename Impl> Impl *Singleton<Impl>::instance_ = nullptr;
 
-}  // namespace kube
+} // namespace kube
 
-#endif  // _SINGLETON_H
+#endif // _SINGLETON_H

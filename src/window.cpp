@@ -22,7 +22,7 @@
 
 namespace kube {
 
-void Window::Open(int width, int height, const char* title) {
+void Window::Open(int width, int height, const char *title) {
   if (is_open_) {
     throw "Window::Open called twice";
   }
@@ -34,20 +34,14 @@ void Window::SetScrollCallback(std::function<void(double, double)> callback) {
   scroll_callback_ = callback;
 }
 
-void Window::Clear() {
-  opengl_->Clear();
-};
+void Window::Clear() { opengl_->Clear(); };
 
-void Window::Update() {
-  opengl_->Update();
-};
+void Window::Update() { opengl_->Update(); };
 
 bool Window::ShouldClose() {
   return opengl_->IsKeyPressed(GLFW_KEY_ESCAPE) || opengl_->WindowShouldClose();
 };
 
-void Window::Close() {
-  opengl_->CloseWindow();
-}
+void Window::Close() { opengl_->CloseWindow(); }
 
-}  // namespace kube
+} // namespace kube

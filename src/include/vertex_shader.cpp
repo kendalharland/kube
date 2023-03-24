@@ -24,7 +24,7 @@
 namespace kube {
 
 class ModelShader {
- public:
+public:
   // TODO: The shader files themselves should be the arguments?
   ModelShader()
       : _matrixID(0), _programID(0), _vertexBuffer(0), _colorBuffer(0) {
@@ -43,12 +43,8 @@ class ModelShader {
 
   // TODO: Model and camera objects would cut down on the number of params,
   // here.
-  void Draw(glm::mat4 mvp,
-            const GLfloat* vertices,
-            int numVertices,
-            const GLfloat* colors,
-            int numColors,
-            const GLubyte* indices,
+  void Draw(glm::mat4 mvp, const GLfloat *vertices, int numVertices,
+            const GLfloat *colors, int numColors, const GLubyte *indices,
             int numIndices) {
     glUniformMatrix4fv(_matrixID, 1, GL_FALSE, &mvp[0][0]);
     glUseProgram(_programID);
@@ -57,16 +53,16 @@ class ModelShader {
     glEnableClientState(GL_COLOR_ARRAY);
 
     // 1st attribute buffer : vertices.
-    glEnableVertexAttribArray(_vertexArray);  // vertices.
+    glEnableVertexAttribArray(_vertexArray); // vertices.
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, numVertices, vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(_vertexArray, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(_vertexArray, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
     // 2nd attribute buffer : colors.
-    glEnableVertexAttribArray(_colorArray);  // colors.
+    glEnableVertexAttribArray(_colorArray); // colors.
     glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
     glBufferData(GL_ARRAY_BUFFER, numColors, colors, GL_STATIC_DRAW);
-    glVertexAttribPointer(_colorArray, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(_colorArray, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
     glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_BYTE, indices);
 
@@ -77,7 +73,7 @@ class ModelShader {
     glDisableVertexAttribArray(_colorArray);
   }
 
- private:
+private:
   GLuint _programID;
   GLuint _matrixID;
   GLuint _vertexBuffer;
@@ -87,6 +83,6 @@ class ModelShader {
   static const GLuint _colorArray = 1;
 };
 
-};  // namespace kube
+}; // namespace kube
 
-#endif  // _VERTEX_SHADER_HPP
+#endif // _VERTEX_SHADER_HPP

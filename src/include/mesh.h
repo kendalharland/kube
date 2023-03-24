@@ -36,28 +36,27 @@ struct Texture {
 };
 
 class Mesh {
- public:
-  Mesh(std::vector<Vertex> vertices,
-       std::vector<unsigned int> indices,
+
+public:
+  Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
        std::vector<Texture> textures)
-      : vertices_(vertices), indices_(indices), textures_(textures) {
-    init();
-  }
+      : vertices(vertices), indices(indices), textures(textures) {}
 
-  void Draw(Shader& shader);
+  void Draw(Shader &shader);
+  void SetVAO(unsigned int VAO);
+  void SetVBO(unsigned int VBO);
+  void SetEBO(unsigned int EBO);
 
- private:
-  std::vector<Vertex> vertices_;
-  std::vector<unsigned int> indices_;
-  std::vector<Texture> textures_;
+  std::vector<Vertex> vertices;
+  std::vector<unsigned int> indices;
+  std::vector<Texture> textures;
 
-  unsigned int VAO;  // vertex arrays
-  unsigned int VBO;  // vertex buffer
-  unsigned int EBO;  // element array buffer
-
-  void init();
+private:
+  unsigned int VAO_; // vertex arrays
+  unsigned int VBO_; // vertex buffer
+  unsigned int EBO_; // element array buffer
 };
 
-};  // namespace kube
+}; // namespace kube
 
-#endif  // _VERTEX_H
+#endif // _VERTEX_H

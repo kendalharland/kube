@@ -29,44 +29,44 @@ namespace kube {
 class PlayerState;
 
 class Player {
- public:
-  Player(DeprecatedModel* model, PlayerState* state);
+public:
+  Player(DeprecatedModel *model, PlayerState *state);
 
-  void HandleInput(GLFWwindow* window);
+  void HandleInput(GLFWwindow *window);
   void Update(double dt);
   void SetModelRotation(double rotation, glm::vec3 axis);
 
- private:
-  DeprecatedModel* _model;
-  PlayerState* _state;
+private:
+  DeprecatedModel *_model;
+  PlayerState *_state;
 };
 
 class PlayerState {
- public:
-  virtual void HandleInput(GLFWwindow* window) = 0;
-  virtual PlayerState* Update(double dt, Player* player) = 0;
+public:
+  virtual void HandleInput(GLFWwindow *window) = 0;
+  virtual PlayerState *Update(double dt, Player *player) = 0;
 };
 
 class PlayerIdleState : public virtual PlayerState {
- public:
+public:
   PlayerIdleState();
-  void HandleInput(GLFWwindow* window);
-  PlayerState* Update(double dt, Player* player);
+  void HandleInput(GLFWwindow *window);
+  PlayerState *Update(double dt, Player *player);
 
- private:
-  PlayerState* _next = this;
+private:
+  PlayerState *_next = this;
 };
 
 class PlayerRollingState : public virtual PlayerState {
- public:
+public:
   PlayerRollingState(RotateAnimation animation);
-  void HandleInput(GLFWwindow* window);
-  PlayerState* Update(double dt, Player* player);
+  void HandleInput(GLFWwindow *window);
+  PlayerState *Update(double dt, Player *player);
 
- private:
+private:
   RotateAnimation _animation;
 };
 
-}  // namespace kube
+} // namespace kube
 
-#endif  // _PLAYER_HPP
+#endif // _PLAYER_HPP

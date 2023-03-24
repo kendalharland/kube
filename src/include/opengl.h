@@ -17,33 +17,36 @@
 #ifndef _OPENGL_H
 #define _OPENGL_H
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <functional>
+
+#include <mesh.h>
 #include <singleton.h>
 
-#include <functional>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 namespace kube {
 
 class OpenGLContext : public Singleton<OpenGLContext> {
- private:
+private:
   SINGLETON(OpenGLContext) {}
 
   GLuint vertex_array_;
 
- public:  // TODO: Remove
-  GLFWwindow* window_;
+public: // TODO: Remove
+  GLFWwindow *window_;
 
- public:
-  void CreateWindow(int width, int height, const char* title);
+public:
+  void CreateWindow(int width, int height, const char *title);
   void CloseWindow();
   bool IsKeyPressed(uint key);
   bool WindowShouldClose();
   void Clear();
   void Update();
+  void SetupMesh(Mesh &mesh);
 };
 
-};  // namespace kube
+}; // namespace kube
 
-#endif  // _OPENGL_H
+#endif // _OPENGL_H
