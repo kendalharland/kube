@@ -73,31 +73,31 @@ GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename) {
   GLuint fragment_shader_id = CompileShader(fragment_filename, GL_FRAGMENT_SHADER);
 
   // Link the program
-  printf("Linking program\n");
-  GLuint ProgramID = glCreateProgram();
-  glAttachShader(ProgramID, vertex_shader_id);
-  glAttachShader(ProgramID, fragment_shader_id);
-  glLinkProgram(ProgramID);
+  KUBE_INFO("Linking program");
+  GLuint program_id = glCreateProgram();
+  glAttachShader(program_id, vertex_shader_id);
+  glAttachShader(program_id, fragment_shader_id);
+  glLinkProgram(program_id);
 
   GLint result = GL_FALSE;
   int info_log_length;
 
   // Check the program
-  glGetProgramiv(ProgramID, GL_LINK_STATUS, &result);
-  glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &info_log_length);
+  glGetProgramiv(program_id, GL_LINK_STATUS, &result);
+  glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &info_log_length);
   if (info_log_length > 0) {
-    std::vector<char> ProgramErrorMessage(info_log_length + 1);
-    glGetProgramInfoLog(ProgramID, info_log_length, NULL, &ProgramErrorMessage[0]);
-    printf("%s\n", &ProgramErrorMessage[0]);
+    std::vector<char> err(info_log_length + 1);
+    glGetProgramInfoLog(program_id, info_log_length, NULL, &err[0]);
+    KUBE_ERROR(std::string(err.begin(), err.end()));
   }
 
-  glDetachShader(ProgramID, vertex_shader_id);
-  glDetachShader(ProgramID, fragment_shader_id);
+  glDetachShader(program_id, vertex_shader_id);
+  glDetachShader(program_id, fragment_shader_id);
 
   glDeleteShader(vertex_shader_id);
   glDeleteShader(fragment_shader_id);
 
-  return ProgramID;
+  return program_id;
 }
 
 } // namespace kube
