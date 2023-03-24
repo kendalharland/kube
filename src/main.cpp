@@ -37,14 +37,13 @@ using namespace glm;
 #include <shapes.cpp>
 #include <vertex_shader.cpp>
 
-void DrawModel(kube::Camera camera, kube::DeprecatedModel *model,
-               kube::ModelShader &shader) {
+void DrawModel(kube::Camera camera, kube::DeprecatedModel *model, kube::ModelShader &shader) {
   glm::mat4 translation = glm::translate(IDENTITY_MAT4, model->Center());
   glm::mat4 rotation = model->Rotation();
   glm::mat4 scale = model->Scale();
   glm::mat4 mvp = camera.MVP(translation * rotation * scale);
-  shader.Draw(mvp, model->Vertices(), model->NumVertices(), model->Colors(),
-              model->NumColors(), model->Indices(), model->NumIndices());
+  shader.Draw(mvp, model->Vertices(), model->NumVertices(), model->Colors(), model->NumColors(),
+              model->Indices(), model->NumIndices());
 }
 
 int main(void) {
@@ -52,9 +51,8 @@ int main(void) {
   auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
 
   window->Open(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
-  window->SetScrollCallback([&camera = camera](double xoffset, double yoffset) {
-    camera.Zoom(yoffset > 0);
-  });
+  window->SetScrollCallback(
+      [&camera = camera](double xoffset, double yoffset) { camera.Zoom(yoffset > 0); });
 
   // Must come after the VertexArray above is created.
   auto shader = kube::ModelShader();

@@ -26,8 +26,7 @@ namespace kube {
 class ModelShader {
 public:
   // TODO: The shader files themselves should be the arguments?
-  ModelShader()
-      : _matrixID(0), _programID(0), _vertexBuffer(0), _colorBuffer(0) {
+  ModelShader() : _matrixID(0), _programID(0), _vertexBuffer(0), _colorBuffer(0) {
     _programID = LoadShaders("src/shaders/TransformVertexShader.vertexshader",
                              "src/shaders/ColorFragmentShader.fragmentshader");
     _matrixID = glGetUniformLocation(_programID, "MVP");
@@ -43,9 +42,8 @@ public:
 
   // TODO: Model and camera objects would cut down on the number of params,
   // here.
-  void Draw(glm::mat4 mvp, const GLfloat *vertices, int numVertices,
-            const GLfloat *colors, int numColors, const GLubyte *indices,
-            int numIndices) {
+  void Draw(glm::mat4 mvp, const GLfloat *vertices, int numVertices, const GLfloat *colors,
+            int numColors, const GLubyte *indices, int numIndices) {
     glUniformMatrix4fv(_matrixID, 1, GL_FALSE, &mvp[0][0]);
     glUseProgram(_programID);
 

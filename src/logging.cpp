@@ -21,8 +21,7 @@
 
 namespace kube {
 
-void kube_log_internal(const char *file, int line, LogLevel level,
-                       std::string_view message) {
+void kube_log_internal(const char *file, int line, LogLevel level, std::string_view message) {
   std::string lev;
   switch (level) {
   case LogLevel::info:
@@ -36,8 +35,7 @@ void kube_log_internal(const char *file, int line, LogLevel level,
     break;
   }
 
-  std::clog << "[" << lev << "][" << file << ":" << line << "] " << message
-            << std::endl;
+  std::clog << "[" << lev << "][" << file << ":" << line << "] " << message << std::endl;
 }
 
 } // namespace kube

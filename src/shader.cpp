@@ -53,17 +53,15 @@ GLuint CompileShader(std::string filename, uint gl_shader_type) {
   glShaderSource(shader_id, 1, &source, NULL);
   glCompileShader(shader_id);
 
-  // Check Vertex Shader
+  // Check for errors.
   GLint result = GL_FALSE;
   int info_log_length;
-
   glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result);
   glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &info_log_length);
-
   if (info_log_length > 0) {
     std::vector<char> err(info_log_length + 1);
     glGetShaderInfoLog(shader_id, info_log_length, NULL, &err[0]);
-    printf("%s\n", &err[0]);
+    KUBE_ERROR(std::string(err.begin(), err.end()));
   }
 
   return shader_id;
@@ -72,8 +70,7 @@ GLuint CompileShader(std::string filename, uint gl_shader_type) {
 GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename) {
   // Create the shaders
   GLuint vertex_shader_id = CompileShader(vertex_filename, GL_VERTEX_SHADER);
-  GLuint fragment_shader_id =
-      CompileShader(fragment_filename, GL_FRAGMENT_SHADER);
+  GLuint fragment_shader_id = CompileShader(fragment_filename, GL_FRAGMENT_SHADER);
 
   // Link the program
   printf("Linking program\n");
@@ -90,8 +87,7 @@ GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename) {
   glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &info_log_length);
   if (info_log_length > 0) {
     std::vector<char> ProgramErrorMessage(info_log_length + 1);
-    glGetProgramInfoLog(ProgramID, info_log_length, NULL,
-                        &ProgramErrorMessage[0]);
+    glGetProgramInfoLog(ProgramID, info_log_length, NULL, &ProgramErrorMessage[0]);
     printf("%s\n", &ProgramErrorMessage[0]);
   }
 

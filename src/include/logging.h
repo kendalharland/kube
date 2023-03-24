@@ -36,8 +36,7 @@ enum LogLevel {
 #define KUBE_ERROR(message) KUBE_LOG(kube::LogLevel::error, message)
 // clang-format on
 
-void kube_log_internal(const char *file, int line, LogLevel level,
-                       std::string_view message);
+void kube_log_internal(const char *file, int line, LogLevel level, std::string_view message);
 
 } // namespace kube
 
