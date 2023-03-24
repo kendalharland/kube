@@ -12,11 +12,13 @@ ifeq ($(config),debug)
 	CXXFLAGS += -g -O0
 endif
 
-CXX := clang++
-CXXFLAGS += -std=c++20 -I./src/includes
+LIBDIRS := -Lsrc/libs
+LIBS := -lglfw -lGLEW -lGL -lm -lassimp
+INC := -I./src/includes
 
-INC := -Llib
-LIBS := -lglfw -lGLEW -lGL -lm
+CXX := clang++
+CXXFLAGS += -std=c++20 $(LIBDIRS) $(LIBS) $(INC)
+
 TARGET := kube
 
 .PHONY: all clean help format
@@ -31,6 +33,8 @@ assimp:
 	@echo "=== Building third_party/assimp ==="
 	cd third_party/assimp; cmake CMakeLists.txt; make -j4
 
+	ln -sf third_party/assimp/bin/libassimp.so src/libs/libassimp.so
+
 dependencies: assimp
 	@echo "=="
 
@@ -40,7 +44,7 @@ clean:
 
 build: dependencies format
 	@echo "=== Building $(TARGET) ($(config)) ==="
-	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) $(LIBS) $(INC)
+	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) 
 
 clean-build: clean build
 	@echo "=== Performing a clean build ==="
