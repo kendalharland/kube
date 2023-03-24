@@ -32,7 +32,7 @@ static const glm::vec3 Z_AXIS = glm::vec3(0.f, 0.f, 1.f);
 
 namespace kube {
 
-class Model {
+class DeprecatedModel {
  public:
   struct Options {
     glm::vec3 center;
@@ -46,10 +46,10 @@ class Model {
     const GLfloat *vertices;
   };
 
-  Model() = delete;
+  DeprecatedModel() = delete;
 
   // Constructs a Model from the given Options.
-  explicit Model(Options options) : _options(options) {}
+  explicit DeprecatedModel(Options options) : _options(options) {}
 
   const glm::vec3 Center() { return _options.center; }
 

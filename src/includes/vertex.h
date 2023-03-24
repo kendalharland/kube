@@ -19,9 +19,13 @@
 
 #include <glm/glm.hpp>
 
+namespace kube {
+
 struct Vertex {
-    glm::vec3 position;
-    glm::vec3 color;
+  glm::vec3 position; // bytes  0-12
+  glm::vec3 color;    // bytes 13-24
 };
 
-#endif // _VERTEX_H
+};  // namespace Kube
+
+#endif  // _VERTEX_H

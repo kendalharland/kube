@@ -34,8 +34,9 @@ using namespace glm;
 #include <model.hpp>
 #include <shapes.cpp>
 #include <vertex_shader.cpp>
+#include <vertex.h>
 
-void DrawModel(kube::Camera camera, kube::Model* model,
+void DrawModel(kube::Camera camera, kube::DeprecatedModel* model,
                kube::ModelShader& shader) {
   glm::mat4 translation = glm::translate(IDENTITY_MAT4, model->Center());
   glm::mat4 rotation = model->Rotation();
@@ -48,6 +49,13 @@ void DrawModel(kube::Camera camera, kube::Model* model,
 int main(void) {
   auto window = kube::Window::GetInstance();
   auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
+
+  auto vert = kube::Vertex{
+    position: glm::vec3(1,2,3),
+    color: glm::vec3(1,1,0),
+  };
+
+  std::cout << sizeof(vert.position) << std::endl;
 
   window->Open(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
   window->SetScrollCallback([&camera = camera](double xoffset, double yoffset) {

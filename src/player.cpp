@@ -27,7 +27,7 @@ namespace kube {
 // Player
 //
 
-Player::Player(Model* model, PlayerState* state)
+Player::Player(DeprecatedModel* model, PlayerState* state)
     : _model(model), _state(state) {}
 
 void Player::SetModelRotation(double rotation, glm::vec3 axis) {
