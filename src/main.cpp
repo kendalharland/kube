@@ -30,7 +30,7 @@ using namespace glm;
 #include <window.h>
 
 #include <animation.hpp>
-// #include <assimp/Importer.hpp>
+#include <assimp/Importer.hpp>
 #include <camera.cpp>
 #include <constants.hpp>
 #include <model.hpp>
@@ -52,8 +52,8 @@ int main(void) {
   auto camera = kube::Camera(CAMERA_POS, CAMERA_TARGET);
 
   auto vert = kube::Vertex{
-    position : glm::vec3(1, 2, 3),
-    color : glm::vec3(1, 1, 0),
+      .position = glm::vec3(1, 2, 3),
+      .color = glm::vec3(1, 1, 0),
   };
 
   std::cout << sizeof(vert.position) << std::endl;

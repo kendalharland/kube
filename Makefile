@@ -12,12 +12,19 @@ ifeq ($(config),debug)
 	CXXFLAGS += -g -O0
 endif
 
-LIBDIRS := -Lsrc/libs
-LIBS := -lglfw -lGLEW -lGL -lm -lassimp
-INC := -I./src/includes
+SOURCE_ROOT := $(realpath ./)
 
+# Ideally this is a directory in the project but for some
+# reason clang++ can't find libraries unless its this specific
+# directory and the user has run `export LIBRARY_PATH=/usr/local/lib`
+# *shrug*.
+LIBRARY_PATH=$(SOURCE_ROOT)/src/lib/
+LIBS := -lglfw -lGLEW -lGL -lm -lassimp
+INC := -I./src/include
+INC += -I./third_party/assimp/include
+ENV := LIBRARY_PATH=$(LIBRARY_PATH) LD_LIBRARY_PATH=$(LIBRARY_PATH)
 CXX := clang++
-CXXFLAGS += -std=c++20 $(LIBDIRS) $(LIBS) $(INC)
+CXXFLAGS += -std=c++20 $(LIBS) $(INC)
 
 TARGET := kube
 
@@ -32,8 +39,7 @@ format:
 assimp:
 	@echo "=== Building third_party/assimp ==="
 	cd third_party/assimp; cmake CMakeLists.txt; make -j4
-
-	ln -sf third_party/assimp/bin/libassimp.so src/libs/libassimp.so
+	sudo cp -av third_party/assimp/bin/libassimp.so* $(LIBRARY_PATH)
 
 dependencies: assimp
 	@echo "=="
@@ -44,6 +50,12 @@ clean:
 
 build: dependencies format
 	@echo "=== Building $(TARGET) ($(config)) ==="
+	@echo "==="
+	@echo "=== WARNING: If you see link errors, try running the following commands and rebuilding."
+	@echo "==="
+	@echo "===     export LD_LIBRARY_PATH=$(LIBRARY_PATH)"
+	@echo "===     export LIBRARY_PATH=$(LIBRARY_PATH)"
+	@echo "==="
 	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) 
 
 clean-build: clean build
