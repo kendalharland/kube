@@ -18,7 +18,6 @@
 #include <model.h>
 #include <player.h>
 
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 namespace kube {

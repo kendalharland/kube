@@ -1,3 +1,5 @@
+1. Fix licenses.
+1. Fix ifndefs
 1. Make Mesh a struct without methods.
 3. Add functions Graphics::CompileShaderProgram
 5. Use Window instead of glfw* methods in player.cpp and any other file
@@ -8,7 +10,6 @@
     add Makefile entries for both.
 12. Make the window's background color configurable.
 13. Define ShaderProgram struct to pass to Graphics::CompileShaderProgram
-14. Create a Clock/Stopwatch abstraction.
 15. Replace Camera::MVP with Camera::GetProjectionMatrix(Mesh&);
 18. Make it impossible to import gl.h before glew.h
 19. Define a macro to manage move constructors.

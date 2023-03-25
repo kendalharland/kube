@@ -27,6 +27,7 @@
 #include <camera.h>
 #include <constants.hpp>
 #include <graphics.h>
+#include <kube/time.h>
 #include <logging.h>
 #include <model.h>
 #include <player.h>
@@ -34,27 +35,21 @@
 #include <window.h>
 
 int main(void) {
-  auto window = kube::Window::GetInstance();
   kube::Camera camera(CAMERA_POS, CAMERA_TARGET);
-
+  auto window = kube::Window::GetInstance();
   window->Open(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
   window->SetCamera(std::move(camera));
-
-  double currentTime = glfwGetTime();
-  double lastTime = currentTime;
-  double deltaTime = 0;
 
   auto model = kube::Cube(glm::vec3(0, 0, 0), 2.f);
   auto state = kube::PlayerIdleState();
   kube::Player player(&model, &state);
 
-  do {
-    currentTime = glfwGetTime();
-    deltaTime = currentTime - lastTime;
-    lastTime = currentTime;
+  kube::Stopwatch stopwatch;
+  stopwatch.Start();
 
+  do {
     player.HandleInput(window);
-    player.Update(deltaTime);
+    player.Update(stopwatch.Lap());
     window->Clear();
     model.Draw(window);
     window->Update();
