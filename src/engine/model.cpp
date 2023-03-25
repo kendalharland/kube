@@ -30,22 +30,12 @@ void Model::Draw(Window *window) {
   glm::mat4 translation = glm::translate(IDENTITY_MAT4, Center());
   glm::mat4 rotation = Rotation();
   glm::mat4 scale = Scale();
-  glm::mat4 mvp = window->GetCamera().MVP(translation * rotation * scale);
+  glm::mat4 mvp = window->GetCamera().GetProjectionMatrix(translation * rotation * scale);
   mesh_.Draw(shader_, mvp);
 }
 
 void Model::SetRotation(float radians, glm::vec3 axis) {
   rotation_ = glm::rotate(IDENTITY_MAT4, radians, axis);
-}
-
-void Model::RotateRight(float t) {
-  auto angle = glm::radians(3.0f) * t;
-  rotation_ = glm::rotate(rotation_, angle, -Y_AXIS);
-}
-
-void Model::RotateLeft(float t) {
-  auto angle = glm::radians(3.0f) * t;
-  rotation_ = glm::rotate(rotation_, angle, Y_AXIS);
 }
 
 }; // namespace kube

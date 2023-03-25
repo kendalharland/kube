@@ -22,6 +22,8 @@
 
 namespace kube {
 
+#define ANIMATION_SPEED 10.0
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Player
 //
@@ -45,25 +47,29 @@ void PlayerIdleState::HandleInput(Window *window) {
   // TODO: Each tween should start from the cube's current rotation.
   if (window->IsKeyPressed(GLFW_KEY_RIGHT)) {
     auto tween = DoubleTween(glm::radians(0.f), glm::radians(90.f));
-    auto animation = RotateAnimation(AnimationState(), tween, (Curve &)LinearCurve, X_AXIS);
+    auto animation =
+        RotateAnimation(AnimationState(ANIMATION_SPEED), tween, (Curve &)LinearCurve, X_AXIS);
     _next = new PlayerRollingState(animation);
   }
 
   if (window->IsKeyPressed(GLFW_KEY_LEFT)) {
     auto tween = DoubleTween(glm::radians(0.f), glm::radians(90.f));
-    auto animation = RotateAnimation(AnimationState(), tween, (Curve &)LinearCurve, -X_AXIS);
+    auto animation =
+        RotateAnimation(AnimationState(ANIMATION_SPEED), tween, (Curve &)LinearCurve, -X_AXIS);
     _next = new PlayerRollingState(animation);
   }
 
   if (window->IsKeyPressed(GLFW_KEY_DOWN)) {
     auto tween = DoubleTween(glm::radians(0.f), glm::radians(90.f));
-    auto animation = RotateAnimation(AnimationState(), tween, (Curve &)LinearCurve, Z_AXIS);
+    auto animation =
+        RotateAnimation(AnimationState(ANIMATION_SPEED), tween, (Curve &)LinearCurve, Z_AXIS);
     _next = new PlayerRollingState(animation);
   }
 
   if (window->IsKeyPressed(GLFW_KEY_UP)) {
     auto tween = DoubleTween(glm::radians(0.f), glm::radians(90.f));
-    auto animation = RotateAnimation(AnimationState(), tween, (Curve &)LinearCurve, -Z_AXIS);
+    auto animation =
+        RotateAnimation(AnimationState(ANIMATION_SPEED), tween, (Curve &)LinearCurve, -Z_AXIS);
     _next = new PlayerRollingState(animation);
   }
 }

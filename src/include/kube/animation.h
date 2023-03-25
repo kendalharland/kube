@@ -141,10 +141,12 @@ const CurveFunction LinearCurve = CurveFunction([](double t) { return t; });
 
 class AnimationState {
 public:
+  AnimationState(double speed = 1) : speed_(speed) {}
+
   bool IsComplete() { return _progress >= 1; }
 
   void Update(double delta) {
-    _progress += delta;
+    _progress += delta * speed_;
     if (_progress > 1.f) {
       _progress = 1.f;
     }
@@ -153,6 +155,7 @@ public:
   double Progress() { return _progress; }
 
 private:
+  double speed_ = 0;
   double _progress = 0;
 };
 

@@ -4,4 +4,3 @@
 - Define a macro to manage move constructors.
 - Make the window's background color configurable.
 - Define ShaderProgram struct to pass to Graphics::CompileShaderProgram
-- Replace Camera::MVP with Camera::GetProjectionMatrix(Mesh&);

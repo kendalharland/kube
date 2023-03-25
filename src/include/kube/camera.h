@@ -38,7 +38,7 @@ public:
       : _aspectRatio(aspectRatio), _far(far), _fov(fov), _near(near),
         _zoomSpeed(glm::radians(zoomSpeed)), _position(position), _target(target), _up(up) {}
 
-  glm::mat4 MVP(glm::mat4 model) {
+  glm::mat4 GetProjectionMatrix(glm::mat4 model) {
     auto projection = glm::perspective(_fov, _aspectRatio, _near, _far);
     auto view = glm::lookAt(_position, _target, _up);
     return projection * view * model;

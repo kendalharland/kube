@@ -56,8 +56,6 @@ public:
 
   void Draw(Window *window);
   void SetRotation(float radians, glm::vec3 axis);
-  void RotateRight(float t);
-  void RotateLeft(float t);
 
 private:
   // TODO: Move to Geometry class?

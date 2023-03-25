@@ -57,17 +57,16 @@ public:
   Mesh &operator=(Mesh &&other) = default;
 
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
-      : vertices(vertices), indices(indices) {}
+      : vertices_(vertices), indices_(indices) {}
 
   void Load();
   void Unload();
   void Draw(Shader &shader, glm::mat4 mvp); // TODO: Make camera
 
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
-  std::vector<Texture> textures;
-
 private:
+  std::vector<Vertex> vertices_;
+  std::vector<unsigned int> indices_;
+  std::vector<Texture> textures_;
   unsigned int VAO_; // vertex arrays
   unsigned int VBO_; // vertex buffer
   unsigned int EBO_; // element array buffer

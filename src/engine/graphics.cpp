@@ -38,7 +38,7 @@ void Mesh::Load() {
   glGenBuffers(1, &EBO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(Vertex), &vertices_[0], GL_STATIC_DRAW);
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.GetEBO());
   // glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int),
   // &mesh.indices[0], GL_STATIC_DRAW);
@@ -84,7 +84,7 @@ void Mesh::Draw(Shader &shader, glm::mat4 mvp /* TODO: Remove mvp */) {
   shader.SetMVP(mvp);
   shader.Use();
   glBindVertexArray(VAO_);
-  glDrawArrays(GL_TRIANGLES, 0, indices.size());
+  glDrawArrays(GL_TRIANGLES, 0, indices_.size());
   glBindVertexArray(0);
 }
 
