@@ -3,3 +3,13 @@
 You may have a file that conflicts with a stdlib import, like <time.h>.
 This conflict doesn't happen if you use <project/time.h> instead.
 
+><;> Why VBO indexing is great
+
+VBO indexing allows you to reuse vertices. In short, to draw a triangle mesh
+you'd normally need to specify 3 vertices per triangle even if some of those
+those vertices are shared by some triangles. With VBO indexing you can declare
+shared vertices once, and specify the index of each vertex in the vertex array
+using a separate array of indices. To make this work, you need declare a new
+OpenGL GL_ELEMENT_ARRY buffer and load the indices (typically a list of
+unsigned int).  You'll also render the vertices using glDrawElements instead
+of glDrawArrays.

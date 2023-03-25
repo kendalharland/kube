@@ -57,14 +57,15 @@ static const GLfloat cube_vertices_[] = {
 static const GLfloat cube_colors_[] = {
   1, 1, 1,   1, 1, 0,   1, 0, 0,   1, 0, 1, // v0,v1,v2,v3 (front)
   1, 1, 1,   1, 0, 1,   0, 0, 1,   0, 1, 1, // v0,v3,v4,v5 (right)
-  1, 1, 1,   0, 1, 1,   0, 1, 0,   1, 1, 0, // v0,v5,v6,v1 (top)
-  1, 1, 0,   0, 1, 0,   0, 0, 0,   1, 0, 0, // v1,v6,v7,v2 (left)
-  0, 0, 0,   0, 0, 1,   1, 0, 1,   1, 0, 0, // v7,v4,v3,v2 (bottom)
-  0, 0, 1,   0, 0, 0,   0, 1, 0,   0, 1, 1  // v4,v7,v6,v5 (back)
 };
 
 static unsigned int cube_indices_[]  = {
-   0, 1, 2, 0, 3, 2
+   0, 1, 2, 2, 3, 0, // front
+   5, 0, 3, 3, 4, 5, // right
+   5, 6, 7, 7, 4, 5, // back
+   6, 1, 2, 2, 7, 6, // left
+   5, 6, 1, 1, 0, 5, // top
+   4, 7, 2, 2, 3, 4, // bottom
 };
 // clang-format on
 

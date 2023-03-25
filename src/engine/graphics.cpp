@@ -83,7 +83,7 @@ void Mesh::Draw(Shader &shader, glm::mat4 mvp /* TODO: Remove mvp */) {
   shader.SetMVP(mvp);
   shader.Use();
   glBindVertexArray(VAO_);
-  glDrawArrays(GL_TRIANGLES, 0, indices_.size());
+  glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, (void *)0);
   glBindVertexArray(0);
 }
 
