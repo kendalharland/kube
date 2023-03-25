@@ -18,8 +18,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include <graphics.h>
-#include <logging.h>
+#include <kube/graphics.h>
+#include <kube/logging.h>
 
 namespace kube {
 namespace graphics {

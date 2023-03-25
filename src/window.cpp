@@ -16,10 +16,10 @@
 
 #include <memory>
 
-#include <camera.h>
-#include <constants.hpp>
-#include <model.h>
-#include <window.h>
+#include <kube/camera.h>
+#include <kube/constants.hpp>
+#include <kube/model.h>
+#include <kube/window.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

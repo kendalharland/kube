@@ -25,8 +25,8 @@
 #include <string>
 #include <vector>
 
-#include <logging.h>
-#include <shader.h>
+#include <kube/logging.h>
+#include <kube/shader.h>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>

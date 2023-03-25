@@ -1,0 +1,5 @@
+><;> Why you should keep headers in include/<project> rather than include/.
+
+You may have a file that conflicts with a stdlib import, like <time.h>.
+This conflict doesn't happen if you use <project/time.h> instead.
+

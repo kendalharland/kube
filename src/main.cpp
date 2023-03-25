@@ -23,16 +23,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <animation.hpp>
-#include <camera.h>
-#include <constants.hpp>
-#include <graphics.h>
+#include <kube/animation.hpp>
+#include <kube/camera.h>
+#include <kube/constants.hpp>
+#include <kube/graphics.h>
+#include <kube/logging.h>
+#include <kube/model.h>
+#include <kube/player.h>
+#include <kube/shapes.cpp>
 #include <kube/time.h>
-#include <logging.h>
-#include <model.h>
-#include <player.h>
-#include <shapes.cpp>
-#include <window.h>
+#include <kube/window.h>
 
 int main(void) {
   kube::Camera camera(CAMERA_POS, CAMERA_TARGET);

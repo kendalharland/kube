@@ -1,5 +1,5 @@
-#include <model.h>
-#include <window.h>
+#include <kube/model.h>
+#include <kube/window.h>
 
 namespace kube {
 
