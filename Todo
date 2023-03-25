@@ -1,0 +1,14 @@
+1. Make Mesh a struct without methods.
+2. Rename OpenGL to Graphics
+3. Add functions Graphics::CompileShaderProgram
+                 Graphics::LoadMesh (SetupMesh)
+                 Graphics::UnloadMesh (TeardownMesh)
+4. Move OpenGL::Clear and OpenGL::Update to Window along with all other
+   methods that depend on window_
+5. Use Window instead of glfw* methods in player.cpp and any other file
+   that touches glfw* primitives.
+6. Stop holding onto and expose opengl_ in Window.
+7. Delete vertex_shader.hpp.
+8. Store mesh directly on model since vertices and indices never change.
+9. Load models directly from obj files
+10. Render texture coordinates and normals (read about these too).
