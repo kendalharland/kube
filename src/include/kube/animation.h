@@ -161,7 +161,7 @@ public:
   RotateAnimation() = delete;
 
   explicit RotateAnimation(AnimationState state, DoubleTween tween, Curve &curve, glm::vec3 axis)
-      : _animation(state), _tween(tween), _curve(curve), _axis(axis) {}
+      : _tween(tween), _animation(state), _curve(curve), _axis(axis) {}
 
   double Update(double t) {
     _animation.Update(t);

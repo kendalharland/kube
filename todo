@@ -1,10 +1,7 @@
-1. Fix ifndefs
-1. Make Mesh a struct without methods.
-3. Add functions Graphics::CompileShaderProgram
-9. Load models directly from obj files
-10. Render texture coordinates and normals (read about these too).
-12. Make the window's background color configurable.
-13. Define ShaderProgram struct to pass to Graphics::CompileShaderProgram
-15. Replace Camera::MVP with Camera::GetProjectionMatrix(Mesh&);
-18. Make it impossible to import gl.h before glew.h
-19. Define a macro to manage move constructors.
+- Load models directly from obj files
+- Render texture coordinates and normals (read about these too).
+- Make it impossible to import gl.h before glew.h
+- Define a macro to manage move constructors.
+- Make the window's background color configurable.
+- Define ShaderProgram struct to pass to Graphics::CompileShaderProgram
+- Replace Camera::MVP with Camera::GetProjectionMatrix(Mesh&);

@@ -18,6 +18,7 @@
 #define _LOGGING_H
 
 #include <iostream>
+#include <string>
 
 using namespace std;
 

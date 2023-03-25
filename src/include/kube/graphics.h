@@ -68,7 +68,6 @@ public:
   std::vector<Texture> textures;
 
 private:
-  bool is_loaded_;
   unsigned int VAO_; // vertex arrays
   unsigned int VBO_; // vertex buffer
   unsigned int EBO_; // element array buffer

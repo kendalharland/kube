@@ -21,7 +21,7 @@
 
 namespace kube {
 
-void Stopwatch::Start() { double last_lap_ = glfwGetTime(); }
+void Stopwatch::Start() { last_lap_ = glfwGetTime(); }
 
 double Stopwatch::Lap() {
   auto now = glfwGetTime();

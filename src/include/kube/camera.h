@@ -35,8 +35,8 @@ public:
   Camera(glm::vec3 position, glm::vec3 target, float fov = glm::radians(45.0f),
          float aspectRatio = 4.0f / 3.0f, float near = 0.1f, float far = 100.f,
          glm::vec3 up = glm::vec3(0, 1, 0), float zoomSpeed = 4.f)
-      : _aspectRatio(aspectRatio), _far(far), _fov(fov), _near(near), _position(position),
-        _target(target), _up(up), _zoomSpeed(glm::radians(zoomSpeed)) {}
+      : _aspectRatio(aspectRatio), _far(far), _fov(fov), _near(near),
+        _zoomSpeed(glm::radians(zoomSpeed)), _position(position), _target(target), _up(up) {}
 
   glm::mat4 MVP(glm::mat4 model) {
     auto projection = glm::perspective(_fov, _aspectRatio, _near, _far);
