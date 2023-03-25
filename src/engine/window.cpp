@@ -39,7 +39,7 @@ void Window::Open(int width, int height, const char *title) {
   is_open_ = true;
 
   if (!glfwInit()) {
-    throw "Failed to initialize GLFW\n";
+    throw std::runtime_error("Failed to initialize GLFW");
   }
 
   glfwWindowHint(GLFW_SAMPLES, 4);
@@ -53,15 +53,15 @@ void Window::Open(int width, int height, const char *title) {
   window_ = glfwCreateWindow(width, height, title, NULL, NULL);
   if (window_ == NULL) {
     glfwTerminate();
-    throw("Failed to open GLFW window. If you have an Intel GPU, they are "
-          "not 3.3 compatible. Try version 2.1");
+    throw std::runtime_error("Failed to open GLFW window. If you have an Intel GPU, they are not "
+                             "3.3 compatible. Try version 2.1");
   }
 
   glfwMakeContextCurrent(window_);
 
   if (glewInit() != GLEW_OK) {
     glfwTerminate();
-    throw "Failed to initialize GLEW\n";
+    throw std::runtime_error("Failed to initialize GLEW");
   }
 
   glEnable(GL_DEPTH_TEST);
