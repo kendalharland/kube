@@ -25,7 +25,7 @@
 
 #include <camera.h>
 #include <logging.h>
-#include <model.hpp>
+#include <model.h>
 #include <opengl.h>
 #include <singleton.h>
 

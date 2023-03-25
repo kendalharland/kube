@@ -18,7 +18,7 @@
 #define _PLAYER_HPP
 
 #include <animation.hpp>
-#include <model.hpp>
+#include <model.h>
 #include <window.h>
 
 #include <glm/glm.hpp>

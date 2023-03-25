@@ -24,6 +24,7 @@
 namespace kube {
 namespace graphics {
 
+// clang-format off
 void Mesh::Load() {
   KUBE_INFO("loading mesh");
   unsigned int VAO; // vertex arrays
@@ -71,6 +72,7 @@ void Mesh::Load() {
   VBO_ = VBO;
   EBO_ = EBO;
 }
+// clang-format on
 
 void Mesh::Unload() {
   KUBE_INFO("unloading mesh");
@@ -80,16 +82,12 @@ void Mesh::Unload() {
 }
 
 void Mesh::Draw(Shader &shader, glm::mat4 mvp /* TODO: Remove mvp */) {
-  KUBE_INFO("drawing mesh");
-
   shader.SetMVP(mvp);
   shader.Use();
   glBindVertexArray(VAO_);
   glDrawArrays(GL_TRIANGLES, 0, indices.size());
   glBindVertexArray(0);
 }
-
-// clang-format on
 
 }; // namespace graphics
 }; // namespace kube

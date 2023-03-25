@@ -18,7 +18,7 @@
 
 #include <camera.h>
 #include <constants.hpp>
-#include <model.hpp>
+#include <model.h>
 #include <window.h>
 
 #include <GL/glew.h>

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <animation.hpp>
-#include <model.hpp>
+#include <model.h>
 #include <player.h>
 
 #include <GLFW/glfw3.h>

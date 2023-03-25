@@ -1,4 +1,4 @@
-#include <model.hpp>
+#include <model.h>
 #include <window.h>
 
 namespace kube {

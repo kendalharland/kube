@@ -18,7 +18,7 @@
 #define _SHAPES_H
 
 #include <constants.hpp>
-#include <model.hpp>
+#include <model.h>
 #include <opengl.h>
 #include <shader.h>
 
