@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef _MODEL_HPP
-#define _MODEL_HPP
+#ifndef _MODEL_H
+#define _MODEL_H
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -68,4 +68,4 @@ private:
 
 } // namespace kube
 
-#endif // _MODEL_HPP
+#endif // _MODEL_H

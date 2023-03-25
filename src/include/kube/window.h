@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef _WINDOW_HPP
-#define _WINDOW_HPP
+#ifndef _WINDOW_H
+#define _WINDOW_H
 
 #include <functional>
 #include <memory>
@@ -63,4 +63,4 @@ private:
 
 }; // namespace kube
 
-#endif // _WINDOW_HPP
+#endif // _WINDOW_H

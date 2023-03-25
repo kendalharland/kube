@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef _PLAYER_HPP
-#define _PLAYER_HPP
+#ifndef _PLAYER_H
+#define _PLAYER_H
 
 #include <kube/animation.h>
 #include <kube/model.h>
@@ -68,4 +68,4 @@ private:
 
 } // namespace kube
 
-#endif // _PLAYER_HPP
+#endif // _PLAYER_H

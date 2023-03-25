@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef _CAMERA_HPP
-#define _CAMERA_HPP
+#ifndef _CAMERA_H
+#define _CAMERA_H
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -26,10 +26,7 @@ namespace kube {
 
 class Camera {
 public:
-  Camera()
-      : _aspectRatio(0), _far(0), _fov(0), _near(0), _position(0), _target(0), _up(0),
-        _zoomSpeed(glm::radians(0.0f)) {}
-
+  Camera() {}
   Camera(const Camera &camera) = delete;
   Camera(Camera &&other) = default;
   Camera &operator=(Camera &&other) = default;
@@ -63,4 +60,4 @@ private:
 
 }; // namespace kube
 
-#endif // _CAMERA_HPP
+#endif // _CAMERA_H

@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef _SHADER_HPP
-#define _SHADER_HPP
+#ifndef _SHADER_H
+#define _SHADER_H
 
 #include <glm/glm.hpp>
 
@@ -47,4 +47,4 @@ private:
 
 } // namespace kube
 
-#endif // _SHADER_HPP
+#endif // _SHADER_H
