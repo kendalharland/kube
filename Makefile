@@ -71,6 +71,7 @@ clean-build: clean build
 demo: build
 	@echo "=== Running $(TARGET) ($(config)) ==="
 	$(CXX) demos/rotating_cube/main.cpp -o bin/rotating_cube $(CXXFLAGS) -lkube
+	./bin/rotating_cube
 
 pull-submodules:
 	@echo "=== Fetching submodules ==="
