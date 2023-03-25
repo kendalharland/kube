@@ -28,7 +28,7 @@
  * complete. The animation always moves forward, from 0 to 1.  The animation is
  * updated incrementally based on the amount of time that has passed
  * (deltaTime) which is assumed to be mapped from clock-time to wall time by
- * the caller. If we want the animation to complete faster, we can multiple
+ * the caller. If we want the animation to complete faster, we can multiply
  * deltaTime by some constant.
  *
  * Tweens are used to map real-world values to the positions on the animation
@@ -164,23 +164,25 @@ public:
   RotateAnimation() = delete;
 
   explicit RotateAnimation(AnimationState state, DoubleTween tween, Curve &curve, glm::vec3 axis)
-      : _tween(tween), _animation(state), _curve(curve), _axis(axis) {}
+      : _tween(tween), state_(state), _curve(curve), _axis(axis) {}
 
   double Update(double t) {
-    _animation.Update(t);
-    double position = _curve.Value(_animation.Progress());
-    return _tween.Compute(position);
+    state_.Update(t);
+    double position = _curve.Value(state_.Progress());
+    auto tw = _tween.Compute(position);
+    std::cout << tw << std::endl;
+    return tw;
   }
 
   const glm::vec3 Axis() { return _axis; }
 
-  bool IsComplete() { return _animation.IsComplete(); }
+  bool IsComplete() { return state_.IsComplete(); }
 
-  double Progress() { return _animation.Progress(); }
+  double Progress() { return state_.Progress(); }
 
 private:
   DoubleTween _tween;
-  AnimationState _animation;
+  AnimationState state_;
   Curve &_curve;
   glm::vec3 _axis;
 };

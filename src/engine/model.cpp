@@ -34,8 +34,8 @@ void Model::Draw(Window *window) {
   mesh_.Draw(shader_, mvp);
 }
 
-void Model::SetRotation(float radians, glm::vec3 axis) {
-  rotation_ = glm::rotate(IDENTITY_MAT4, radians, axis);
+void Model::Rotate(float radians, glm::vec3 axis) {
+  rotation_ = glm::rotate(rotation_, radians, axis);
 }
 
 }; // namespace kube

@@ -42,12 +42,14 @@ namespace kube {
 //  |/      |/
 //  v2------v3
 static const GLfloat cube_vertices_[] = {
-  1, 1, 1,   -1, 1, 1,   -1,-1, 1,    1,-1, 1, // v0,v1,v2,v3 (front)
-  1, 1, 1,    1,-1, 1,    1,-1,-1,    1, 1,-1, // v0,v3,v4,v5 (right)
-  1, 1, 1,    1, 1,-1,   -1, 1,-1,   -1, 1, 1, // v0,v5,v6,v1 (top)
- -1, 1, 1,   -1, 1,-1,   -1,-1,-1,   -1,-1, 1, // v1,v6,v7,v2 (left)
- -1,-1,-1,    1,-1,-1,    1,-1, 1,   -1,-1, 1, // v7,v4,v3,v2 (bottom)
-  1,-1,-1,   -1,-1,-1,   -1, 1,-1,    1, 1,-1  // v4,v7,v6,v5 (back)
+   1, 1, 1, // v0
+  -1, 1, 1, // v1
+  -1,-1, 1, // v2
+   1,-1, 1, // v3
+   1,-1,-1, // v4
+   1, 1,-1, // v5
+  -1, 1,-1, // v6
+  -1,-1,-1  // v7
 };
 
 // Creates a cube whose vertices transition between the full visbile
@@ -62,12 +64,7 @@ static const GLfloat cube_colors_[] = {
 };
 
 static unsigned int cube_indices_[]  = {
-   0, 1, 2,   2, 3, 0, // front (v0, v1, v2) (v2, v3, v0)
-   4, 5, 6,   6, 7, 4, // right (v0, v3, v4) ()
-   8, 9,10,  10,11, 8, // top
-  12,13,14,  14,15,12, // left
-  16,17,18,  18,19,16, // bottom
-  20,21,22,  22,23,20  // back
+   0, 1, 2, 0, 3, 2
 };
 // clang-format on
 

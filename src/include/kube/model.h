@@ -55,7 +55,7 @@ public:
   const glm::mat4 Scale();
 
   void Draw(Window *window);
-  void SetRotation(float radians, glm::vec3 axis);
+  void Rotate(float radians, glm::vec3 axis);
 
 private:
   // TODO: Move to Geometry class?

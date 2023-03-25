@@ -22,7 +22,7 @@
 
 namespace kube {
 
-#define ANIMATION_SPEED 10.0
+#define ANIMATION_SPEED 2.0
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Player
@@ -30,9 +30,7 @@ namespace kube {
 
 Player::Player(Model *model, PlayerState *state) : _model(model), _state(state) {}
 
-void Player::SetModelRotation(double rotation, glm::vec3 axis) {
-  _model->SetRotation(rotation, axis);
-}
+void Player::RotateModel(double rotation, glm::vec3 axis) { _model->Rotate(rotation, axis); }
 
 void Player::HandleInput(Window *window) { _state->HandleInput(window); }
 void Player::Update(double dt) { _state = _state->Update(dt, this); }
@@ -85,8 +83,10 @@ PlayerRollingState::PlayerRollingState(RotateAnimation animation) : _animation(a
 void PlayerRollingState::HandleInput(Window *window) {}
 
 PlayerState *PlayerRollingState::Update(double dt, Player *player) {
-  double rotation = _animation.Update(dt);
-  player->SetModelRotation(rotation, _animation.Axis());
+  auto radians = _animation.Update(dt);
+  auto delta_radians = radians - last_radians_;
+  last_radians_ = radians;
+  player->RotateModel(delta_radians, _animation.Axis());
   if (_animation.IsComplete()) {
     return new PlayerIdleState();
   }

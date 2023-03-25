@@ -30,10 +30,7 @@
 
 #define TITLE "Rotating Cube"
 
-// Camera is at (4,3,-3), in World Space
-// and looks at the origin
-
-#define CAMERA_POS glm::vec3(-15, 10, -25)
+#define CAMERA_POS glm::vec3(10, 10, 10)
 #define CAMERA_TARGET glm::vec3()
 
 #define SCREEN_WIDTH 1000

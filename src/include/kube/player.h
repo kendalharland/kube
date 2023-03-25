@@ -33,7 +33,7 @@ public:
 
   void HandleInput(Window *window);
   void Update(double dt);
-  void SetModelRotation(double rotation, glm::vec3 axis);
+  void RotateModel(double rotation, glm::vec3 axis);
 
 private:
   Model *_model;
@@ -64,6 +64,7 @@ public:
 
 private:
   RotateAnimation _animation;
+  double last_radians_ = glm::radians(0.0f);
 };
 
 } // namespace kube
