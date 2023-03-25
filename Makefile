@@ -17,15 +17,14 @@ LIBRARY_PATH=$(SOURCE_ROOT)/src/lib/
 LIBS := -lglfw -lGLEW -lGL -lm -lassimp
 INC := -I./src/include
 INC += -I./third_party/assimp/include
-ENV := LIBRARY_PATH=$(LIBRARY_PATH) LD_LIBRARY_PATH=$(LIBRARY_PATH)
 CXX := clang++
-CXXFLAGS += -std=c++20 $(LIBS) $(INC)
+CXXFLAGS += -std=c++20 -Wall $(LIBS) $(INC)
 
-TARGET := kube
+TARGET := $(LIBRARY_PATH)libkube.o
 
 .PHONY: all clean help format
 
-default: run
+default: demo
 
 format:
 	@echo "=== Formatting code ==="
@@ -45,14 +44,16 @@ clean:
 
 build: dependencies format
 	@echo "=== Building $(TARGET) ($(config)) ==="
-	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) 
+	$(CXX) -c -o $(TARGET) src/kube.cpp $(CXXFLAGS) -fPIC
+	$(CXX) -shared -o $(LIBRARY_PATH)libkube.so $(TARGET)
+
 
 clean-build: clean build
 	@echo "=== Performing a clean build ==="
 
-run: build
+demo: build
 	@echo "=== Running $(TARGET) ($(config)) ==="
-	./$(TARGET)
+	$(CXX) demos/rotating_cube/main.cpp -o bin/rotating_cube $(CXXFLAGS) -lkube
 
 help:
 	@echo "Usage: make [target]"

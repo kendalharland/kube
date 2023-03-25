@@ -4,8 +4,6 @@
 3. Add functions Graphics::CompileShaderProgram
 9. Load models directly from obj files
 10. Render texture coordinates and normals (read about these too).
-11. Move Cube demo and model demo to examples/ directory and 
-    add Makefile entries for both.
 12. Make the window's background color configurable.
 13. Define ShaderProgram struct to pass to Graphics::CompileShaderProgram
 15. Replace Camera::MVP with Camera::GetProjectionMatrix(Mesh&);
