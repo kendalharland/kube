@@ -71,8 +71,8 @@ void Window::Open(int width, int height, const char *title) {
   // TODO: Make this configurable.
   // Dark blue background
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-  glGenVertexArrays(1, &vertex_array_id_);
-  glBindVertexArray(vertex_array_id_);
+  glGenVertexArrays(1, &VAO_);
+  glBindVertexArray(VAO_);
 };
 
 void Window::Clear() {
@@ -96,9 +96,8 @@ bool Window::ShouldClose() {
 
 void Window::Close() {
   // Clean VBO
-  glDeleteVertexArrays(1, &vertex_array_id_);
+  glDeleteVertexArrays(1, &VAO_);
   glfwTerminate();
 }
 
 }; // namespace kube
-   // namespace kube

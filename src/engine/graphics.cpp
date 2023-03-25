@@ -26,17 +26,15 @@ namespace graphics {
 // clang-format off
 void Mesh::Load() {
   KUBE_INFO("loading mesh");
-  unsigned int VAO; // vertex arrays
-  unsigned int VBO; // vertex buffer
-  unsigned int EBO; // element array buffer
+  unsigned int VAO; // vertex array.
+  unsigned int VBO; // vertex buffer.
+  unsigned int EBO; // element array buffer for VBO indexing.
 
   glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO); // OR glEnableVertexAttribArray(VAO);
+  glBindVertexArray(VAO);
 
-  // Create and fill buffers with data.
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &EBO);
-
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(Vertex), &vertices_[0], GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -74,7 +72,7 @@ void Mesh::Load() {
 
 void Mesh::Unload() {
   KUBE_INFO("unloading mesh");
-  // TODO: VAO?
+  glDeleteVertexArrays(1, &VAO_);
   glDeleteBuffers(1, &VBO_);
   glDeleteBuffers(1, &EBO_);
 }

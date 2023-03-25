@@ -56,7 +56,7 @@ private:
   bool is_open_;
   GLFWwindow *window_;
   Camera camera_;
-  GLuint vertex_array_id_; // TODO: Delete?
+  GLuint VAO_; // TODO: Delete?
 
   // TODO: delete singleton constructors and assignment operators.
 };
