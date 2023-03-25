@@ -2,8 +2,6 @@
 1. Fix ifndefs
 1. Make Mesh a struct without methods.
 3. Add functions Graphics::CompileShaderProgram
-5. Use Window instead of glfw* methods in player.cpp and any other file
-   that touches glfw* primitives.
 9. Load models directly from obj files
 10. Render texture coordinates and normals (read about these too).
 11. Move Cube demo and model demo to examples/ directory and 

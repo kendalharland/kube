@@ -18,11 +18,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <kube/animation.hpp>
 #include <kube/camera.h>
 #include <kube/constants.hpp>
@@ -40,7 +35,7 @@ int main(void) {
   window->Open(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
   window->SetCamera(std::move(camera));
 
-  auto model = kube::Cube(glm::vec3(0, 0, 0), 2.f);
+  auto model = kube::Cube();
   auto state = kube::PlayerIdleState();
   kube::Player player(&model, &state);
 
