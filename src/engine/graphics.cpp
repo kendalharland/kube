@@ -20,12 +20,64 @@
 #include <kube/graphics.h>
 #include <kube/logging.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <kube/internal/stb_image.h>
+
 namespace kube {
 namespace graphics {
 
+// TODO: Declare this somewhere
+
+void LoadTexture_(Texture *texture) {
+  KUBE_INFO("Loading texture " + texture->filename);
+
+  glGenTextures(1, &texture->id);
+  glBindTexture(GL_TEXTURE_2D, texture->id);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  int width, height, num_channels;
+  unsigned char *data = stbi_load(texture->filename.c_str(), &width, &height, &num_channels, 0);
+  if (data) {
+    GLenum format;
+    if (num_channels == 1) {
+      format = GL_RED;
+    } else if (num_channels == 3) {
+      format = GL_RGB;
+    } else if (num_channels == 4) {
+      format = GL_RGBA;
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+  } else {
+    KUBE_ERROR("Failed to load texture from " + texture->filename);
+  }
+
+  stbi_image_free(data);
+}
+
+void MeshBuilder::AddVertex(graphics::Vertex &&vertex) {
+  mesh_.vertices_.push_back(std::move(vertex));
+}
+
+void MeshBuilder::AddIndex(unsigned int index) { mesh_.indices_.push_back(std::move(index)); }
+
+void MeshBuilder::AddTexture(graphics::Texture &&texture) {
+  mesh_.textures_.push_back(std::move(texture));
+}
+
+Mesh MeshBuilder::Build() { return std::move(mesh_); }
+
 // clang-format off
 void Mesh::Load() {
-  KUBE_INFO("loading mesh");
+  // KUBE_INFO("loading mesh textures");
+  // for (auto texture : textures_) {
+  //   LoadTexture_(&texture);
+  // }
+
+  KUBE_INFO("Loading mesh vertices");
   unsigned int VAO; // vertex array.
   unsigned int VBO; // vertex buffer.
   unsigned int EBO; // element array buffer for VBO indexing.
@@ -56,11 +108,42 @@ void Mesh::Load() {
                         GL_FALSE,                          // do not normalize.
                         sizeof(Vertex),                    // stride
                         (void *)offsetof(Vertex, colors)); // offset.
-  // vertex normals
-  // glEnableVertexAttribArray(1);
-  // glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex,
-  // normal)); vertex texture coords glEnableVertexAttribArray(2); glVertexAttribPointer(3, 2,
-  // GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, tex_coords));
+
+  // vertex normal
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2,
+                        3,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        sizeof(Vertex),
+                        (void *)offsetof(Vertex,  normal));
+
+  // vertex texture coords
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3,
+                        2,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        sizeof(Vertex),
+                        (void *)offsetof(Vertex,  tex_coords));
+
+  // vertex tangent
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4,
+                        3,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        sizeof(Vertex),
+                        (void *)offsetof(Vertex,  tangent));
+
+  // vertex bitangent
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5,
+                        3,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        sizeof(Vertex),
+                        (void *)offsetof(Vertex,  bitangent));
 
   glBindVertexArray(0);
 
@@ -71,16 +154,26 @@ void Mesh::Load() {
 // clang-format on
 
 void Mesh::Unload() {
-  KUBE_INFO("unloading mesh");
+  KUBE_INFO("Unloading mesh");
   glDeleteVertexArrays(1, &VAO_);
   glDeleteBuffers(1, &VBO_);
   glDeleteBuffers(1, &EBO_);
+  // TODO: Textures!
 }
 
-void Mesh::Draw() {
+void Mesh::Draw(Shader *shader) {
+  if (textures_.size() > 0) {
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i(glGetUniformLocation(shader->GetProgramID(), "sampler"), 0);
+    glBindTexture(GL_TEXTURE_2D, textures_[0].id);
+  }
   glBindVertexArray(VAO_);
   glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, (void *)0);
   glBindVertexArray(0);
+
+  if (textures_.size() > 0) {
+    glActiveTexture(GL_TEXTURE0);
+  }
 }
 
 }; // namespace graphics

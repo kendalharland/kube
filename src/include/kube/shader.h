@@ -33,6 +33,7 @@ public:
   void Unload();
   void Use();
 
+  GLuint GetProgramID();
   void SetVertexShader(std::string filename);
   void SetFragmentShader(std::string filename);
   void SetMVP(glm::mat4 mvp);

@@ -96,8 +96,7 @@ Model Cube() {
   shader.SetVertexShader("src/shaders/TransformVertexShader.vertexshader");
   shader.SetFragmentShader("src/shaders/ColorFragmentShader.fragmentshader");
 
-  Model model(std::move(mesh), std::move(shader));
-  return model;
+  return Model(std::move(mesh), std::move(shader));
 }
 
 }; // namespace kube

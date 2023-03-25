@@ -68,6 +68,8 @@ GLuint compile_shader(std::string filename, uint gl_shader_type) {
   return shader_id;
 }
 
+GLuint Shader::GetProgramID() { return program_id_; }
+
 void Shader::SetVertexShader(std::string filename) { vertex_shader_filename_ = filename; }
 
 void Shader::SetFragmentShader(std::string filename) { fragment_shader_filename_ = filename; }

@@ -170,7 +170,6 @@ public:
     state_.Update(t);
     double position = _curve.Value(state_.Progress());
     auto tw = _tween.Compute(position);
-    std::cout << tw << std::endl;
     return tw;
   }
 

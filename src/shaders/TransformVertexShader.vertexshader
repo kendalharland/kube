@@ -14,17 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+// TODO: Consider creating a separate shader for the cube
+// and for imported models which actually have textures.
+
 #version 330 core
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
+layout(location = 2) in vec3 normal;
+layout(location = 3) in vec2 tex_coord;
+layout(location = 4) in vec2 tangent;
+layout(location = 5) in vec2 bitangent;
 
 out vec3 fragmentColor;
+out vec2 fragment_tex_coord;
 
 uniform mat4 MVP;
 
 void main() {
 	gl_Position =  MVP * vec4(position, 1);
 	fragmentColor = color;
+    fragment_tex_coord = tex_coord;
 }
-

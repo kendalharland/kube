@@ -54,6 +54,7 @@ dkms.conf
 
 # Third party code
 third_party/*
+assets/*
 
 # Editor files
 .vscode/* 

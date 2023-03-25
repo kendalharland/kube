@@ -36,7 +36,6 @@
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 800
 
-
 #define ORIGIN glm::vec3(0.0f)
 
 int main(void) {
@@ -45,7 +44,13 @@ int main(void) {
   window->Open(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
   window->SetCamera(std::move(camera));
 
+  // TODO: We get a segfault if we use the Cube model, probably because our Mesh code iterates
+  // over textures even if there aren't any (vector is null).
   auto model = kube::Cube();
+  // kube::Model model;
+  // kube::Model::LoadFromFile("assets/models/Landyroamer.fbx", &model);
+  // kube::Model::LoadFromFile("/home/kjh/Downloads/kitchenmodels/individualsfiles/fridge.fbx", &model);
+
   auto state = kube::PlayerIdleState();
   kube::Player player(&model, &state);
 

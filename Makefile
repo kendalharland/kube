@@ -56,8 +56,8 @@ build3p: assimp
 
 clean:
 	@echo "=== Removing temporary files ==="
-	rm $(TARGET)
-	rm ./bin/*
+	rm -f $(TARGET)
+	rm -f ./bin/*
 
 build: build3p format
 	@echo "=== Building $(TARGET) ($(config)) ==="

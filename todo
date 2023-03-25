@@ -4,3 +4,6 @@
 - Define a macro to manage move constructors.
 - Make the window's background color configurable.
 - Define ShaderProgram struct to pass to Graphics::CompileShaderProgram
+- Implement some sort of vsync to present screen tearing.
+- Don't store shaders on the model. Inject them so you can switch shaders at runtime.
+- Create logging macro to throw fatal error.

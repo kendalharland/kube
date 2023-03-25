@@ -28,27 +28,32 @@
 namespace kube {
 namespace graphics {
 
-class Mesh;
-struct Texture;
-struct Vertex;
+class MeshBuilder;
 
 struct Vertex {
   glm::vec3 position;
   glm::vec3 colors;
-  // glm::vec3 normal;
-  // glm::vec2 tex_coords;
+  glm::vec3 normal;
+  glm::vec2 tex_coords;
+  glm::vec3 tangent;
+  glm::vec3 bitangent;
 };
 
 struct Texture {
+  // OpenGL texture id. Initialized when the texture is loaded.
   unsigned int id;
+
+  // The path to this texture's file.
+  std::string filename;
   std::string type;
 };
 
 class Mesh {
+  friend MeshBuilder;
 
 public:
-  Mesh() = delete;
-  Mesh(const Mesh &other) = delete;
+  Mesh(){};
+  Mesh(const Mesh &other) = default;
   Mesh(Mesh &&other) = default;
   Mesh &operator=(Mesh &&other) = default;
 
@@ -57,15 +62,31 @@ public:
 
   void Load();
   void Unload();
-  void Draw(); // TODO: Make camera
+  void Draw(Shader *shader);
 
-private:
   std::vector<Vertex> vertices_;
   std::vector<unsigned int> indices_;
   std::vector<Texture> textures_;
-  unsigned int VAO_; // vertex arrays
-  unsigned int VBO_; // vertex buffer
-  unsigned int EBO_; // element array buffer for VBO indexing.
+
+private:
+  unsigned int VAO_; // vertex array id.
+  unsigned int VBO_; // vertex buffer id.
+  unsigned int EBO_; // element array buffer id for VBO indexing.
+};
+
+// TODO: Consider the following:
+// - Create ModelBuilder.
+// - Create TextureBuilder.
+// - Compose these builders.
+class MeshBuilder {
+public:
+  void AddVertex(Vertex &&vertex);
+  void AddIndex(unsigned int index);
+  void AddTexture(Texture &&texture);
+  Mesh Build();
+
+private:
+  Mesh mesh_;
 };
 
 }; // namespace graphics

@@ -30,37 +30,36 @@ static const glm::vec3 Z_AXIS = glm::vec3(0.f, 0.f, 1.f);
 
 namespace kube {
 
+class ModelLoader;
+
 class Model {
+  friend ModelLoader;
+
 public:
-  Model(graphics::Mesh &&mesh, Shader &&shader) : mesh_(std::move(mesh)), shader_(shader) {
-    mesh_.Load();
-    shader_.Load();
-  }
+  static void LoadFromFile(std::string filename, Model *into);
 
-  ~Model() {
-    mesh_.Unload();
-    shader_.Unload();
-  }
+  // TODO: Move implementations to model.cpp.
+  Model() {}
+  Model(graphics::Mesh &&mesh, Shader &&shader);
+  ~Model();
 
-  // TODO: Should we use a unique ptr?
   Model(const Model &model) = delete;
   Model(Model &&other) = default;
-  Model &operator=(Model &&other) = default;
-
-  graphics::Mesh mesh_;
-  Shader shader_;
-
-  const glm::vec3 Center();
-  const glm::mat4 Rotation();
-  const glm::mat4 Scale();
+  Model &operator=(Model &&other) = default; // What does this really do?
 
   void Draw(Window *window);
   void Rotate(float radians, glm::vec3 axis);
 
 private:
+  void Load();
+  void Unload();
+
+  std::vector<graphics::Mesh> meshes_;
+  Shader shader_;
+
   // TODO: Move to Geometry class?
   glm::vec3 center_ = glm::vec3(0.0f);
-  glm::mat4 scale_ = glm::mat4(2.f);
+  glm::mat4 scale_ = glm::mat4(1.f);
   glm::mat4 rotation_ = glm::mat4(1.f);
 };
 
