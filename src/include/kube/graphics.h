@@ -32,10 +32,6 @@ class Mesh;
 struct Texture;
 struct Vertex;
 
-void LoadMesh(Mesh &mesh);
-void UnloadMesh(Mesh &mesh);
-void DrawMesh(Mesh &mesh, Shader &shader, glm::mat4 mvp);
-
 struct Vertex {
   glm::vec3 position;
   glm::vec3 colors;
@@ -61,7 +57,7 @@ public:
 
   void Load();
   void Unload();
-  void Draw(Shader &shader, glm::mat4 mvp); // TODO: Make camera
+  void Draw(); // TODO: Make camera
 
 private:
   std::vector<Vertex> vertices_;
@@ -69,7 +65,7 @@ private:
   std::vector<Texture> textures_;
   unsigned int VAO_; // vertex arrays
   unsigned int VBO_; // vertex buffer
-  unsigned int EBO_; // element array buffer
+  unsigned int EBO_; // element array buffer for VBO indexing.
 };
 
 }; // namespace graphics

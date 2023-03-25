@@ -21,17 +21,12 @@
 
 namespace kube {
 
-// TODO: Delete.
-const glm::vec3 Model::Center() { return center_; }
-const glm::mat4 Model::Rotation() { return rotation_; }
-const glm::mat4 Model::Scale() { return scale_; }
-
 void Model::Draw(Window *window) {
-  glm::mat4 translation = glm::translate(IDENTITY_MAT4, Center());
-  glm::mat4 rotation = Rotation();
-  glm::mat4 scale = Scale();
-  glm::mat4 mvp = window->GetCamera().GetProjectionMatrix(translation * rotation * scale);
-  mesh_.Draw(shader_, mvp);
+  glm::mat4 translation = glm::translate(IDENTITY_MAT4, center_);
+  glm::mat4 mvp = window->GetCamera().GetProjectionMatrix(translation * rotation_ * scale_);
+  shader_.SetMVP(mvp);
+  shader_.Use();
+  mesh_.Draw();
 }
 
 void Model::Rotate(float radians, glm::vec3 axis) {

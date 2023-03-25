@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <iostream>
-#include <string>
+#include <string_view>
 
 #include <kube/logging.h>
 
