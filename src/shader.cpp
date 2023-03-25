@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <logging.h>
-#include <shader.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <algorithm>
 #include <fstream>
@@ -25,16 +25,15 @@
 #include <string>
 #include <vector>
 
+#include <logging.h>
+#include <shader.h>
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <stdlib.h>
-#include <string.h>
 
 namespace kube {
 
-Shader::~Shader() { glDeleteProgram(program_id_); }
-
-GLuint CompileShader(std::string filename, uint gl_shader_type) {
+GLuint compile_shader(std::string filename, uint gl_shader_type) {
   KUBE_INFO("Compiling shader " + filename);
 
   GLuint shader_id = glCreateShader(gl_shader_type);
@@ -69,9 +68,23 @@ GLuint CompileShader(std::string filename, uint gl_shader_type) {
   return shader_id;
 }
 
-void Shader::LinkProgram() {
-  KUBE_INFO("Linking shader program");
+void Shader::SetVertexShader(std::string filename) { vertex_shader_filename_ = filename; }
 
+void Shader::SetFragmentShader(std::string filename) { fragment_shader_filename_ = filename; }
+
+void Shader::SetMVP(glm::mat4 mvp) {
+  GLuint mvp_id_ = glGetUniformLocation(program_id_, "MVP");
+  glUniformMatrix4fv(mvp_id_, 1, GL_FALSE, &mvp[0][0]);
+}
+
+void Shader::Use() { glUseProgram(program_id_); }
+
+void Shader::Load() {
+  KUBE_INFO("Loading shader program");
+  vertex_shader_id_ = compile_shader(vertex_shader_filename_, GL_VERTEX_SHADER);
+  fragment_shader_id_ = compile_shader(fragment_shader_filename_, GL_FRAGMENT_SHADER);
+
+  KUBE_INFO("Linking shader program");
   GLuint program_id = glCreateProgram();
   // TODO: What if these ids are null?
   glAttachShader(program_id, vertex_shader_id_);
@@ -100,19 +113,9 @@ void Shader::LinkProgram() {
   program_id_ = program_id;
 }
 
-void Shader::CompileVertexShader(std::string filename) {
-  vertex_shader_id_ = CompileShader(filename, GL_VERTEX_SHADER);
+void Shader::Unload() {
+  KUBE_INFO("Deleting shader program");
+  glDeleteProgram(program_id_);
 }
-
-void Shader::CompileFragmentShader(std::string filename) {
-  fragment_shader_id_ = CompileShader(filename, GL_FRAGMENT_SHADER);
-}
-
-void Shader::SetMVP(glm::mat4 mvp) {
-  GLuint mvp_id_ = glGetUniformLocation(program_id_, "MVP");
-  glUniformMatrix4fv(mvp_id_, 1, GL_FALSE, &mvp[0][0]);
-}
-
-void Shader::Use() { glUseProgram(program_id_); }
 
 } // namespace kube

@@ -22,7 +22,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <constants.hpp>
-#include <mesh.h>
+#include <opengl.h>
+#include <window.h>
 
 #define ROTATIONS_PER_SEC 90.f
 
@@ -32,75 +33,40 @@ static const glm::vec3 Z_AXIS = glm::vec3(0.f, 0.f, 1.f);
 
 namespace kube {
 
-class DeprecatedModel {
+class Model {
 public:
-  struct Options {
-    glm::vec3 center;
-    const GLfloat *colors;
-    const GLubyte *indices;
-    int numColors;
-    int numIndices;
-    int numVertices;
-    glm::mat4 rotation = glm::mat4(1.f);
-    glm::mat4 scale = glm::mat4(1.f);
-    const GLfloat *vertices;
-  };
-
-  DeprecatedModel() = delete;
-
-  // Constructs a Model from the given Options.
-  explicit DeprecatedModel(Options options) : _options(options) {}
-
-  Mesh *CreateMesh() {
-    auto mesh = new Mesh();
-    for (int i = 0; i < _options.numVertices; i += 3) {
-      Vertex v;
-      v.position.x = _options.vertices[i];
-      v.position.y = _options.vertices[i + 1];
-      v.position.z = _options.vertices[i + 2];
-
-      v.colors.x = _options.colors[i];
-      v.colors.y = _options.colors[i + 1];
-      v.colors.z = _options.colors[i + 2];
-      mesh->vertices.push_back(v);
-    }
-    for (int i = 0; i < _options.numIndices; i++) {
-      mesh->indices.push_back(_options.indices[i]);
-    }
-    return mesh;
+  Model(graphics::Mesh &&mesh, Shader &&shader) : mesh_(std::move(mesh)), shader_(shader) {
+    mesh_.Load();
+    shader_.Load();
   }
 
-  const glm::vec3 Center() { return _options.center; }
-
-  const glm::mat4 Rotation() { return _options.rotation; }
-
-  const glm::mat4 Scale() { return _options.scale; }
-
-  const GLfloat *Vertices() { return _options.vertices; }
-  int NumVertices() { return _options.numVertices; }
-
-  const GLfloat *Colors() { return _options.colors; }
-  int NumColors() { return _options.numColors; }
-
-  const GLubyte *Indices() { return _options.indices; }
-  int NumIndices() { return _options.numIndices; }
-
-  void SetRotation(float radians, glm::vec3 axis) {
-    _options.rotation = glm::rotate(IDENTITY_MAT4, radians, axis);
+  ~Model() {
+    mesh_.Unload();
+    shader_.Unload();
   }
 
-  void RotateRight(float t) {
-    auto angle = glm::radians(ROTATIONS_PER_SEC) * t;
-    _options.rotation = glm::rotate(_options.rotation, angle, -Y_AXIS);
-  }
+  // TODO: Should we use a unique ptr?
+  Model(const Model &model) = delete;
+  Model(Model &&other) = default;
+  Model &operator=(Model &&other) = default;
 
-  void RotateLeft(float t) {
-    auto angle = glm::radians(ROTATIONS_PER_SEC) * t;
-    _options.rotation = glm::rotate(_options.rotation, angle, Y_AXIS);
-  }
+  graphics::Mesh mesh_;
+  Shader shader_;
+
+  const glm::vec3 Center();
+  const glm::mat4 Rotation();
+  const glm::mat4 Scale();
+
+  void Draw(Window *window);
+  void SetRotation(float radians, glm::vec3 axis);
+  void RotateRight(float t);
+  void RotateLeft(float t);
 
 private:
-  Options _options;
+  // TODO: Move to Geometry class?
+  glm::vec3 center_ = ORIGIN;
+  glm::mat4 scale_ = glm::mat4(1.f);
+  glm::mat4 rotation_ = glm::mat4(1.f);
 };
 
 } // namespace kube

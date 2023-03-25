@@ -32,20 +32,21 @@ typedef unsigned int GLuint;
 // Represents a shader program.
 class Shader {
 public:
-  ~Shader();
-  void CompileVertexShader(std::string filename);
-  void CompileFragmentShader(std::string filename);
-  void LinkProgram();
-  void SetMVP(glm::mat4 mvp);
+  void Load();
+  void Unload();
   void Use();
+
+  void SetVertexShader(std::string filename);
+  void SetFragmentShader(std::string filename);
+  void SetMVP(glm::mat4 mvp);
 
 private:
   GLuint program_id_;
   GLuint vertex_shader_id_;
   GLuint fragment_shader_id_;
+  std::string vertex_shader_filename_;
+  std::string fragment_shader_filename_;
 };
-
-GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename);
 
 } // namespace kube
 

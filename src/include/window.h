@@ -25,7 +25,7 @@
 
 #include <camera.h>
 #include <logging.h>
-#include <mesh.h>
+#include <model.hpp>
 #include <opengl.h>
 #include <singleton.h>
 
@@ -45,9 +45,9 @@ public:
   void Close();
   void Clear();
   void Update();
-  void DrawMesh(Mesh &mesh);
 
   void SetCamera(Camera &&camera);
+  Camera &GetCamera();
 
   bool IsKeyPressed(uint key);
   bool ShouldClose();

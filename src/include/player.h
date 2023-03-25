@@ -29,14 +29,14 @@ class PlayerState;
 
 class Player {
 public:
-  Player(DeprecatedModel *model, PlayerState *state);
+  Player(Model *model, PlayerState *state);
 
   void HandleInput(Window *window);
   void Update(double dt);
   void SetModelRotation(double rotation, glm::vec3 axis);
 
 private:
-  DeprecatedModel *_model;
+  Model *_model;
   PlayerState *_state;
 };
 

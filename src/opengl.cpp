@@ -19,14 +19,13 @@
 #include <glm/glm.hpp>
 
 #include <logging.h>
-#include <mesh.h>
 #include <opengl.h>
 
 namespace kube {
 namespace graphics {
 
-// clang-format off
-void LoadMesh(Mesh &mesh) {
+void Mesh::Load() {
+  KUBE_INFO("loading mesh");
   unsigned int VAO; // vertex arrays
   unsigned int VBO; // vertex buffer
   unsigned int EBO; // element array buffer
@@ -37,11 +36,12 @@ void LoadMesh(Mesh &mesh) {
   // Create and fill buffers with data.
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &EBO);
-  
+
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(Vertex), &mesh.vertices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.GetEBO());
-  // glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0], GL_STATIC_DRAW);
+  // glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int),
+  // &mesh.indices[0], GL_STATIC_DRAW);
 
   // vertex positions
   glEnableVertexAttribArray(0);
@@ -50,44 +50,42 @@ void LoadMesh(Mesh &mesh) {
                         GL_FLOAT,       // element type.
                         GL_FALSE,       // do not normalize
                         sizeof(Vertex), // stride
-                        (void*)0);      // offset 
+                        (void *)0);     // offset
   // vertex colors
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1,              // location = 1 in shader file
-                        3,              // the color has [r, g, b] 3 elements.
-                        GL_FLOAT,       // element type.
-                        GL_FALSE,       // do not normalize.
-                        sizeof(Vertex), // stride
+  glVertexAttribPointer(1,                                 // location = 1 in shader file
+                        3,                                 // the color has [r, g, b] 3 elements.
+                        GL_FLOAT,                          // element type.
+                        GL_FALSE,                          // do not normalize.
+                        sizeof(Vertex),                    // stride
                         (void *)offsetof(Vertex, colors)); // offset.
   // vertex normals
   // glEnableVertexAttribArray(1);
-  // glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
-  // vertex texture coords
-  // glEnableVertexAttribArray(2);
-  // glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, tex_coords));
+  // glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex,
+  // normal)); vertex texture coords glEnableVertexAttribArray(2); glVertexAttribPointer(3, 2,
+  // GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, tex_coords));
 
   glBindVertexArray(0);
-  
-  mesh.SetVAO(VAO);
-  mesh.SetVBO(VBO);
-  mesh.SetEBO(EBO);  
+
+  VAO_ = VAO;
+  VBO_ = VBO;
+  EBO_ = EBO;
 }
 
-void UnloadMesh(Mesh& mesh) {
-  unsigned int VBO = mesh.GetVBO();
-  unsigned int EBO = mesh.GetEBO();
-
-  glDeleteBuffers(1, &VBO);
-  glDeleteBuffers(1, &EBO);
+void Mesh::Unload() {
+  KUBE_INFO("unloading mesh");
+  // TODO: VAO?
+  glDeleteBuffers(1, &VBO_);
+  glDeleteBuffers(1, &EBO_);
 }
 
-void DrawMesh(Mesh& mesh, Shader& shader, glm::mat4 mvp /* TODO: Remove mvp */) {
-  KUBE_INFO("Drawing mesh");
+void Mesh::Draw(Shader &shader, glm::mat4 mvp /* TODO: Remove mvp */) {
+  KUBE_INFO("drawing mesh");
 
   shader.SetMVP(mvp);
-  shader.Use(); // TODO: Flip order?
-  glBindVertexArray(mesh.GetVAO());
-  glDrawArrays(GL_TRIANGLES, 0, mesh.indices.size());//, 3);//GL_UNSIGNED_BYTE, 0);
+  shader.Use();
+  glBindVertexArray(VAO_);
+  glDrawArrays(GL_TRIANGLES, 0, indices.size());
   glBindVertexArray(0);
 }
 

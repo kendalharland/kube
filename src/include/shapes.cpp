@@ -14,12 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef _SHAPES_HPP
-#define _SHAPES_HPP
+#ifndef _SHAPES_H
+#define _SHAPES_H
 
 #include <constants.hpp>
-#include <glm/glm.hpp>
 #include <model.hpp>
+#include <opengl.h>
+#include <shader.h>
+
+#include <glm/glm.hpp>
 
 namespace kube {
 
@@ -32,7 +35,7 @@ namespace kube {
 //  | |v7---|-|v4
 //  |/      |/
 //  v2------v3
-static const GLfloat vertices[] = {
+static const GLfloat cube_vertices_[] = {
   1, 1, 1,   -1, 1, 1,   -1,-1, 1,    1,-1, 1, // v0,v1,v2,v3 (front)
   1, 1, 1,    1,-1, 1,    1,-1,-1,    1, 1,-1, // v0,v3,v4,v5 (right)
   1, 1, 1,    1, 1,-1,   -1, 1,-1,   -1, 1, 1, // v0,v5,v6,v1 (top)
@@ -43,7 +46,7 @@ static const GLfloat vertices[] = {
 
 // Creates a cube whose vertices transition between the full visbile
 // spectrum of visibile colors.
-static const GLfloat colors[] = {
+static const GLfloat cube_colors_[] = {
   1, 1, 1,   1, 1, 0,   1, 0, 0,   1, 0, 1, // v0,v1,v2,v3 (front)
   1, 1, 1,   1, 0, 1,   0, 0, 1,   0, 1, 1, // v0,v3,v4,v5 (right)
   1, 1, 1,   0, 1, 1,   0, 1, 0,   1, 1, 0, // v0,v5,v6,v1 (top)
@@ -52,7 +55,7 @@ static const GLfloat colors[] = {
   0, 0, 1,   0, 0, 0,   0, 1, 0,   0, 1, 1  // v4,v7,v6,v5 (back)
 }; 
 
-static const GLubyte indices[]  = {
+static unsigned int cube_indices_[]  = {
     0, 1, 2,   2, 3, 0, // front                        
     4, 5, 6,   6, 7, 4, // right                        
     8, 9,10,  10,11, 8, // top                          
@@ -63,19 +66,36 @@ static const GLubyte indices[]  = {
 // clang-format on
 
 // Generic, drawable cube geometry.
-DeprecatedModel Cube(glm::vec3 center, float length = 1.f) {
-  return DeprecatedModel({
-      .center = center,
-      .colors = colors,
-      .indices = &indices[0],
-      .numColors = sizeof(colors),
-      .numIndices = sizeof(indices),
-      .numVertices = sizeof(vertices),
-      .scale = glm::scale(IDENTITY_MAT4, glm::vec3(length)),
-      .vertices = vertices,
-  });
+Model Cube(glm::vec3 center, float length = 1.f) {
+  std::vector<graphics::Vertex> vertices;
+  std::vector<unsigned int> indices;
+
+  for (int i = 0; i < sizeof(cube_vertices_); i += 3) {
+    graphics::Vertex v;
+    v.position.x = cube_vertices_[i];
+    v.position.y = cube_vertices_[i + 1];
+    v.position.z = cube_vertices_[i + 2];
+
+    v.colors.x = cube_colors_[i];
+    v.colors.y = cube_colors_[i + 1];
+    v.colors.z = cube_colors_[i + 2];
+    vertices.push_back(v);
+  }
+
+  for (int i = 0; i < sizeof(cube_indices_); i++) {
+    indices.push_back(cube_indices_[i]);
+  }
+
+  graphics::Mesh mesh(vertices, indices);
+
+  Shader shader;
+  shader.SetVertexShader("src/shaders/TransformVertexShader.vertexshader");
+  shader.SetFragmentShader("src/shaders/ColorFragmentShader.fragmentshader");
+
+  Model model(std::move(mesh), std::move(shader));
+  return model;
 }
 
 }; // namespace kube
 
-#endif // _SHAPES_HPP
+#endif // _SHAPES_H

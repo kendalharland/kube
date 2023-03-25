@@ -35,5 +35,6 @@
 #define CUBE_SIZE 1.f
 
 #define IDENTITY_MAT4 glm::mat4(1.f)
+#define ORIGIN glm::vec3(0.0f)
 
 #endif // _CONSTANTS_HPP

@@ -17,6 +17,8 @@
 #include <memory>
 
 #include <camera.h>
+#include <constants.hpp>
+#include <model.hpp>
 #include <window.h>
 
 #include <GL/glew.h>
@@ -30,6 +32,8 @@ void Window::SetCamera(Camera &&camera) {
   camera_ = std::move(camera);
   glfwSetScrollCallback(window_, Window::glfw_scroll);
 }
+
+Camera &Window::GetCamera() { return camera_; }
 
 void Window::Open(int width, int height, const char *title) {
   assert(!is_open_);
