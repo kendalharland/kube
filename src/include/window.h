@@ -17,37 +17,46 @@
 #ifndef _WINDOW_HPP
 #define _WINDOW_HPP
 
+#include <functional>
+#include <memory>
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+#include <camera.h>
+#include <logging.h>
+#include <mesh.h>
 #include <opengl.h>
 #include <singleton.h>
-
-#include <functional>
 
 namespace kube {
 
 class Window : public Singleton<Window> {
 private:
-  SINGLETON(Window) : opengl_(OpenGLContext::GetInstance()), is_open_(false) {}
+  SINGLETON(Window) : is_open_(false) {}
+
+  static void glfw_scroll(GLFWwindow *window, double xoffset, double yoffset) {
+    Window *instance = Window::GetInstance();
+    instance->camera_.Zoom(yoffset > 0);
+  }
 
 public:
   void Open(int width, int height, const char *title);
+  void Close();
   void Clear();
   void Update();
-  void SetScrollCallback(std::function<void(double, double)> callback);
-  bool ShouldClose();
-  void Close();
+  void DrawMesh(Mesh &mesh);
 
-  // TODO: Delete these.
-  GLFWwindow *inner() { return opengl_->window_; }
-  OpenGLContext *opengl() { return opengl_; }
+  void SetCamera(Camera &&camera);
+
+  bool IsKeyPressed(uint key);
+  bool ShouldClose();
 
 private:
   bool is_open_;
-  OpenGLContext *opengl_;
-  std::function<void(double, double)> scroll_callback_;
-
-  static void GLFWScrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-    GetInstance()->scroll_callback_(xoffset, yoffset);
-  }
+  GLFWwindow *window_;
+  Camera camera_;
+  GLuint vertex_array_id_; // TODO: Delete?
 
   // TODO: delete singleton constructors and assignment operators.
 };

@@ -23,70 +23,10 @@
 #include <opengl.h>
 
 namespace kube {
-
-void OpenGLContext::CreateWindow(int width, int height, const char *title) {
-  if (!glfwInit()) {
-    throw "Failed to initialize GLFW\n";
-  }
-
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  // GL_TRUE makes MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  // Open a window and create its OpenGL context
-  window_ = glfwCreateWindow(width, height, title, NULL, NULL);
-  if (window_ == NULL) {
-    glfwTerminate();
-    throw("Failed to open GLFW window. If you have an Intel GPU, they are "
-          "not 3.3 compatible. Try version 2.1");
-  }
-
-  glfwMakeContextCurrent(window_);
-
-  if (glewInit() != GLEW_OK) {
-    glfwTerminate();
-    throw "Failed to initialize GLEW\n";
-  }
-
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
-  glfwSetInputMode(window_, GLFW_STICKY_KEYS, GL_FALSE);
-
-  // TODO: Make this configurable.
-  // Dark blue background
-  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-  glGenVertexArrays(1, &vertex_array_);
-  glBindVertexArray(vertex_array_);
-}
-
-void OpenGLContext::CloseWindow() {
-  // Clean VBO
-  glDeleteVertexArrays(1, &vertex_array_);
-  glfwTerminate();
-}
-
-void OpenGLContext::Clear() {
-  // Save the initial ModelView matrix before modifying ModelView matrix.
-  glPushMatrix();
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-};
-
-void OpenGLContext::Update() {
-  // Restore initial ModelView matrix.
-  glPopMatrix();
-  glfwSwapBuffers(window_);
-  glfwPollEvents();
-};
-
-bool OpenGLContext::IsKeyPressed(uint key) { return glfwGetKey(window_, key) == GLFW_PRESS; }
-
-bool OpenGLContext::WindowShouldClose() { return glfwWindowShouldClose(window_); }
+namespace graphics {
 
 // clang-format off
-void OpenGLContext::SetupMesh(Mesh &mesh) {
+void LoadMesh(Mesh &mesh) {
   unsigned int VAO; // vertex arrays
   unsigned int VBO; // vertex buffer
   unsigned int EBO; // element array buffer
@@ -133,7 +73,7 @@ void OpenGLContext::SetupMesh(Mesh &mesh) {
   mesh.SetEBO(EBO);  
 }
 
-void OpenGLContext::TeardownMesh(Mesh& mesh) {
+void UnloadMesh(Mesh& mesh) {
   unsigned int VBO = mesh.GetVBO();
   unsigned int EBO = mesh.GetEBO();
 
@@ -141,7 +81,7 @@ void OpenGLContext::TeardownMesh(Mesh& mesh) {
   glDeleteBuffers(1, &EBO);
 }
 
-void OpenGLContext::DrawMesh(Mesh& mesh, Shader& shader, glm::mat4 mvp /* TODO: Remove mvp */) {
+void DrawMesh(Mesh& mesh, Shader& shader, glm::mat4 mvp /* TODO: Remove mvp */) {
   KUBE_INFO("Drawing mesh");
 
   shader.SetMVP(mvp);
@@ -150,6 +90,8 @@ void OpenGLContext::DrawMesh(Mesh& mesh, Shader& shader, glm::mat4 mvp /* TODO: 
   glDrawArrays(GL_TRIANGLES, 0, mesh.indices.size());//, 3);//GL_UNSIGNED_BYTE, 0);
   glBindVertexArray(0);
 }
+
 // clang-format on
 
+}; // namespace graphics
 }; // namespace kube

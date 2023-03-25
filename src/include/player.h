@@ -17,10 +17,11 @@
 #ifndef _PLAYER_HPP
 #define _PLAYER_HPP
 
-#include <glm/glm.hpp>
+#include <animation.hpp>
+#include <model.hpp>
+#include <window.h>
 
-#include "animation.hpp"
-#include "model.hpp"
+#include <glm/glm.hpp>
 
 namespace kube {
 
@@ -30,7 +31,7 @@ class Player {
 public:
   Player(DeprecatedModel *model, PlayerState *state);
 
-  void HandleInput(GLFWwindow *window);
+  void HandleInput(Window *window);
   void Update(double dt);
   void SetModelRotation(double rotation, glm::vec3 axis);
 
@@ -41,14 +42,14 @@ private:
 
 class PlayerState {
 public:
-  virtual void HandleInput(GLFWwindow *window) = 0;
+  virtual void HandleInput(Window *window) = 0;
   virtual PlayerState *Update(double dt, Player *player) = 0;
 };
 
 class PlayerIdleState : public virtual PlayerState {
 public:
   PlayerIdleState();
-  void HandleInput(GLFWwindow *window);
+  void HandleInput(Window *window);
   PlayerState *Update(double dt, Player *player);
 
 private:
@@ -58,7 +59,7 @@ private:
 class PlayerRollingState : public virtual PlayerState {
 public:
   PlayerRollingState(RotateAnimation animation);
-  void HandleInput(GLFWwindow *window);
+  void HandleInput(Window *window);
   PlayerState *Update(double dt, Player *player);
 
 private:

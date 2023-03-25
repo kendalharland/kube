@@ -26,6 +26,14 @@ namespace kube {
 
 class Camera {
 public:
+  Camera()
+      : _aspectRatio(0), _far(0), _fov(0), _near(0), _position(0), _target(0), _up(0),
+        _zoomSpeed(glm::radians(0.0f)) {}
+
+  Camera(const Camera &camera) = delete;
+  Camera(Camera &&other) = default;
+  Camera &operator=(Camera &&other) = default;
+
   // TODO: Replace these params with an options type.
   Camera(glm::vec3 position, glm::vec3 target, float fov = glm::radians(45.0f),
          float aspectRatio = 4.0f / 3.0f, float near = 0.1f, float far = 100.f,

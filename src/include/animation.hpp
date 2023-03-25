@@ -17,6 +17,7 @@
 #ifndef _ANIMATION_HPP
 #define _ANIMATION_HPP
 
+#include <glm/glm.hpp>
 #include <math.h> /* sin */
 
 /*

@@ -23,6 +23,7 @@ namespace kube {
 #define SINGLETON(IMPL)                                                                            \
   friend Singleton<IMPL>;                                                                          \
   static IMPL *CreateInstance() { return new IMPL(); }                                             \
+  IMPL(const IMPL &other) = delete;                                                                \
   IMPL()
 
 template <typename Impl> class Singleton {

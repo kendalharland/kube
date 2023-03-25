@@ -25,28 +25,13 @@
 #include <GL/glew.h>
 
 namespace kube {
+namespace graphics {
 
-class OpenGLContext : public Singleton<OpenGLContext> {
-private:
-  SINGLETON(OpenGLContext) {}
+void LoadMesh(Mesh &mesh);
+void UnloadMesh(Mesh &mesh);
+void DrawMesh(Mesh &mesh, Shader &shader, glm::mat4 mvp);
 
-  GLuint vertex_array_;
-
-public: // TODO: Remove
-  GLFWwindow *window_;
-
-public:
-  void CreateWindow(int width, int height, const char *title);
-  void CloseWindow();
-  bool IsKeyPressed(uint key);
-  bool WindowShouldClose();
-  void Clear();
-  void Update();
-  void SetupMesh(Mesh &mesh);
-  void TeardownMesh(Mesh &mesh);
-  void DrawMesh(Mesh &mesh, Shader &shader, glm::mat4 mvp);
-};
-
+}; // namespace graphics
 }; // namespace kube
 
 #endif // _OPENGL_H

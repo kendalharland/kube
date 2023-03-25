@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <GLFW/glfw3.h>
+#include <animation.hpp>
+#include <model.hpp>
 #include <player.h>
 
-#include <animation.hpp>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <model.hpp>
 
 namespace kube {
 
@@ -33,7 +33,7 @@ void Player::SetModelRotation(double rotation, glm::vec3 axis) {
   _model->SetRotation(rotation, axis);
 }
 
-void Player::HandleInput(GLFWwindow *window) { _state->HandleInput(window); }
+void Player::HandleInput(Window *window) { _state->HandleInput(window); }
 void Player::Update(double dt) { _state = _state->Update(dt, this); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -42,30 +42,30 @@ void Player::Update(double dt) { _state = _state->Update(dt, this); }
 
 PlayerIdleState::PlayerIdleState() {}
 
-void PlayerIdleState::HandleInput(GLFWwindow *window) {
-  if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-    // TODO: The tween should start from the cube's current rotation.
-    _next = new PlayerRollingState(
-        RotateAnimation(AnimationState(), DoubleTween(glm::radians(0.f), glm::radians(90.f)),
-                        (Curve &)LinearCurve, X_AXIS));
+void PlayerIdleState::HandleInput(Window *window) {
+  // TODO: Each tween should start from the cube's current rotation.
+  if (window->IsKeyPressed(GLFW_KEY_RIGHT)) {
+    auto tween = DoubleTween(glm::radians(0.f), glm::radians(90.f));
+    auto animation = RotateAnimation(AnimationState(), tween, (Curve &)LinearCurve, X_AXIS);
+    _next = new PlayerRollingState(animation);
   }
 
-  if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-    _next = new PlayerRollingState(
-        RotateAnimation(AnimationState(), DoubleTween(glm::radians(0.f), glm::radians(90.f)),
-                        (Curve &)LinearCurve, -X_AXIS));
+  if (window->IsKeyPressed(GLFW_KEY_LEFT)) {
+    auto tween = DoubleTween(glm::radians(0.f), glm::radians(90.f));
+    auto animation = RotateAnimation(AnimationState(), tween, (Curve &)LinearCurve, -X_AXIS);
+    _next = new PlayerRollingState(animation);
   }
 
-  if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-    _next = new PlayerRollingState(
-        RotateAnimation(AnimationState(), DoubleTween(glm::radians(0.f), glm::radians(90.f)),
-                        (Curve &)LinearCurve, Z_AXIS));
+  if (window->IsKeyPressed(GLFW_KEY_DOWN)) {
+    auto tween = DoubleTween(glm::radians(0.f), glm::radians(90.f));
+    auto animation = RotateAnimation(AnimationState(), tween, (Curve &)LinearCurve, Z_AXIS);
+    _next = new PlayerRollingState(animation);
   }
 
-  if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-    _next = new PlayerRollingState(
-        RotateAnimation(AnimationState(), DoubleTween(glm::radians(0.f), glm::radians(90.f)),
-                        (Curve &)LinearCurve, -Z_AXIS));
+  if (window->IsKeyPressed(GLFW_KEY_UP)) {
+    auto tween = DoubleTween(glm::radians(0.f), glm::radians(90.f));
+    auto animation = RotateAnimation(AnimationState(), tween, (Curve &)LinearCurve, -Z_AXIS);
+    _next = new PlayerRollingState(animation);
   }
 }
 
@@ -77,7 +77,7 @@ PlayerState *PlayerIdleState::Update(double dt, Player *player) { return _next; 
 
 PlayerRollingState::PlayerRollingState(RotateAnimation animation) : _animation(animation) {}
 
-void PlayerRollingState::HandleInput(GLFWwindow *window) { glfwGetKey(window, 0); }
+void PlayerRollingState::HandleInput(Window *window) {}
 
 PlayerState *PlayerRollingState::Update(double dt, Player *player) {
   double rotation = _animation.Update(dt);

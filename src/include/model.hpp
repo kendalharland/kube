@@ -17,6 +17,7 @@
 #ifndef _MODEL_HPP
 #define _MODEL_HPP
 
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 

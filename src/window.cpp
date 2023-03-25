@@ -14,34 +14,88 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <memory>
+
+#include <camera.h>
 #include <window.h>
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 namespace kube {
 
-void Window::Open(int width, int height, const char *title) {
-  if (is_open_) {
-    throw "Window::Open called twice";
-  }
-  is_open_ = true;
-  opengl_->CreateWindow(width, height, title);
-};
-
-void Window::SetScrollCallback(std::function<void(double, double)> callback) {
-  scroll_callback_ = callback;
+void Window::SetCamera(Camera &&camera) {
+  assert(is_open_);
+  camera_ = std::move(camera);
+  glfwSetScrollCallback(window_, Window::glfw_scroll);
 }
 
-void Window::Clear() { opengl_->Clear(); };
+void Window::Open(int width, int height, const char *title) {
+  assert(!is_open_);
+  is_open_ = true;
 
-void Window::Update() { opengl_->Update(); };
+  if (!glfwInit()) {
+    throw "Failed to initialize GLFW\n";
+  }
 
-bool Window::ShouldClose() {
-  return opengl_->IsKeyPressed(GLFW_KEY_ESCAPE) || opengl_->WindowShouldClose();
+  glfwWindowHint(GLFW_SAMPLES, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  // GL_TRUE makes MacOS happy; should not be needed
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+  // Open a window and create its OpenGL context
+  window_ = glfwCreateWindow(width, height, title, NULL, NULL);
+  if (window_ == NULL) {
+    glfwTerminate();
+    throw("Failed to open GLFW window. If you have an Intel GPU, they are "
+          "not 3.3 compatible. Try version 2.1");
+  }
+
+  glfwMakeContextCurrent(window_);
+
+  if (glewInit() != GLEW_OK) {
+    glfwTerminate();
+    throw "Failed to initialize GLEW\n";
+  }
+
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glfwSetInputMode(window_, GLFW_STICKY_KEYS, GL_FALSE);
+
+  // TODO: Make this configurable.
+  // Dark blue background
+  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+  glGenVertexArrays(1, &vertex_array_id_);
+  glBindVertexArray(vertex_array_id_);
 };
 
-void Window::Close() { opengl_->CloseWindow(); }
+void Window::Clear() {
+  // Save the initial ModelView matrix before modifying ModelView matrix.
+  glPushMatrix();
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+};
 
-} // namespace kube
+void Window::Update() {
+  // Restore initial ModelView matrix.
+  glPopMatrix();
+  glfwSwapBuffers(window_);
+  glfwPollEvents();
+};
+
+bool Window::IsKeyPressed(uint key) { return glfwGetKey(window_, key) == GLFW_PRESS; }
+
+bool Window::ShouldClose() {
+  return IsKeyPressed(GLFW_KEY_ESCAPE) || glfwWindowShouldClose(window_);
+}
+
+void Window::Close() {
+  // Clean VBO
+  glDeleteVertexArrays(1, &vertex_array_id_);
+  glfwTerminate();
+}
+
+}; // namespace kube
+   // namespace kube
