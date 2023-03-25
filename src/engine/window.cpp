@@ -17,7 +17,6 @@
 #include <memory>
 
 #include <kube/camera.h>
-#include <kube/constants.hpp>
 #include <kube/model.h>
 #include <kube/window.h>
 

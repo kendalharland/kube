@@ -17,7 +17,6 @@
 #ifndef _SHAPES_H
 #define _SHAPES_H
 
-#include <kube/constants.hpp>
 #include <kube/graphics.h>
 #include <kube/model.h>
 #include <kube/shader.h>
@@ -28,6 +27,13 @@ namespace kube {
 
 // clang-format off
 
+//
+//        y
+//        |
+//        +--x
+//       /
+//      z
+//
 //    v6----- v5
 //   /|      /|
 //  v1------v0|

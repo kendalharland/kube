@@ -21,11 +21,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <kube/constants.hpp>
 #include <kube/graphics.h>
 #include <kube/window.h>
-
-#define ROTATIONS_PER_SEC 90.f
 
 static const glm::vec3 Y_AXIS = glm::vec3(0.f, 1.f, 0.f);
 static const glm::vec3 X_AXIS = glm::vec3(1.f, 0.f, 0.f);
@@ -64,7 +61,7 @@ public:
 
 private:
   // TODO: Move to Geometry class?
-  glm::vec3 center_ = ORIGIN;
+  glm::vec3 center_ = glm::vec3(0.0f);
   glm::mat4 scale_ = glm::mat4(2.f);
   glm::mat4 rotation_ = glm::mat4(1.f);
 };

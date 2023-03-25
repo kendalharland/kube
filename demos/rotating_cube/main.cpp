@@ -19,7 +19,6 @@
 #include <stdlib.h>
 
 #include <kube/camera.h>
-#include <kube/constants.hpp>
 #include <kube/graphics.h>
 #include <kube/logging.h>
 #include <kube/model.h>
@@ -27,6 +26,20 @@
 #include <kube/shapes.cpp>
 #include <kube/time.h>
 #include <kube/window.h>
+
+#define TITLE "Rotating Cube"
+
+// Camera is at (4,3,-3), in World Space
+// and looks at the origin
+
+#define CAMERA_POS glm::vec3(-15, 10, -25)
+#define CAMERA_TARGET glm::vec3()
+
+#define SCREEN_WIDTH 1000
+#define SCREEN_HEIGHT 800
+
+
+#define ORIGIN glm::vec3(0.0f)
 
 int main(void) {
   kube::Camera camera(CAMERA_POS, CAMERA_TARGET);

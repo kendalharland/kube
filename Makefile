@@ -22,7 +22,7 @@ CXXFLAGS += -std=c++20 -Wall $(LIBS) $(INC)
 
 TARGET := $(LIBRARY_PATH)libkube.o
 
-.PHONY: all clean help format
+.PHONY: default pull-submodules clean help format
 
 default: demo
 
@@ -35,14 +35,15 @@ assimp:
 	cd third_party/assimp; cmake CMakeLists.txt; make -j4
 	cp -av third_party/assimp/bin/libassimp.so* $(LIBRARY_PATH)
 
-dependencies: assimp
+build3p: assimp
 	@echo "=="
 
 clean:
-	@echo "=== Removing kube ==="
-	rm -rf $(TARGET) ./*.o
+	@echo "=== Removing temporary files ==="
+	rm $(TARGET)
+	rm ./bin/*
 
-build: dependencies format
+build: build3p format
 	@echo "=== Building $(TARGET) ($(config)) ==="
 	$(CXX) -c -o $(TARGET) src/kube.cpp $(CXXFLAGS) -fPIC
 	$(CXX) -shared -o $(LIBRARY_PATH)libkube.so $(TARGET)
@@ -55,12 +56,16 @@ demo: build
 	@echo "=== Running $(TARGET) ($(config)) ==="
 	$(CXX) demos/rotating_cube/main.cpp -o bin/rotating_cube $(CXXFLAGS) -lkube
 
+pull-submodules:
+	@echo "=== Fetching submodules ==="
+	git submodule update --init --recursive
+
 help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  kube (default)"
-	@echo "  clean"
+	@echo "  demo (default)  Builds all demos and places them in bin/"
+	@echo "  clean           Deletes temporary files from the project directory"
 	@echo "  format"
 	@echo "  run"
 	@echo ""

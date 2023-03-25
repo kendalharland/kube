@@ -1,6 +1,8 @@
 #include <kube/model.h>
 #include <kube/window.h>
 
+#define IDENTITY_MAT4 glm::mat4(1.f)
+
 namespace kube {
 
 // TODO: Delete.
@@ -21,12 +23,12 @@ void Model::SetRotation(float radians, glm::vec3 axis) {
 }
 
 void Model::RotateRight(float t) {
-  auto angle = glm::radians(ROTATIONS_PER_SEC) * t;
+  auto angle = glm::radians(3.0f) * t;
   rotation_ = glm::rotate(rotation_, angle, -Y_AXIS);
 }
 
 void Model::RotateLeft(float t) {
-  auto angle = glm::radians(ROTATIONS_PER_SEC) * t;
+  auto angle = glm::radians(3.0f) * t;
   rotation_ = glm::rotate(rotation_, angle, Y_AXIS);
 }
 
