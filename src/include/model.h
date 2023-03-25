@@ -22,7 +22,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <constants.hpp>
-#include <opengl.h>
+#include <graphics.h>
 #include <window.h>
 
 #define ROTATIONS_PER_SEC 90.f

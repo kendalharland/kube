@@ -26,9 +26,9 @@
 #include <animation.hpp>
 #include <camera.h>
 #include <constants.hpp>
+#include <graphics.h>
 #include <logging.h>
 #include <model.h>
-#include <opengl.h>
 #include <player.h>
 #include <shapes.cpp>
 #include <window.h>

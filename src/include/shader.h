@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// TODO: Move this to a opengl subdirectory with opengl.h and call GL primitives
+// TODO: Move this to a opengl subdirectory with graphics.h and call GL primitives
 // directly.
 
 #ifndef _SHADER_HPP

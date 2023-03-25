@@ -30,6 +30,8 @@ namespace kube {
 namespace graphics {
 
 class Mesh;
+class Texture;
+class Vertex;
 
 void LoadMesh(Mesh &mesh);
 void UnloadMesh(Mesh &mesh);

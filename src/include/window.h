@@ -24,9 +24,9 @@
 #include <GLFW/glfw3.h>
 
 #include <camera.h>
+#include <graphics.h>
 #include <logging.h>
 #include <model.h>
-#include <opengl.h>
 #include <singleton.h>
 
 namespace kube {

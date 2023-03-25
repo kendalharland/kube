@@ -18,8 +18,8 @@
 #define _SHAPES_H
 
 #include <constants.hpp>
+#include <graphics.h>
 #include <model.h>
-#include <opengl.h>
 #include <shader.h>
 
 #include <glm/glm.hpp>
