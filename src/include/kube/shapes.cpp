@@ -59,15 +59,15 @@ static const GLfloat cube_colors_[] = {
   1, 1, 0,   0, 1, 0,   0, 0, 0,   1, 0, 0, // v1,v6,v7,v2 (left)
   0, 0, 0,   0, 0, 1,   1, 0, 1,   1, 0, 0, // v7,v4,v3,v2 (bottom)
   0, 0, 1,   0, 0, 0,   0, 1, 0,   0, 1, 1  // v4,v7,v6,v5 (back)
-}; 
+};
 
 static unsigned int cube_indices_[]  = {
-    0, 1, 2,   2, 3, 0, // front                        
-    4, 5, 6,   6, 7, 4, // right                        
-    8, 9,10,  10,11, 8, // top                          
-   12,13,14,  14,15,12, // left                         
-   16,17,18,  18,19,16, // bottom                       
-   20,21,22,  22,23,20  // back
+   0, 1, 2,   2, 3, 0, // front (v0, v1, v2) (v2, v3, v0)
+   4, 5, 6,   6, 7, 4, // right (v0, v3, v4) ()
+   8, 9,10,  10,11, 8, // top
+  12,13,14,  14,15,12, // left
+  16,17,18,  18,19,16, // bottom
+  20,21,22,  22,23,20  // back
 };
 // clang-format on
 
@@ -76,7 +76,7 @@ Model Cube() {
   std::vector<graphics::Vertex> vertices;
   std::vector<unsigned int> indices;
 
-  for (int i = 0; i < sizeof(cube_vertices_); i += 3) {
+  for (size_t i = 0; i < sizeof(cube_vertices_) / sizeof(GLfloat); i += 3) {
     graphics::Vertex v;
     v.position.x = cube_vertices_[i];
     v.position.y = cube_vertices_[i + 1];
@@ -88,7 +88,7 @@ Model Cube() {
     vertices.push_back(v);
   }
 
-  for (int i = 0; i < sizeof(cube_indices_); i++) {
+  for (size_t i = 0; i < sizeof(cube_indices_) / sizeof(unsigned int); i++) {
     indices.push_back(cube_indices_[i]);
   }
 
