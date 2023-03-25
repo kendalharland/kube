@@ -12,3 +12,11 @@
 8. Store mesh directly on model since vertices and indices never change.
 9. Load models directly from obj files
 10. Render texture coordinates and normals (read about these too).
+11. Move Cube demo and model demo to examples/ directory and 
+    add Makefile entries for both.
+12. Make the window's background color configurable.
+13. Define ShaderProgram struct to pass to Graphics::CompileShaderProgram
+14. Create a Clock/Stopwatch abstraction.
+15. Replace Camera::MVP with Camera::GetProjectionMatrix(Mesh&);
+16. Move camera into Window with Window::SetCamera
+17. Add Window::DrawModel now that camera is stored Window.
