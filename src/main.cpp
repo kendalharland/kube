@@ -25,26 +25,18 @@
 
 using namespace glm;
 
-#include <mesh.h>
-#include <player.h>
-#include <window.h>
-
 #include <animation.hpp>
-#include <assimp/Importer.hpp>
 #include <camera.cpp>
 #include <constants.hpp>
+#include <logging.h>
+#include <mesh.h>
 #include <model.hpp>
+#include <player.h>
 #include <shapes.cpp>
 #include <vertex_shader.cpp>
+#include <window.h>
 
-void DrawModel(kube::Camera camera, kube::DeprecatedModel *model, kube::ModelShader &shader) {
-  glm::mat4 translation = glm::translate(IDENTITY_MAT4, model->Center());
-  glm::mat4 rotation = model->Rotation();
-  glm::mat4 scale = model->Scale();
-  glm::mat4 mvp = camera.MVP(translation * rotation * scale);
-  shader.Draw(mvp, model->Vertices(), model->NumVertices(), model->Colors(), model->NumColors(),
-              model->Indices(), model->NumIndices());
-}
+void DrawModel(kube::Camera camera, kube::DeprecatedModel *model, kube::ModelShader &shader) {}
 
 int main(void) {
   auto window = kube::Window::GetInstance();
@@ -55,7 +47,10 @@ int main(void) {
       [&camera = camera](double xoffset, double yoffset) { camera.Zoom(yoffset > 0); });
 
   // Must come after the VertexArray above is created.
-  auto shader = kube::ModelShader();
+  auto shader = kube::Shader();
+  shader.CompileVertexShader("src/shaders/TransformVertexShader.vertexshader");
+  shader.CompileFragmentShader("src/shaders/ColorFragmentShader.fragmentshader");
+  shader.LinkProgram();
 
   double currentTime = glfwGetTime();
   double lastTime = currentTime;
@@ -65,6 +60,9 @@ int main(void) {
   auto state = kube::PlayerIdleState();
   kube::Player player(&model, &state);
 
+  auto mesh = model.CreateMesh();
+  window->opengl()->SetupMesh(*mesh);
+
   do {
     currentTime = glfwGetTime();
     deltaTime = currentTime - lastTime;
@@ -73,11 +71,18 @@ int main(void) {
     player.HandleInput(window->inner());
     player.Update(deltaTime);
     window->Clear();
-    DrawModel(camera, &model, shader);
+
+    glm::mat4 translation = glm::translate(IDENTITY_MAT4, model.Center());
+    glm::mat4 rotation = model.Rotation();
+    glm::mat4 scale = model.Scale();
+    glm::mat4 mvp = camera.MVP(translation * rotation * scale);
+    window->opengl()->DrawMesh(*mesh, shader, mvp);
+
     window->Update();
   } // Check if the ESC key was pressed or the window was closed
   while (!window->ShouldClose());
 
+  window->opengl()->TeardownMesh(*mesh);
   window->Close();
 
   return 0;

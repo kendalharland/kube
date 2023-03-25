@@ -26,8 +26,9 @@ namespace kube {
 
 struct Vertex {
   glm::vec3 position;
-  glm::vec3 normal;
-  glm::vec2 tex_coords;
+  glm::vec3 colors;
+  // glm::vec3 normal;
+  // glm::vec2 tex_coords;
 };
 
 struct Texture {
@@ -38,14 +39,19 @@ struct Texture {
 class Mesh {
 
 public:
+  Mesh() {}
+
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
        std::vector<Texture> textures)
       : vertices(vertices), indices(indices), textures(textures) {}
 
-  void Draw(Shader &shader);
   void SetVAO(unsigned int VAO);
   void SetVBO(unsigned int VBO);
   void SetEBO(unsigned int EBO);
+  void SetCBO(unsigned int CBO);
+  unsigned int GetVAO();
+  unsigned int GetVBO();
+  unsigned int GetEBO();
 
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;

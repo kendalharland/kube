@@ -23,8 +23,6 @@
 #include <singleton.h>
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 
 namespace kube {
 
@@ -45,6 +43,8 @@ public:
   void Clear();
   void Update();
   void SetupMesh(Mesh &mesh);
+  void TeardownMesh(Mesh &mesh);
+  void DrawMesh(Mesh &mesh, Shader &shader, glm::mat4 mvp);
 };
 
 }; // namespace kube

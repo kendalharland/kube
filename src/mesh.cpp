@@ -21,5 +21,8 @@ namespace kube {
 void Mesh::SetVAO(unsigned int VAO) { VAO_ = VAO; }
 void Mesh::SetVBO(unsigned int VBO) { VBO_ = VBO; }
 void Mesh::SetEBO(unsigned int EBO) { EBO_ = EBO; }
+unsigned int Mesh::GetVAO() { return VAO_; }
+unsigned int Mesh::GetVBO() { return VBO_; }
+unsigned int Mesh::GetEBO() { return EBO_; }
 
 }; // namespace kube

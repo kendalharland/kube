@@ -14,19 +14,36 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+// TODO: Move this to a opengl subdirectory with opengl.h and call GL primitives
+// directly.
+
 #ifndef _SHADER_HPP
 #define _SHADER_HPP
 
-#include <GL/glew.h>
+#include <glm/glm.hpp>
 
 #include <iostream>
 #include <string>
 
 namespace kube {
 
-class Shader {};
+typedef unsigned int GLuint;
 
-GLuint CompileShader(std::string filename, uint gl_shader_type);
+// Represents a shader program.
+class Shader {
+public:
+  ~Shader();
+  void CompileVertexShader(std::string filename);
+  void CompileFragmentShader(std::string filename);
+  void LinkProgram();
+  void SetMVP(glm::mat4 mvp);
+  void Use();
+
+private:
+  GLuint program_id_;
+  GLuint vertex_shader_id_;
+  GLuint fragment_shader_id_;
+};
 
 GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename);
 

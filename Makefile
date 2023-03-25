@@ -45,12 +45,6 @@ clean:
 
 build: dependencies format
 	@echo "=== Building $(TARGET) ($(config)) ==="
-	@echo "==="
-	@echo "=== WARNING: If you see link errors, try running the following commands and rebuilding."
-	@echo "==="
-	@echo "===     export LD_LIBRARY_PATH=$(LIBRARY_PATH)"
-	@echo "===     export LIBRARY_PATH=$(LIBRARY_PATH)"
-	@echo "==="
 	$(CXX) src/*.cpp -o $(TARGET) $(CXXFLAGS) 
 
 clean-build: clean build

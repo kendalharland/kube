@@ -17,8 +17,6 @@
 #ifndef _WINDOW_HPP
 #define _WINDOW_HPP
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <opengl.h>
 #include <singleton.h>
 
@@ -37,7 +35,10 @@ public:
   void SetScrollCallback(std::function<void(double, double)> callback);
   bool ShouldClose();
   void Close();
+
+  // TODO: Delete these.
   GLFWwindow *inner() { return opengl_->window_; }
+  OpenGLContext *opengl() { return opengl_; }
 
 private:
   bool is_open_;

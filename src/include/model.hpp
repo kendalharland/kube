@@ -17,12 +17,11 @@
 #ifndef _MODEL_HPP
 #define _MODEL_HPP
 
-#include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "constants.hpp"
+#include <constants.hpp>
+#include <mesh.h>
 
 #define ROTATIONS_PER_SEC 90.f
 
@@ -50,6 +49,25 @@ public:
 
   // Constructs a Model from the given Options.
   explicit DeprecatedModel(Options options) : _options(options) {}
+
+  Mesh *CreateMesh() {
+    auto mesh = new Mesh();
+    for (int i = 0; i < _options.numVertices; i += 3) {
+      Vertex v;
+      v.position.x = _options.vertices[i];
+      v.position.y = _options.vertices[i + 1];
+      v.position.z = _options.vertices[i + 2];
+
+      v.colors.x = _options.colors[i];
+      v.colors.y = _options.colors[i + 1];
+      v.colors.z = _options.colors[i + 2];
+      mesh->vertices.push_back(v);
+    }
+    for (int i = 0; i < _options.numIndices; i++) {
+      mesh->indices.push_back(_options.indices[i]);
+    }
+    return mesh;
+  }
 
   const glm::vec3 Center() { return _options.center; }
 

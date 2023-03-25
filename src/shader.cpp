@@ -24,13 +24,15 @@
 #include <sstream>
 #include <string>
 #include <vector>
-using namespace std;
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <stdlib.h>
 #include <string.h>
 
 namespace kube {
+
+Shader::~Shader() { glDeleteProgram(program_id_); }
 
 GLuint CompileShader(std::string filename, uint gl_shader_type) {
   KUBE_INFO("Compiling shader " + filename);
@@ -67,22 +69,18 @@ GLuint CompileShader(std::string filename, uint gl_shader_type) {
   return shader_id;
 }
 
-GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename) {
-  // Create the shaders
-  GLuint vertex_shader_id = CompileShader(vertex_filename, GL_VERTEX_SHADER);
-  GLuint fragment_shader_id = CompileShader(fragment_filename, GL_FRAGMENT_SHADER);
+void Shader::LinkProgram() {
+  KUBE_INFO("Linking shader program");
 
-  // Link the program
-  KUBE_INFO("Linking program");
   GLuint program_id = glCreateProgram();
-  glAttachShader(program_id, vertex_shader_id);
-  glAttachShader(program_id, fragment_shader_id);
+  // TODO: What if these ids are null?
+  glAttachShader(program_id, vertex_shader_id_);
+  glAttachShader(program_id, fragment_shader_id_);
   glLinkProgram(program_id);
 
+  KUBE_INFO("Checking for link errors");
   GLint result = GL_FALSE;
   int info_log_length;
-
-  // Check the program
   glGetProgramiv(program_id, GL_LINK_STATUS, &result);
   glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &info_log_length);
   if (info_log_length > 0) {
@@ -91,13 +89,30 @@ GLuint LoadShaders(const char *vertex_filename, const char *fragment_filename) {
     KUBE_ERROR(std::string(err.begin(), err.end()));
   }
 
-  glDetachShader(program_id, vertex_shader_id);
-  glDetachShader(program_id, fragment_shader_id);
+  KUBE_INFO("Detaching shaders");
+  glDetachShader(program_id, vertex_shader_id_);
+  glDetachShader(program_id, fragment_shader_id_);
 
-  glDeleteShader(vertex_shader_id);
-  glDeleteShader(fragment_shader_id);
+  KUBE_INFO("Deleting shaders");
+  glDeleteShader(vertex_shader_id_);
+  glDeleteShader(fragment_shader_id_);
 
-  return program_id;
+  program_id_ = program_id;
 }
+
+void Shader::CompileVertexShader(std::string filename) {
+  vertex_shader_id_ = CompileShader(filename, GL_VERTEX_SHADER);
+}
+
+void Shader::CompileFragmentShader(std::string filename) {
+  fragment_shader_id_ = CompileShader(filename, GL_FRAGMENT_SHADER);
+}
+
+void Shader::SetMVP(glm::mat4 mvp) {
+  GLuint mvp_id_ = glGetUniformLocation(program_id_, "MVP");
+  glUniformMatrix4fv(mvp_id_, 1, GL_FALSE, &mvp[0][0]);
+}
+
+void Shader::Use() { glUseProgram(program_id_); }
 
 } // namespace kube

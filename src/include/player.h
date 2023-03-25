@@ -17,8 +17,6 @@
 #ifndef _PLAYER_HPP
 #define _PLAYER_HPP
 
-#include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 
 #include "animation.hpp"
