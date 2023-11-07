@@ -1,5 +1,7 @@
 # kube
 
+![https://giphy.com/gifs/6sgx3EvsKJJYwJsvnN](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjJ1eWs1MzhqcGNtajNpeWQzeG42YTlsMmw3eHozNDZucDdlMHl6bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/6sgx3EvsKJJYwJsvnN/giphy.gif)
+
 This is a project I started to learn OpenGL and maybe one day make a game engine
 that I could use for future C++ games. At the moment all it does is render a few
 free model assets with different shaders. Free free to use it as an example for
