@@ -29,7 +29,7 @@ BIN_PATH     := $(SOURCE_ROOT)/bin
 
 CXX      := clang++
 CXXFLAGS += -std=c++20 -Wall
-INC      := -I./src/include -I./third_party/assimp/include
+INC      := -I./src/include -I./third_party/assimp/include -I./third_party/wren/src/include
 
 ifeq ($(config),debug)
 	CXXFLAGS += -g -O0
@@ -45,19 +45,20 @@ ifeq ($(UNAME_S),Darwin)
 	LINKSHARED := -dynamiclib
 	CXXFLAGS  += -I/opt/homebrew/include -I/opt/homebrew/opt/llvm/include
 	LDFLAGS   += -L/opt/homebrew/lib -L$(SOURCE_ROOT)/third_party/assimp/bin \
+							 -L$(SOURCE_ROOT)/third_party/wren/bin \
 	             -L$(LIBRARY_PATH) -Wl,-rpath,@executable_path/../src/lib
-	LIBS      := -lglfw -lGLEW -lassimp -lm -framework OpenGL
+	LIBS      := -lglfw -lGLEW -lassimp -lwren -lm -framework OpenGL
 else
 	SHLIB_EXT  := so
 	LINKSHARED := -shared
 	LDFLAGS   += -L$(LIBRARY_PATH)
-	LIBS      := -lglfw -lGLEW -lGL -lm -lassimp
+	LIBS      := -lglfw -lGLEW -lGL -lm -lassimp -lwren
 endif
 
 TARGET_OBJ   := $(LIBRARY_PATH)libkube.o
 TARGET_LIB   := $(LIBRARY_PATH)libkube.$(SHLIB_EXT)
 
-.PHONY: default pull-submodules clean help format build build3p assimp demo demo-cube demo-creatures demo-car clean-build
+.PHONY: default pull-submodules clean help format build build3p assimp wren demo demo-cube demo-creatures demo-car demo-wren clean-build
 
 default: demo
 
@@ -72,7 +73,14 @@ assimp:
 	# Copy the real dylib and its symlinks
 	cp -av third_party/assimp/bin/libassimp*.dylib $(LIBRARY_PATH)
 
-build3p: assimp
+wren:
+	@echo "=== Building third_party/wren ==="
+	cd third_party/wren/projects/make.mac; make -j4
+	@mkdir -p $(LIBRARY_PATH)
+	# Copy the real dylib and its symlinks
+	cp -av third_party/wren/lib/libwren*.dylib $(LIBRARY_PATH)
+
+build3p: assimp wren
 	@echo "=="
 
 clean:
@@ -106,6 +114,7 @@ demo: build
 	$(CXX) demos/car/main.cpp       -o $(BIN_PATH)/car       $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
 	$(CXX) demos/cube/main.cpp      -o $(BIN_PATH)/cube      $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
 	$(CXX) demos/creatures/main.cpp -o $(BIN_PATH)/creatures $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
+	$(CXX) demos/wren/main.cpp      -o $(BIN_PATH)/wren      $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
 
 demo-cube: demo
 	./bin/cube
@@ -115,6 +124,9 @@ demo-creatures: demo
 
 demo-car: demo
 	./bin/car
+
+demo-wren: demo
+	./bin/wren
 
 help:
 	@echo "Usage: make [target]"
