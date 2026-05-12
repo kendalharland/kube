@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/kendalharland/Code/kube/third_party/assimp/cmake_install.cmake",
+		"/Users/kendalharland/Code/kube/third_party/assimp/code/cmake_install.cmake",
+		"/Users/kendalharland/Code/kube/third_party/assimp/test/cmake_install.cmake",
+		"/Users/kendalharland/Code/kube/third_party/assimp/test/headercheck/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
