@@ -18,12 +18,14 @@
 #include <stdlib.h>
 
 #include <kube/camera.h>
-#include <kube/actor.h>
 #include <kube/logging.h>
 #include <kube/mesh.h>
 #include <kube/model.h>
 #include <kube/shapes.cpp>
+#include <kube/time.h>
 #include <kube/window.h>
+
+#include "controls.hpp"
 
 #define TITLE "Car"
 #define SCREEN_WIDTH 1000
@@ -37,14 +39,57 @@ int main(void) {
   window->Open(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
   window->SetCamera(&camera);
 
-  shader_ptr shader = Shader::DiffuseShader("src/shaders/");
-  auto asset = "demos/car/assets/models/cars/Toyoyo Highlight.fbx";
-  auto model = kube::Model::LoadFromFile(asset);
+  // clang-format off
+  // TODO: Load assets from file.
+  std::string assets[] = {
+    "demos/car/assets/models/cars/docLorean.obj",
+    "demos/car/assets/models/cars/Tristar Racer.obj",
+    "demos/car/assets/models/cars/Toyoyo Highlight.obj",
+    "demos/car/assets/models/cars/Landyroamer.obj",
+    "demos/car/assets/models/cars/Beatall.obj",
+  };
+  // clang-format on
 
+  shader_ptr shader = Shader::DiffuseShader("src/shaders");
+  auto light_position = glm::vec4(1, 1, 1, 1);
+
+  std::vector<std::shared_ptr<kube::Model>> models;
+  for (auto asset : assets) {
+    auto model = kube::Model::LoadFromFile(asset);
+    models.push_back(std::move(model));
+  }
+
+  int active_model = 0;
+
+  kube::Actor actor;
+  actor.SetModel(models.at(active_model));
+  actor.SetState(std::make_unique<IdleState>());
+
+  kube::Stopwatch stopwatch;
+  stopwatch.Start();
+
+  float x = 0;
   do {
+    auto dt = stopwatch.Lap();
+
+    // Add an orbiting light source to show off the shader.
+    x += dt;
+    light_position.y = sin(x) * 2;
+    light_position.z = sin(x) * 2;
+    shader->SetUniformVec4("light_position", light_position);
+
+    // Press space to rotate through models.
+    if (window->IsKeyPressed(GLFW_KEY_SPACE)) {
+      active_model = (active_model + 1) % models.size();
+      actor.SetModel(models.at(active_model));
+    }
+
+    actor.HandleInput(window);
+    actor.Update(dt);
     window->Clear();
-    model->Draw(&camera, shader);
+    actor.GetModel()->Draw(&camera, shader);
     window->Update();
+
   } while (!window->ShouldClose());
 
   window->Close();

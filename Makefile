@@ -17,28 +17,47 @@
 # To install dependencies:
 # * libglfw: https://www.glfw.org/
 # * libGLEW: https://glew.sourceforge.net/
-# * libGL: https://dri.freedesktop.org/wiki/libGL/
+# * libGL:   https://dri.freedesktop.org/wiki/libGL/
 
 ifndef config
 	config = release
 endif
 
+SOURCE_ROOT  := $(realpath ./)
+LIBRARY_PATH := $(SOURCE_ROOT)/src/lib/
+BIN_PATH     := $(SOURCE_ROOT)/bin
+
+CXX      := clang++
+CXXFLAGS += -std=c++20 -Wall
+INC      := -I./src/include -I./third_party/assimp/include
+
 ifeq ($(config),debug)
 	CXXFLAGS += -g -O0
+else
+	CXXFLAGS += -O2
 endif
 
-SOURCE_ROOT := $(realpath ./)
+# Detect OS (Darwin = macOS, otherwise assume Linux/Unix-like)
+UNAME_S := $(shell uname -s)
 
-LIBRARY_PATH=$(SOURCE_ROOT)/src/lib/
-LIBS := -lglfw -lGLEW -lGL -lm -lassimp
-INC := -I./src/include
-INC += -I./third_party/assimp/include
-CXX := clang++
-CXXFLAGS += -std=c++20 -Wall $(LIBS) $(INC)
+ifeq ($(UNAME_S),Darwin)
+	SHLIB_EXT  := dylib
+	LINKSHARED := -dynamiclib
+	CXXFLAGS  += -I/opt/homebrew/include -I/opt/homebrew/opt/llvm/include
+	LDFLAGS   += -L/opt/homebrew/lib -L$(SOURCE_ROOT)/third_party/assimp/bin \
+	             -L$(LIBRARY_PATH) -Wl,-rpath,@executable_path/../src/lib
+	LIBS      := -lglfw -lGLEW -lassimp -lm -framework OpenGL
+else
+	SHLIB_EXT  := so
+	LINKSHARED := -shared
+	LDFLAGS   += -L$(LIBRARY_PATH)
+	LIBS      := -lglfw -lGLEW -lGL -lm -lassimp
+endif
 
-TARGET := $(LIBRARY_PATH)libkube.o
+TARGET_OBJ   := $(LIBRARY_PATH)libkube.o
+TARGET_LIB   := $(LIBRARY_PATH)libkube.$(SHLIB_EXT)
 
-.PHONY: default pull-submodules clean help format
+.PHONY: default pull-submodules clean help format build build3p assimp demo demo-cube demo-creatures demo-car clean-build
 
 default: demo
 
@@ -49,20 +68,29 @@ format:
 assimp:
 	@echo "=== Building third_party/assimp ==="
 	cd third_party/assimp; cmake CMakeLists.txt; make -j4
-	cp -av third_party/assimp/bin/libassimp.so* $(LIBRARY_PATH)
+	@mkdir -p $(LIBRARY_PATH)
+	# Copy the real dylib and its symlinks
+	cp -av third_party/assimp/bin/libassimp*.dylib $(LIBRARY_PATH)
 
 build3p: assimp
 	@echo "=="
 
 clean:
 	@echo "=== Removing temporary files ==="
-	rm -f $(TARGET)
-	rm -f ./bin/*
+	rm -f $(TARGET_OBJ) $(TARGET_LIB)
+	rm -f $(BIN_PATH)/*
 
-build: build3p format
-	@echo "=== Building $(TARGET) ($(config)) ==="
-	$(CXX) -c -o $(TARGET) src/kube.cpp $(CXXFLAGS) -fPIC
-	$(CXX) -shared -o $(LIBRARY_PATH)libkube.so $(TARGET)
+$(TARGET_OBJ): src/kube.cpp
+	@mkdir -p $(LIBRARY_PATH)
+	@echo "=== Compiling libkube object ($(config)) ==="
+	$(CXX) -c -o $@ $< $(CXXFLAGS) $(INC) -fPIC
+
+$(TARGET_LIB): $(TARGET_OBJ)
+	@echo "=== Linking $(TARGET_LIB) ($(config)) ==="
+	$(CXX) $(LINKSHARED) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+build: build3p format $(TARGET_LIB)
+	@echo "=== Build complete: $(TARGET_LIB) ==="
 
 clean-build: clean build
 	@echo "=== Performing a clean build ==="
@@ -72,10 +100,12 @@ pull-submodules:
 	git submodule update --init --recursive
 
 demo: build
-	@echo "=== Running $(TARGET) ($(config)) ==="
-	$(CXX) demos/car/main.cpp -o bin/car $(CXXFLAGS) -lkube -Idemos/common/
-	$(CXX) demos/cube/main.cpp -o bin/cube $(CXXFLAGS) -lkube -Idemos/common/
-	$(CXX) demos/creatures/main.cpp -o bin/creatures $(CXXFLAGS) -lkube -Idemos/common/
+	@mkdir -p $(BIN_PATH)
+	@echo "=== Building demos ($(config)) ==="
+	# Ensure the linker finds libkube in src/lib
+	$(CXX) demos/car/main.cpp       -o $(BIN_PATH)/car       $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
+	$(CXX) demos/cube/main.cpp      -o $(BIN_PATH)/cube      $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
+	$(CXX) demos/creatures/main.cpp -o $(BIN_PATH)/creatures $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
 
 demo-cube: demo
 	./bin/cube
@@ -90,9 +120,10 @@ help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  demo (default)  Builds all demos and places them in bin/"
-	@echo "  clean           Deletes temporary files from the project directory"
-	@echo "  format"
-	@echo "  run"
-	@echo ""
-	@echo "For more information, see https://github.com/premake/premake-core/wiki"
+	@echo "  demo (default)   Builds all demos and places them in bin/"
+	@echo "  clean            Deletes temporary files from the project directory"
+	@echo "  format           Runs clang-format on all source files"
+	@echo "  build            Builds libkube shared library"
+	@echo "  clean-build      Cleans and then builds"
+	@echo "  pull-submodules  Initializes/updates git submodules"
+

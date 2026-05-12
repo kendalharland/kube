@@ -39,7 +39,7 @@ void StringReplace(std::string *input, std::string old, std::string rep) {
 }
 
 std::shared_ptr<Model> ModelLoader::LoadFromFile(std::string filename) {
-  KUBE_INFO << "Loading scene from file " << filename;
+  KUBE_INFO << "Loading model from file " << filename;
 
   directory_ = filename.substr(0, filename.find_last_of('/'));
   Assimp::Importer importer;

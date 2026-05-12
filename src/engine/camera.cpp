@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <algorithm>
+#include <numbers>
 
 #include <kube/camera.h>
 
@@ -42,7 +43,7 @@ glm::mat4 Camera::ComputeMVP(const glm::mat4 model) const {
 
 void Camera::Zoom(bool in) {
   fov_ += in ? -zoomSpeed_ : zoomSpeed_;
-  fov_ = std::min(fov_, (float)M_PI_4f32);
+  fov_ = std::min(fov_, (float)std::numbers::pi);
   fov_ = std::max(fov_, (float)M_2_PI);
 }
 

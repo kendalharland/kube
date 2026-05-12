@@ -43,18 +43,18 @@ int main(void) {
   // TODO: Load assets from file.
   std::string assets[] = {
     "demos/creatures/assets/creatures/crocsoldier/Crocsoldier.obj",
-    "demos/creatures/assets/creatures/lizardbomb/lizardbomb-0.obj",
-    "demos/creatures/assets/creatures/lizardbomb/lizardbomb-1.obj",
-    "demos/creatures/assets/creatures/lizardbomb/lizardbomb-2.obj",
-    "demos/creatures/assets/creatures/lizardbomb/lizardbomb-3.obj",
-    "demos/creatures/assets/creatures/lizardmonitor/lizardmonitor-0.obj",
-    "demos/creatures/assets/creatures/lizardmonitor/lizardmonitor-1.obj",
-    "demos/creatures/assets/creatures/snakegod/snakegod-0.obj",
-    "demos/creatures/assets/creatures/snakeking/snakeking-0.obj",
-    "demos/creatures/assets/creatures/snakeking/snakeking-1.obj",
-    "demos/creatures/assets/creatures/snakeking/snakeking-2.obj",
-    "demos/creatures/assets/creatures/snakeking/snakeking-3.obj",
-    "demos/creatures/assets/creatures/snakewizard/Snakewizard.obj",
+    // "demos/creatures/assets/creatures/lizardbomb/lizardbomb-0.obj",
+    // "demos/creatures/assets/creatures/lizardbomb/lizardbomb-1.obj",
+    // "demos/creatures/assets/creatures/lizardbomb/lizardbomb-2.obj",
+    // "demos/creatures/assets/creatures/lizardbomb/lizardbomb-3.obj",
+    // "demos/creatures/assets/creatures/lizardmonitor/lizardmonitor-0.obj",
+    // "demos/creatures/assets/creatures/lizardmonitor/lizardmonitor-1.obj",
+    // "demos/creatures/assets/creatures/snakegod/snakegod-0.obj",
+    // "demos/creatures/assets/creatures/snakeking/snakeking-0.obj",
+    // "demos/creatures/assets/creatures/snakeking/snakeking-1.obj",
+    // "demos/creatures/assets/creatures/snakeking/snakeking-2.obj",
+    // "demos/creatures/assets/creatures/snakeking/snakeking-3.obj",
+    // "demos/creatures/assets/creatures/snakewizard/Snakewizard.obj",
   };
   // clang-format on
 

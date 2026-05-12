@@ -36,17 +36,14 @@
 namespace kube {
 namespace graphics {
 
-void ReadFile(std::string filename, const char **contents) {
-  std::string shader_code;
-  std::ifstream reader(filename, std::ios::in);
-  if (!reader.is_open()) {
+std::string ReadFile(std::string filename) {
+  std::ifstream file(filename, std::ios::in);
+  if (!file.is_open()) {
     throw std::runtime_error("failed to open shader file " + filename);
   }
-  std::stringstream stream;
-  stream << reader.rdbuf();
-  shader_code = stream.str();
-  reader.close();
-  *contents = shader_code.c_str();
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
 }
 
 void EnsureProgramLinked(GLuint program_id) {
@@ -74,9 +71,9 @@ void EnsureShaderCompiled(GLuint shader_id) {
 }
 
 void CompileShader(GLuint shader_id, std::string filename) {
-  char const *source;
-  ReadFile(filename, &source);
-  glShaderSource(shader_id, 1, &source, NULL);
+  auto source = ReadFile(filename);
+  auto source_c_str = source.c_str();
+  glShaderSource(shader_id, 1, &source_c_str, NULL);
   glCompileShader(shader_id);
   EnsureShaderCompiled(shader_id);
 }
