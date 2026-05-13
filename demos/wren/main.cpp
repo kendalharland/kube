@@ -26,14 +26,81 @@
 #include <kube/time.h>
 #include <kube/window.h>
 
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
 #include "controls.hpp"
-#include "wren.h"
+#include "wren.hpp"
 
 #define TITLE "Rotating Cube"
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 800
 
+std::string ReadFile(std::string filename) {
+  std::ifstream file(filename, std::ios::in);
+  if (!file.is_open()) {
+    throw std::runtime_error("failed to open shader file " + filename);
+  }
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
+}
+
+
+void wrenWriteFn(WrenVM* vm, const char* text) {
+  printf("%s", text);
+}
+
+void wrenErrorFn(WrenVM* vm, WrenErrorType errorType,
+             const char* module, const int line,
+             const char* msg)
+{
+  switch (errorType)
+  {
+    case WREN_ERROR_COMPILE:
+    {
+      printf("[%s line %d] [Error] %s\n", module, line, msg);
+    } break;
+    case WREN_ERROR_STACK_TRACE:
+    {
+      printf("[%s line %d] in %s\n", module, line, msg);
+    } break;
+    case WREN_ERROR_RUNTIME:
+    {
+      printf("[Runtime Error] %s\n", msg);
+    } break;
+  }
+}
+
+
+int initializeWren() {
+  WrenConfiguration config;
+  wrenInitConfiguration(&config);
+  config.writeFn = &wrenWriteFn;
+  config.errorFn = &wrenErrorFn;
+  WrenVM* vm = wrenNewVM(&config);
+
+  auto wren_source = ReadFile("demos/wren/main.wren");
+  WrenInterpretResult result = wrenInterpret(vm, "main", wren_source.c_str());
+
+  switch (result) {
+  case WREN_RESULT_COMPILE_ERROR:
+    { printf("Compile Error!\n"); } break;
+  case WREN_RESULT_RUNTIME_ERROR:
+    { printf("Runtime Error!\n"); } break;
+  case WREN_RESULT_SUCCESS:
+    { printf("Success!\n"); } break;
+  }
+  wrenFreeVM(vm);
+  return 0;
+}
+
 int main(void) {
+
+  initializeWren();
+
   using namespace kube::graphics;
   
   kube::Camera camera;
