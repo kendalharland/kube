@@ -64,6 +64,20 @@ void openWindow(int width, int height, char *title) {
 
 // -- Wren handlers
 
+WrenLoadModuleResult wrenLoadModule(WrenVM* vm, const char* name) {
+  WrenLoadModuleResult result = {0};
+  char fullname[32];
+  if (snprintf(fullname, 32, "demos/wren/%s.wren", name) < 0) {
+    // panic.
+  }
+
+  auto source = kube::fs::readFile(fullname);
+  char* c_source = new char[source.length()+1];
+  std::strcpy(c_source, source.c_str());
+  result.source = c_source;
+  return result;
+}
+
 void wrenRunGame(WrenVM *vm) {
   using namespace kube::graphics;
 
