@@ -54,3 +54,7 @@ dkms.conf
 
 # Editor files
 .vscode/* 
+
+# Third party files
+third_party/assimp/bin/unit
+third_party/assimp/include/assimp/revision.h

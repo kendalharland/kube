@@ -53,6 +53,7 @@ void wrenWriteFn(WrenVM* vm, const char* text) {
   printf("%s", text);
 }
 
+void runGameLoop(WrenVM* vm);
 void wrenErrorFn(WrenVM* vm, WrenErrorType errorType,
              const char* module, const int line,
              const char* msg)
@@ -74,16 +75,29 @@ void wrenErrorFn(WrenVM* vm, WrenErrorType errorType,
   }
 }
 
+WrenForeignMethodFn wrenBindForeignMethod(
+    WrenVM* vm,
+    const char* module,
+    const char* className,
+    bool isStatic,
+    const char* signature
+) {
+  return runGameLoop;
+}
 
 int initializeWren() {
   WrenConfiguration config;
   wrenInitConfiguration(&config);
   config.writeFn = &wrenWriteFn;
   config.errorFn = &wrenErrorFn;
+  config.bindForeignMethodFn = &wrenBindForeignMethod;
+
   WrenVM* vm = wrenNewVM(&config);
 
-  auto wren_source = ReadFile("demos/wren/main.wren");
-  WrenInterpretResult result = wrenInterpret(vm, "main", wren_source.c_str());
+  const char* module = "main";
+  auto source = ReadFile("demos/wren/main.wren");
+  
+  WrenInterpretResult result = wrenInterpret(vm, module, source.c_str());
 
   switch (result) {
   case WREN_RESULT_COMPILE_ERROR:
@@ -98,9 +112,10 @@ int initializeWren() {
 }
 
 int main(void) {
+  return initializeWren();
+}
 
-  initializeWren();
-
+void runGameLoop(WrenVM* vm) {
   using namespace kube::graphics;
   
   kube::Camera camera;
@@ -128,6 +143,4 @@ int main(void) {
   } while (!window->ShouldClose());
 
   window->Close();
-
-  return 0;
 }
