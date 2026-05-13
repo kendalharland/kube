@@ -42,6 +42,8 @@ public:
   void Close();
   void Clear();
   void Update();
+  Camera* GetCamera();
+  void SetCamera(std::unique_ptr<Camera> camera);
   void SetCamera(Camera *camera);
 
   bool IsKeyPressed(uint key);
@@ -50,7 +52,7 @@ public:
 private:
   bool is_open_;
   GLFWwindow *window_;
-  Camera *camera_;
+  std::unique_ptr<Camera> camera_;
   GLuint VAO_;
 };
 

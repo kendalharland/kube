@@ -26,10 +26,21 @@
 
 namespace kube {
 
-void Window::SetCamera(Camera *camera) {
+void Window::SetCamera(std::unique_ptr<Camera> camera) {
   assert(is_open_);
-  camera_ = camera;
+  camera_ = std::move(camera);
+  glfwSetScrollCallback(window_, Window::glfw_scroll); 
+}
+
+void Window::SetCamera(Camera *raw) {
+  assert(is_open_);
+  std::unique_ptr<Camera> camera(raw);
+  camera_ = std::move(camera);
   glfwSetScrollCallback(window_, Window::glfw_scroll);
+}
+
+Camera* Window::GetCamera() {
+  return camera_.get();
 }
 
 void Window::Open(int width, int height, const char *title) {

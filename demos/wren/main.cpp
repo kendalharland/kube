@@ -34,10 +34,6 @@
 #include "controls.hpp"
 #include "wren.hpp"
 
-#define TITLE "Rotating Cube"
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 800
-
 std::string ReadFile(std::string filename) {
   std::ifstream file(filename, std::ios::in);
   if (!file.is_open()) {
@@ -75,6 +71,51 @@ void wrenErrorFn(WrenVM* vm, WrenErrorType errorType,
   }
 }
 
+bool streq(std::string a, std::string b) {
+  return a.compare(b) == 0;
+}
+
+
+void runGameLoop(WrenVM* vm) {
+  using namespace kube::graphics;
+  
+  auto window = kube::Window::GetInstance();
+
+  shader_ptr shader = Shader::SimpleColorShader("src/shaders");
+  
+  kube::Actor actor;
+  actor.SetModel(kube::CreateCubeModel());
+  actor.SetState(std::make_unique<IdleState>());
+
+  kube::Stopwatch stopwatch;
+  stopwatch.Start();
+
+  do {
+    auto dt = stopwatch.Lap();
+
+    actor.HandleInput(window);
+    actor.Update(dt);
+    window->Clear();
+    actor.GetModel()->Draw(window->GetCamera(), shader);
+    window->Update();
+  } while (!window->ShouldClose());
+
+  window->Close();
+}
+
+void openWindow(int width, int height, char* title) {
+  auto window = kube::Window::GetInstance();
+  window->Open(width, height, title);
+  window->SetCamera(std::make_unique<kube::Camera>());
+}
+
+void wrenOpenWindow(WrenVM* vm) {
+  auto width = (int)wrenGetSlotDouble(vm, 1);
+  auto height = (int)wrenGetSlotDouble(vm, 2);
+  auto title = (char*)wrenGetSlotString(vm, 3);
+  openWindow(width, height, title);
+}
+
 WrenForeignMethodFn wrenBindForeignMethod(
     WrenVM* vm,
     const char* module,
@@ -82,8 +123,15 @@ WrenForeignMethodFn wrenBindForeignMethod(
     bool isStatic,
     const char* signature
 ) {
+  // Assume module is main
+  if (streq("Window", className)) {
+    if (isStatic) {
+      if (streq("open(_,_,_)", signature)) return wrenOpenWindow;
+    }
+  }
   return runGameLoop;
 }
+
 
 int initializeWren() {
   WrenConfiguration config;
@@ -113,34 +161,4 @@ int initializeWren() {
 
 int main(void) {
   return initializeWren();
-}
-
-void runGameLoop(WrenVM* vm) {
-  using namespace kube::graphics;
-  
-  kube::Camera camera;
-  auto window = kube::Window::GetInstance();
-  window->Open(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
-  window->SetCamera(&camera);
-
-  shader_ptr shader = Shader::SimpleColorShader("src/shaders");
-  
-  kube::Actor actor;
-  actor.SetModel(kube::CreateCubeModel());
-  actor.SetState(std::make_unique<IdleState>());
-
-  kube::Stopwatch stopwatch;
-  stopwatch.Start();
-
-  do {
-    auto dt = stopwatch.Lap();
-
-    actor.HandleInput(window);
-    actor.Update(dt);
-    window->Clear();
-    actor.GetModel()->Draw(&camera, shader);
-    window->Update();
-  } while (!window->ShouldClose());
-
-  window->Close();
 }
