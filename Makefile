@@ -68,7 +68,7 @@ format:
 
 assimp:
 	@echo "=== Building third_party/assimp ==="
-	cd third_party/assimp; cmake CMakeLists.txt; make -j4
+	cd third_party/assimp; cmake CMakeLists.txt -DASSIMP_BUILD_TESTS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF; make -j4
 	@mkdir -p $(LIBRARY_PATH)
 	# Copy the real dylib and its symlinks
 	cp -av third_party/assimp/bin/libassimp*.dylib $(LIBRARY_PATH)

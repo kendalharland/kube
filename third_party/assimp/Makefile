@@ -187,19 +187,6 @@ assimp/fast:
 	$(MAKE) $(MAKESILENT) -f code/CMakeFiles/assimp.dir/build.make code/CMakeFiles/assimp.dir/build
 .PHONY : assimp/fast
 
-#=============================================================================
-# Target rules for targets named unit
-
-# Build rule for target.
-unit: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit
-.PHONY : unit
-
-# fast build rule for target.
-unit/fast:
-	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/unit.dir/build.make test/CMakeFiles/unit.dir/build
-.PHONY : unit/fast
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -214,7 +201,6 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... uninstall"
 	@echo "... assimp"
-	@echo "... unit"
 .PHONY : help
 
 

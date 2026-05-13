@@ -12,16 +12,3 @@
 /Users/kendalharland/Code/kube/third_party/assimp/code/CMakeFiles/install.dir
 /Users/kendalharland/Code/kube/third_party/assimp/code/CMakeFiles/install/local.dir
 /Users/kendalharland/Code/kube/third_party/assimp/code/CMakeFiles/install/strip.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/CMakeFiles/unit.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/CMakeFiles/edit_cache.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/CMakeFiles/rebuild_cache.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/CMakeFiles/list_install_components.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/CMakeFiles/install.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/CMakeFiles/install/local.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/CMakeFiles/install/strip.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/headercheck/CMakeFiles/edit_cache.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/headercheck/CMakeFiles/rebuild_cache.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/headercheck/CMakeFiles/list_install_components.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/headercheck/CMakeFiles/install.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/headercheck/CMakeFiles/install/local.dir
-/Users/kendalharland/Code/kube/third_party/assimp/test/headercheck/CMakeFiles/install/strip.dir

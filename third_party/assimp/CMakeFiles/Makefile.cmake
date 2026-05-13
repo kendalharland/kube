@@ -21,8 +21,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "code/CMakeLists.txt"
   "include/assimp/config.h.in"
   "include/assimp/revision.h.in"
-  "test/CMakeLists.txt"
-  "test/headercheck/CMakeLists.txt"
   "/opt/homebrew/share/cmake/Modules/BasicConfigVersion-SameMajorVersion.cmake.in"
   "/opt/homebrew/share/cmake/Modules/CMakeCInformation.cmake"
   "/opt/homebrew/share/cmake/Modules/CMakeCXXInformation.cmake"
@@ -78,13 +76,10 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "include/assimp/config.h"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "code/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "test/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "test/headercheck/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/uninstall.dir/DependInfo.cmake"
   "code/CMakeFiles/assimp.dir/DependInfo.cmake"
-  "test/CMakeFiles/unit.dir/DependInfo.cmake"
   )

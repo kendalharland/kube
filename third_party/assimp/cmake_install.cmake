@@ -72,11 +72,6 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/Users/kendalharland/Code/kube/third_party/assimp/code/cmake_install.cmake")
 endif()
 
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/Users/kendalharland/Code/kube/third_party/assimp/test/cmake_install.cmake")
-endif()
-
 if(CMAKE_INSTALL_COMPONENT STREQUAL "libassimp6.0.5-dev" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/Users/kendalharland/Code/kube/third_party/assimp/assimp.pc")
 endif()
