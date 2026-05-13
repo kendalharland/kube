@@ -57,4 +57,5 @@ dkms.conf
 
 # Third party files
 third_party/assimp/bin/unit
+third_party/assimp/code/CmakeFiles/*
 third_party/assimp/include/assimp/revision.h
