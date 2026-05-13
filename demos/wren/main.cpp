@@ -38,11 +38,25 @@
 std::string ReadFile(std::string filename) {
   std::ifstream file(filename, std::ios::in);
   if (!file.is_open()) {
-    throw std::runtime_error("failed to open shader file " + filename);
+    throw std::runtime_error("failed to open file " + filename);
   }
   std::stringstream buffer;
   buffer << file.rdbuf();
   return buffer.str();
+}
+
+WrenLoadModuleResult wrenLoadModule(WrenVM* vm, const char* name) {
+  WrenLoadModuleResult result = {0};
+  char fullname[32];
+  if (snprintf(fullname, 32, "demos/wren/%s.wren", name) < 0) {
+    // panic.
+  }
+
+  auto source = ReadFile(fullname);
+  char* c_source = new char[source.length()+1];
+  std::strcpy(c_source, source.c_str());
+  result.source = c_source;
+  return result;
 }
 
 int main(void) {
@@ -52,6 +66,7 @@ int main(void) {
   config.errorFn = &wrenErrorFn;
   config.bindForeignMethodFn = &wrenBindForeignMethod;
   config.bindForeignClassFn = &wrenBindForeignClass;
+  config.loadModuleFn = &wrenLoadModule;
 
   WrenVM* vm = wrenNewVM(&config);
   const char* module = "main";

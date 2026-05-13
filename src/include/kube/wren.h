@@ -169,9 +169,9 @@ using BindingTable = std::unordered_map<std::string, NativeFn>;
 
 BindingTable& getBindingTable() {
   static BindingTable table = {
-    { makeKey("main", "Engine", "run()",        1),  &runGameLoop      },
-    { makeKey("main", "Window", "open(_,_,_)",  1),  &wrenOpenWindow   },
-    { makeKey("main", "Entity", "setModel(_)",  0),  &wrenEntitySetModel }
+    { makeKey("kube", "Engine", "run()",        1),  &runGameLoop      },
+    { makeKey("kube", "Window", "open(_,_,_)",  1),  &wrenOpenWindow   },
+    { makeKey("kube", "Entity", "setModel(_)",  0),  &wrenEntitySetModel }
   };
   return table;
 }
@@ -182,7 +182,7 @@ WrenForeignClassMethods wrenBindForeignClass(WrenVM *vm, const char *module,
 
   WrenForeignClassMethods methods{};
 
-  if (streq(module, "main") && streq(className, "Entity")) {
+  if (streq(module, "kube") && streq(className, "Entity")) {
     methods.allocate = wrenEntityAlloc;
     methods.finalize = wrenEntityDealloc;
   }
