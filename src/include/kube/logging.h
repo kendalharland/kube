@@ -29,7 +29,7 @@ enum LogLevel {
   Error,
 };
 
-#define KUBE_LOG(level) Logger().Log(__FILE__, __LINE__, level)
+#define KUBE_LOG(level) kube::Logger().Log(__FILE__, __LINE__, level)
 #define KUBE_DEBUG KUBE_LOG(kube::LogLevel::Debug)
 #define KUBE_INFO KUBE_LOG(kube::LogLevel::Info)
 #define KUBE_WARN KUBE_LOG(kube::LogLevel::Warn)

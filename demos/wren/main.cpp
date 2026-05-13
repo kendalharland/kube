@@ -25,6 +25,7 @@
 #include <kube/shapes.cpp>
 #include <kube/time.h>
 #include <kube/window.h>
+#include <kube/wren.h>
 
 #include <filesystem>
 #include <fstream>
@@ -44,107 +45,17 @@ std::string ReadFile(std::string filename) {
   return buffer.str();
 }
 
-
-void wrenWriteFn(WrenVM* vm, const char* text) {
-  printf("%s", text);
-}
-
-void runGameLoop(WrenVM* vm);
-void wrenErrorFn(WrenVM* vm, WrenErrorType errorType,
-             const char* module, const int line,
-             const char* msg)
-{
-  switch (errorType)
-  {
-    case WREN_ERROR_COMPILE:
-    {
-      printf("[%s line %d] [Error] %s\n", module, line, msg);
-    } break;
-    case WREN_ERROR_STACK_TRACE:
-    {
-      printf("[%s line %d] in %s\n", module, line, msg);
-    } break;
-    case WREN_ERROR_RUNTIME:
-    {
-      printf("[Runtime Error] %s\n", msg);
-    } break;
-  }
-}
-
-bool streq(std::string a, std::string b) {
-  return a.compare(b) == 0;
-}
-
-
-void runGameLoop(WrenVM* vm) {
-  using namespace kube::graphics;
-  
-  auto window = kube::Window::GetInstance();
-
-  shader_ptr shader = Shader::SimpleColorShader("src/shaders");
-  
-  kube::Actor actor;
-  actor.SetModel(kube::CreateCubeModel());
-  actor.SetState(std::make_unique<IdleState>());
-
-  kube::Stopwatch stopwatch;
-  stopwatch.Start();
-
-  do {
-    auto dt = stopwatch.Lap();
-
-    actor.HandleInput(window);
-    actor.Update(dt);
-    window->Clear();
-    actor.GetModel()->Draw(window->GetCamera(), shader);
-    window->Update();
-  } while (!window->ShouldClose());
-
-  window->Close();
-}
-
-void openWindow(int width, int height, char* title) {
-  auto window = kube::Window::GetInstance();
-  window->Open(width, height, title);
-  window->SetCamera(std::make_unique<kube::Camera>());
-}
-
-void wrenOpenWindow(WrenVM* vm) {
-  auto width = (int)wrenGetSlotDouble(vm, 1);
-  auto height = (int)wrenGetSlotDouble(vm, 2);
-  auto title = (char*)wrenGetSlotString(vm, 3);
-  openWindow(width, height, title);
-}
-
-WrenForeignMethodFn wrenBindForeignMethod(
-    WrenVM* vm,
-    const char* module,
-    const char* className,
-    bool isStatic,
-    const char* signature
-) {
-  // Assume module is main
-  if (streq("Window", className)) {
-    if (isStatic) {
-      if (streq("open(_,_,_)", signature)) return wrenOpenWindow;
-    }
-  }
-  return runGameLoop;
-}
-
-
-int initializeWren() {
+int main(void) {
   WrenConfiguration config;
   wrenInitConfiguration(&config);
   config.writeFn = &wrenWriteFn;
   config.errorFn = &wrenErrorFn;
   config.bindForeignMethodFn = &wrenBindForeignMethod;
+  config.bindForeignClassFn = &wrenBindForeignClass;
 
   WrenVM* vm = wrenNewVM(&config);
-
   const char* module = "main";
   auto source = ReadFile("demos/wren/main.wren");
-  
   WrenInterpretResult result = wrenInterpret(vm, module, source.c_str());
 
   switch (result) {
@@ -157,8 +68,4 @@ int initializeWren() {
   }
   wrenFreeVM(vm);
   return 0;
-}
-
-int main(void) {
-  return initializeWren();
 }
