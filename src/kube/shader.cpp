@@ -29,6 +29,7 @@
 
 #include <kube/logging.h>
 #include <kube/shader.h>
+#include <kube/fs.h>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -62,7 +63,7 @@ void EnsureShaderCompiled(GLuint shader_id) {
 
 void CompileShader(GLuint shader_id, std::string filename) {
   char const *source;
-  ReadFile(filename, &source);
+  kube::fs::readFile(filename, &source);
   glShaderSource(shader_id, 1, &source, NULL);
   glCompileShader(shader_id);
   EnsureShaderCompiled(shader_id);

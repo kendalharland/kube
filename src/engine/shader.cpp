@@ -29,22 +29,13 @@
 
 #include <kube/logging.h>
 #include <kube/shader.h>
+#include <kube/fs.h>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
 namespace kube {
 namespace graphics {
-
-std::string ReadFile(std::string filename) {
-  std::ifstream file(filename, std::ios::in);
-  if (!file.is_open()) {
-    throw std::runtime_error("failed to open shader file " + filename);
-  }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  return buffer.str();
-}
 
 void EnsureProgramLinked(GLuint program_id) {
   GLint link_status = GL_FALSE;
@@ -71,7 +62,7 @@ void EnsureShaderCompiled(GLuint shader_id) {
 }
 
 void CompileShader(GLuint shader_id, std::string filename) {
-  auto source = ReadFile(filename);
+  auto source = kube::fs::readFile(filename);
   auto source_c_str = source.c_str();
   glShaderSource(shader_id, 1, &source_c_str, NULL);
   glCompileShader(shader_id);

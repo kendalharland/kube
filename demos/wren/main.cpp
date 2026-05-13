@@ -22,28 +22,13 @@
 #include <kube/logging.h>
 #include <kube/mesh.h>
 #include <kube/model.h>
-#include <kube/shapes.cpp>
+#include <kube/fs.h>
 #include <kube/time.h>
 #include <kube/window.h>
 #include <kube/wren.h>
 
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
 #include "controls.hpp"
 #include "wren.hpp"
-
-std::string ReadFile(std::string filename) {
-  std::ifstream file(filename, std::ios::in);
-  if (!file.is_open()) {
-    throw std::runtime_error("failed to open file " + filename);
-  }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  return buffer.str();
-}
 
 WrenLoadModuleResult wrenLoadModule(WrenVM* vm, const char* name) {
   WrenLoadModuleResult result = {0};
@@ -52,7 +37,7 @@ WrenLoadModuleResult wrenLoadModule(WrenVM* vm, const char* name) {
     // panic.
   }
 
-  auto source = ReadFile(fullname);
+  auto source = kube::fs::readFile(fullname);
   char* c_source = new char[source.length()+1];
   std::strcpy(c_source, source.c_str());
   result.source = c_source;
@@ -70,7 +55,7 @@ int main(void) {
 
   WrenVM* vm = wrenNewVM(&config);
   const char* module = "main";
-  auto source = ReadFile("demos/wren/main.wren");
+  auto source = kube::fs::readFile("demos/wren/main.wren");
   WrenInterpretResult result = wrenInterpret(vm, module, source.c_str());
 
   switch (result) {
