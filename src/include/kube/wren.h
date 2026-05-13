@@ -49,15 +49,22 @@ kube::Actor entities[MAX_ENTITIES];
 
 bool streq(std::string a, std::string b) { return a.compare(b) == 0; }
 
-
 // -- Engine handlers
-
 
 typedef struct Entity {
   int id;
 } Entity;
 
-void runGameLoop(WrenVM *vm) {
+
+void openWindow(int width, int height, char *title) {
+  auto window = kube::Window::GetInstance();
+  window->Open(width, height, title);
+  window->SetCamera(std::make_unique<kube::Camera>());
+}
+
+// -- Wren handlers
+
+void wrenRunGame(WrenVM *vm) {
   using namespace kube::graphics;
 
   auto window = kube::Window::GetInstance();
@@ -84,14 +91,6 @@ void runGameLoop(WrenVM *vm) {
 
   window->Close();
 }
-
-void openWindow(int width, int height, char *title) {
-  auto window = kube::Window::GetInstance();
-  window->Open(width, height, title);
-  window->SetCamera(std::make_unique<kube::Camera>());
-}
-
-// -- Wren handlers
 
 void wrenWriteFn(WrenVM *vm, const char *text) { printf("%s", text); }
 
@@ -169,7 +168,7 @@ using BindingTable = std::unordered_map<std::string, NativeFn>;
 
 BindingTable& getBindingTable() {
   static BindingTable table = {
-    { makeKey("kube", "Engine", "run()",        1),  &runGameLoop      },
+    { makeKey("kube", "Game", "run()",          1),  &wrenRunGame      },
     { makeKey("kube", "Window", "open(_,_,_)",  1),  &wrenOpenWindow   },
     { makeKey("kube", "Entity", "setModel(_)",  0),  &wrenEntitySetModel }
   };
