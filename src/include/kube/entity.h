@@ -37,8 +37,8 @@ typedef struct ModelComponent {
 // Entity
 // ----------------------------------------------------------------------------
 
-#define EntityID int
 #define MAX_ENTITIES 2048
+#define EntityID int
 
 typedef struct Entity {
   EntityID id;
@@ -46,13 +46,17 @@ typedef struct Entity {
 
 class EntityStore {
     public:
-        EntityID CreateEntity();
+        EntityStore();
+        ~EntityStore();
 
-        void AddModelComponent(ModelComponent&& component, EntityID entityID);
+        EntityID CreateEntity();
+        void AddEntity(Entity entity);
+        void AddModelComponent(EntityID entityID, ModelComponent&& component);
+        ModelComponent* GetModelComponent(EntityID entityID);
+        std::vector<Entity> GetEntitiesWithModelComponent();
 
     private:
-        int nextID_ = 0;
-        Entity entities_[MAX_ENTITIES];
+        std::vector<Entity> entities_;
         
         // Component Stores
         ComponentStore<ModelComponent>* models_;
@@ -66,7 +70,7 @@ template <typename C>
 class ComponentStore {
     public:
         void Set(C&& component, EntityID entityID);
-        C Get(EntityID entityID);
+        C* Get(EntityID entityID);
 
     private:
         C storage_[MAX_ENTITIES];
@@ -83,27 +87,54 @@ void ComponentStore<C>::Set(C&& component, EntityID entityID) {
 }
 
 template <typename C>
-C ComponentStore<C>::Get(EntityID entityID) {
+C* ComponentStore<C>::Get(EntityID entityID) {
     if (entityID >= MAX_ENTITIES) {
         throw std::out_of_range("entity ID out of bounds");
     }
 
-    return storage_[entityID];
+    return &storage_[entityID];
 }
 
 
-EntityID EntityStore::CreateEntity() {
-    if (nextID_ >= MAX_ENTITIES) {
-        KUBE_ERROR << "maximum number of entities reached";
-        return -1;
-    }
-    entities_[nextID_] = Entity();
-    EntityID id = nextID_++;
+EntityStore::EntityStore() {
+    models_ = new ComponentStore<ModelComponent>();
+}
+
+EntityStore::~EntityStore() {
+    delete models_;
+    models_ = nullptr;
+}
+
+void
+EntityStore::AddEntity(Entity entity) {
+    entities_.push_back(entity);
+}
+
+EntityID
+EntityStore::CreateEntity() {
+    EntityID id = entities_.size();
+    entities_.push_back(Entity());
     return id;
 }
 
-void EntityStore::AddModelComponent(ModelComponent&& component, EntityID entityID) {
+void
+EntityStore::AddModelComponent(EntityID entityID, ModelComponent&& component) {
     models_->Set(std::move(component), entityID);
+}
+
+ModelComponent* 
+EntityStore::GetModelComponent(EntityID entityID) {
+    return models_->Get(entityID);
+}
+
+std::vector<Entity> 
+EntityStore::GetEntitiesWithModelComponent() {
+    // TODO: Filter
+    std::vector<Entity> entities;
+    for (auto entity : entities_) {
+        entities.push_back(entity);
+    }
+    return entities;
 }
 
 } // namespace kube

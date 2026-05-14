@@ -41,8 +41,8 @@
 #define MAX_MODELS MAX_ENTITIES
 typedef int ModelID;
 
-int nextEntity = 0;
-kube::Actor entities[MAX_ENTITIES];
+// TODO: Game instance.
+auto entities = kube::EntityStore();
 
 // -- Helpers
 
@@ -57,6 +57,10 @@ void openWindow(int width, int height, char *title) {
 }
 
 // -- Wren handlers
+
+typedef struct Entity {
+  EntityID id;
+} Entity;
 
 WrenLoadModuleResult wrenLoadModule(WrenVM* vm, const char* name) {
   WrenLoadModuleResult result = {0};
@@ -88,10 +92,10 @@ void wrenRunGame(WrenVM *vm) {
 
     window->Clear();
 
-    for (int i = 0; i < nextEntity; i++) {
-      // entities[i].HandleInput(window);
-      // entities[i].Update(dt);
-      entities[i].GetModel()->Draw(window->GetCamera(), shader);
+    // Draw entities
+    for (auto entity : entities.GetEntitiesWithModelComponent()) {
+      auto component = entities.GetModelComponent(entity.id);
+      component->model.Draw(window->GetCamera(), shader);
     }
 
     window->Update();
@@ -125,10 +129,8 @@ void wrenOpenWindow(WrenVM *vm) {
 }
 
 void wrenEntityAlloc(WrenVM *vm) {
-  auto entity = (kube::Entity *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(kube::Entity));
-  entity->id = nextEntity++;
-  kube::Actor actor;
-  entities[entity->id] = std::move(actor); // TODO: bounds check.
+  auto entity = (Entity *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Entity));
+  entity->id = entities.CreateEntity();
 }
 
 void wrenEntityDealloc(void *entity) {
@@ -136,12 +138,14 @@ void wrenEntityDealloc(void *entity) {
 }
 
 static void wrenEntitySetModel(WrenVM *vm) {
-  auto entity = (kube::Entity *)(wrenGetSlotForeign(vm, 0));
+  auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
+
   auto model = wrenGetSlotString(vm, 1);
   if (streq(model, "cube")) {
     auto cube = kube::CreateCubeModel();
-    entities[entity->id].SetModel(cube);
-    // TODO(controls): entities[entity->id].SetState(std::make_unique<IdleState>());
+    auto component = kube::ModelComponent{};
+    component.model = std::move(cube);
+    entities.AddModelComponent(entity->id, std::move(component));
   }
 }
 

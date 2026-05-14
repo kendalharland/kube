@@ -35,7 +35,7 @@ public:
   Model();
   Model(std::unique_ptr<graphics::Mesh> mesh);
 
-  // Move assignment.
+  // Move assignment + constructor.
   Model &operator=(Model &&other) = default;
 
   std::string GetName() const;
