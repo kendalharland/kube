@@ -30,9 +30,15 @@ Window.open(width, height, title)
 // Scene setup
 // ============================================================================
 
-var entity = Entity.new()
-var model = Model.new("@cube")
-entity.setModel(model)
+var entity1 = Entity.new()
+var model1 = Model.new("@cube")
+entity1.setModel(model1)
+entity1.setPosition(-1, 0, 0)
+
+var entity2 = Entity.new()
+var model2 = Model.new("@cube")
+entity2.setModel(model2)
+entity2.setPosition(1, 0, 0)
 
 // ============================================================================
 // Main loop

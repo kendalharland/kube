@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <glm/glm.hpp>
 #include <kube/logging.h>
 #include <kube/model.h>
 #include <map>
@@ -31,6 +32,10 @@ template <typename C> class ComponentStore;
 typedef struct ModelComponent {
   kube::Model model;
 } ModelComponent;
+
+typedef struct PositionComponent {
+  glm::vec3 position;
+} PositionComponent;
 
 // ----------------------------------------------------------------------------
 // Entity
@@ -54,11 +59,15 @@ public:
   ModelComponent *GetModelComponent(EntityID entityID);
   std::vector<Entity> GetEntitiesWithModelComponent();
 
+  void AddPositionComponent(EntityID entityID, PositionComponent &&component);
+  PositionComponent *GetPositionComponent(EntityID entityID);
+
 private:
   std::vector<Entity> entities_;
 
   // Component Stores
   ComponentStore<ModelComponent> *models_;
+  ComponentStore<PositionComponent> *positions_;
 };
 
 // ----------------------------------------------------------------------------
@@ -91,19 +100,25 @@ template <typename C> C *ComponentStore<C>::Get(EntityID entityID) {
   return &storage_[entityID];
 }
 
-EntityStore::EntityStore() { models_ = new ComponentStore<ModelComponent>(); }
+EntityStore::EntityStore() {
+  models_ = new ComponentStore<ModelComponent>();
+  positions_ = new ComponentStore<PositionComponent>();
+}
 
 EntityStore::~EntityStore() {
   delete models_;
   models_ = nullptr;
+
+  delete positions_;
+  positions_ = nullptr;
 }
 
 void EntityStore::AddEntity(Entity entity) { entities_.push_back(entity); }
 
 EntityID EntityStore::CreateEntity() {
-  EntityID id = entities_.size();
-  entities_.push_back(Entity());
-  return id;
+  Entity entity = Entity{.id = (EntityID)entities_.size()};
+  entities_.push_back(entity);
+  return entity.id;
 }
 
 void EntityStore::AddModelComponent(EntityID entityID, ModelComponent &&component) {
@@ -119,6 +134,14 @@ std::vector<Entity> EntityStore::GetEntitiesWithModelComponent() {
     entities.push_back(entity);
   }
   return entities;
+}
+
+void EntityStore::AddPositionComponent(EntityID entityID, PositionComponent &&component) {
+  positions_->Set(std::move(component), entityID);
+}
+
+PositionComponent *EntityStore::GetPositionComponent(EntityID entityID) {
+  return positions_->Get(entityID);
 }
 
 } // namespace kube

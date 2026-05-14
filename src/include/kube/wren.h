@@ -98,8 +98,14 @@ void wrenRunGame(WrenVM *vm) {
 
     // Draw entities
     for (auto entity : entities.GetEntitiesWithModelComponent()) {
-      auto component = entities.GetModelComponent(entity.id);
-      component->model.Draw(window->GetCamera(), shader);
+      auto model = entities.GetModelComponent(entity.id);
+      auto position = entities.GetPositionComponent(entity.id);
+
+      if (position != nullptr) {
+        model->model.SetCenter(position->position);
+      }
+
+      model->model.Draw(window->GetCamera(), shader);
     }
 
     window->Update();
@@ -162,6 +168,18 @@ static void wrenEntitySetModel(WrenVM *vm) {
   entities.AddModelComponent(entity->id, std::move(component));
 }
 
+static void wrenEntitySetPosition(WrenVM *vm) {
+  auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
+  auto x = wrenGetSlotDouble(vm, 1);
+  auto y = wrenGetSlotDouble(vm, 2);
+  auto z = wrenGetSlotDouble(vm, 3);
+
+  KUBE_DEBUG << "wrenEntitySetPosition(" << entity->id << "," << x << "," << y << "," << z << ")";
+
+  auto component = kube::PositionComponent{.position = glm::vec3(x, y, z)};
+  entities.AddPositionComponent(entity->id, std::move(component));
+}
+
 // -- Binding table lookup
 
 using NativeFn = void (*)(WrenVM *vm); // adjust as needed
@@ -187,9 +205,11 @@ inline std::string makeKey(std::string_view module, std::string_view className,
 using BindingTable = std::unordered_map<std::string, NativeFn>;
 
 BindingTable &getBindingTable() {
-  static BindingTable table = {{makeKey("kube", "Game", "run()", 1), &wrenRunGame},
-                               {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow},
-                               {makeKey("kube", "Entity", "setModel(_)", 0), &wrenEntitySetModel}};
+  static BindingTable table = {
+      {makeKey("kube", "Game", "run()", 1), &wrenRunGame},
+      {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow},
+      {makeKey("kube", "Entity", "setModel(_)", 0), &wrenEntitySetModel},
+      {makeKey("kube", "Entity", "setPosition(_,_,_)", 0), &wrenEntitySetPosition}};
   return table;
 }
 

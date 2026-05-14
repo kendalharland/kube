@@ -25,6 +25,7 @@ class Window {
 foreign class Entity {
     construct new() {}
     foreign setModel(value)
+    foreign setPosition(x, y, z)
 }
 
 foreign class Model {
