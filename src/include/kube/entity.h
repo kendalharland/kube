@@ -37,11 +37,16 @@ typedef struct PositionComponent {
   glm::vec3 position;
 } PositionComponent;
 
+typedef struct MovementComponent {
+  glm::vec3 spin;
+  glm::vec3 velocity;
+} MovementComponent;
+
 // ----------------------------------------------------------------------------
 // Entity
 // ----------------------------------------------------------------------------
 
-#define MAX_ENTITIES 2048
+#define MAX_ENTITIES 50000
 #define EntityID int
 
 typedef struct Entity {
@@ -55,12 +60,15 @@ public:
 
   EntityID CreateEntity();
   void AddEntity(Entity entity);
-  void AddModelComponent(EntityID entityID, ModelComponent &&component);
-  ModelComponent *GetModelComponent(EntityID entityID);
   std::vector<Entity> GetEntitiesWithModelComponent();
 
+  // Component modifiers
+  void AddModelComponent(EntityID entityID, ModelComponent &&component);
+  ModelComponent *GetModelComponent(EntityID entityID);
   void AddPositionComponent(EntityID entityID, PositionComponent &&component);
   PositionComponent *GetPositionComponent(EntityID entityID);
+  void AddMovementComponent(EntityID entityID, MovementComponent &&component);
+  MovementComponent *GetMovementComponent(EntityID entityID);
 
 private:
   std::vector<Entity> entities_;
@@ -68,6 +76,7 @@ private:
   // Component Stores
   ComponentStore<ModelComponent> *models_;
   ComponentStore<PositionComponent> *positions_;
+  ComponentStore<MovementComponent> *movements_;
 };
 
 // ----------------------------------------------------------------------------
@@ -103,6 +112,7 @@ template <typename C> C *ComponentStore<C>::Get(EntityID entityID) {
 EntityStore::EntityStore() {
   models_ = new ComponentStore<ModelComponent>();
   positions_ = new ComponentStore<PositionComponent>();
+  movements_ = new ComponentStore<MovementComponent>();
 }
 
 EntityStore::~EntityStore() {
@@ -127,6 +137,22 @@ void EntityStore::AddModelComponent(EntityID entityID, ModelComponent &&componen
 
 ModelComponent *EntityStore::GetModelComponent(EntityID entityID) { return models_->Get(entityID); }
 
+void EntityStore::AddPositionComponent(EntityID entityID, PositionComponent &&component) {
+  positions_->Set(std::move(component), entityID);
+}
+
+PositionComponent *EntityStore::GetPositionComponent(EntityID entityID) {
+  return positions_->Get(entityID);
+}
+
+void EntityStore::AddMovementComponent(EntityID entityID, MovementComponent &&component) {
+  movements_->Set(std::move(component), entityID);
+}
+
+MovementComponent *EntityStore::GetMovementComponent(EntityID entityID) {
+  return movements_->Get(entityID);
+}
+
 std::vector<Entity> EntityStore::GetEntitiesWithModelComponent() {
   // TODO: Filter
   std::vector<Entity> entities;
@@ -134,14 +160,6 @@ std::vector<Entity> EntityStore::GetEntitiesWithModelComponent() {
     entities.push_back(entity);
   }
   return entities;
-}
-
-void EntityStore::AddPositionComponent(EntityID entityID, PositionComponent &&component) {
-  positions_->Set(std::move(component), entityID);
-}
-
-PositionComponent *EntityStore::GetPositionComponent(EntityID entityID) {
-  return positions_->Get(entityID);
 }
 
 } // namespace kube

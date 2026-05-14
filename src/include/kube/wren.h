@@ -21,6 +21,7 @@
 
 #include <kube/actor.h>
 #include <kube/camera.h>
+#include <kube/math.h>
 #include <kube/entity.h>
 #include <kube/logging.h>
 #include <kube/mesh.h>
@@ -53,7 +54,9 @@ bool streq(std::string a, std::string b) { return a.compare(b) == 0; }
 void openWindow(int width, int height, char *title) {
   auto window = kube::Window::GetInstance();
   window->Open(width, height, title);
-  window->SetCamera(std::make_unique<kube::Camera>());
+  auto camera = std::make_unique<kube::Camera>();
+  camera->SetPosition(100, 100, 100);
+  window->SetCamera(std::move(camera));
 }
 
 // -- Wren handlers
@@ -81,6 +84,7 @@ WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   return result;
 }
 
+
 void wrenRunGame(WrenVM *vm) {
   using namespace kube::graphics;
 
@@ -89,21 +93,31 @@ void wrenRunGame(WrenVM *vm) {
   shader_ptr shader = Shader::SimpleColorShader("src/shaders");
 
   // TODO(controls, state)
-  // kube::Stopwatch stopwatch;
-  // stopwatch.Start();
+  kube::Stopwatch stopwatch;
+  stopwatch.Start();
 
   do {
-    // auto dt = stopwatch.Lap();
+    auto deltaSecs = stopwatch.Lap();
 
     window->Clear();
 
     // Draw entities
     for (auto entity : entities.GetEntitiesWithModelComponent()) {
       auto model = entities.GetModelComponent(entity.id);
+      
+      // Update position.
       auto position = entities.GetPositionComponent(entity.id);
-
       if (position != nullptr) {
         model->model.SetCenter(position->position);
+      }
+
+      // Update rotation.
+      auto movement = entities.GetMovementComponent(entity.id);
+      if (movement != nullptr) {
+        auto model = entities.GetModelComponent(entity.id);
+        model->model.Rotate(movement->spin.x*deltaSecs, X_AXIS);
+        model->model.Rotate(movement->spin.y*deltaSecs, Y_AXIS);
+        model->model.Rotate(movement->spin.z*deltaSecs, Z_AXIS);
       }
 
       model->model.Draw(window->GetCamera(), shader);
@@ -114,6 +128,7 @@ void wrenRunGame(WrenVM *vm) {
 
   window->Close();
 }
+
 
 void wrenWriteFn(WrenVM *vm, const char *text) { printf("%s", text); }
 
@@ -181,6 +196,19 @@ static void wrenEntitySetPosition(WrenVM *vm) {
   entities.AddPositionComponent(entity->id, std::move(component));
 }
 
+
+static void wrenEntitySetSpin(WrenVM *vm) {
+  auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
+  auto x = wrenGetSlotDouble(vm, 1);
+  auto y = wrenGetSlotDouble(vm, 2);
+  auto z = wrenGetSlotDouble(vm, 3);
+
+  KUBE_DEBUG << "wrenEntitySetSpin(" << entity->id << "," << x << "," << y << "," << z << ")";
+
+  auto component = kube::MovementComponent{.spin = glm::vec3(x, y, z)};
+  entities.AddMovementComponent(entity->id, std::move(component));
+}
+
 // -- Binding table lookup
 
 using NativeFn = void (*)(WrenVM *vm); // adjust as needed
@@ -210,7 +238,8 @@ BindingTable &getBindingTable() {
       {makeKey("kube", "Game", "run()", 1), &wrenRunGame},
       {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow},
       {makeKey("kube", "Entity", "setModel_(_)", 0), &wrenEntitySetModel},
-      {makeKey("kube", "Entity", "setPosition_(_,_,_)", 0), &wrenEntitySetPosition}};
+      {makeKey("kube", "Entity", "setPosition_(_,_,_)", 0), &wrenEntitySetPosition},
+      {makeKey("kube", "Entity", "setSpin_(_,_,_)", 0), &wrenEntitySetSpin}};
   return table;
 }
 

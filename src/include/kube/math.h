@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#pragma once
+
 #include <glm/glm.hpp>
 
 const glm::mat4 IDENTITY_MAT4 = glm::mat4(1.f);

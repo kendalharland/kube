@@ -42,6 +42,7 @@ class Vec3 {
 foreign class Entity {
     foreign setModel_(model)
     foreign setPosition_(x, y, z)
+    foreign setSpin_(x, y, z)
 
     construct new() {}
     
@@ -51,6 +52,10 @@ foreign class Entity {
     
     position=(vec) {
         setPosition_(vec.x, vec.y, vec.z)
+    }
+
+    spin=(vec) {
+        setSpin_(vec.x, vec.y, vec.z)
     }
 }
 

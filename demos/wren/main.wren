@@ -16,6 +16,7 @@
 
 import "kube" for Game, Entity, Model, Window, Vec3
 import "random" for Random
+
 // ============================================================================
 // Window setup
 // ============================================================================
@@ -31,16 +32,24 @@ Window.open(width, height, title)
 // ============================================================================
 
 var entities = []
-var entityCount = 0
 var random = Random.new(123456789)
 
-while(entityCount < 2000) { 
+for(i in 1..4000) { 
     var entity = Entity.new()
 
     entity.model = Model.new("@cube")
-    entity.position = Vec3.new(random.float(-4, 4), random.float(-4, 4), random.float(-4, 4))
+    
+    entity.position = Vec3.new(
+        random.float(-100, 100),
+        random.float(-100, 100),
+        random.float(-100, 100)
+    )
 
-    entityCount = entityCount + 1
+    entity.spin = Vec3.new(
+        random.float(-1, 1),
+        random.float(-1, 1),
+        random.float(-1, 1)
+    )
 }
 
 // ============================================================================

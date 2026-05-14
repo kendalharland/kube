@@ -20,12 +20,10 @@
 #include <kube/actor.h>
 #include <kube/animation.h>
 #include <kube/input.h>
+#include <kube/math.h>
 
 #define ANIMATION_SPEED 2.0
-static const glm::mat4 IDENTITY_MAT4 = glm::mat4(1.f);
-static const glm::vec3 Y_AXIS = glm::vec3(0.f, 1.f, 0.f);
-static const glm::vec3 X_AXIS = glm::vec3(1.f, 0.f, 0.f);
-static const glm::vec3 Z_AXIS = glm::vec3(0.f, 0.f, 1.f);
+
 
 class RotatingState;
 
