@@ -70,16 +70,8 @@ WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   WrenLoadModuleResult result = {0};
   char fullname[128];
 
-  if (streq(name, "random")) {
-    if (snprintf(fullname, 128, "third_party/wren/src/optional/wren_opt_%s.wren", name) < 0) {
-      // panic
-      return result;
-    }
-  } else {
-    if (snprintf(fullname, 128, "demos/wren/%s.wren", name) < 0) {
-      // panic.
-      return result;
-    }
+  if (snprintf(fullname, 128, "src/wren/%s.wren", name) < 0) {
+    throw std::stol(name);
   }
 
   auto source = kube::fs::readFile(fullname);

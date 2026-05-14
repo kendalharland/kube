@@ -79,6 +79,8 @@ wren:
 	@mkdir -p $(LIBRARY_PATH)
 	# Copy the real dylib and its symlinks
 	cp -av third_party/wren/lib/libwren*.dylib $(LIBRARY_PATH)
+	# Copy wren sources
+	cp -av third_party/wren/src/optional/wren_opt_random.wren src/wren/random.wren
 
 build3p: assimp wren
 	@echo "=="
