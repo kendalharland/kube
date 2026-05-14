@@ -64,7 +64,7 @@ default: demo
 
 format:
 	@echo "=== Formatting code ==="
-	find src -regex '.*\.\(c\|h\|cpp\|hpp\)' -exec clang-format -style=file -i {} \;
+	# find src -type f -exec clang-format -style=file -i {} \;
 
 assimp:
 	@echo "=== Building third_party/assimp ==="

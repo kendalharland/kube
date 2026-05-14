@@ -62,6 +62,10 @@ typedef struct Entity {
   EntityID id;
 } Entity;
 
+typedef struct Model {
+  kube::Model model;
+} Model;
+
 WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   WrenLoadModuleResult result = {0};
   char fullname[32];
@@ -137,16 +141,25 @@ void wrenEntityDealloc(void *entity) {
   // TODO: Call the destructor explicitly; Wren will free the raw memory.
 }
 
+void wrenModelAlloc(WrenVM *vm) {
+  auto model = (Model *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Model));
+  auto identifier = wrenGetSlotString(vm, 1);
+  if (streq(identifier, "@cube")) {
+    model->model = kube::CreateCubeModel();
+  }
+}
+
+void wrenModelDealloc(void *model) {
+  // TODO
+}
+
 static void wrenEntitySetModel(WrenVM *vm) {
   auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
+  auto model = (Model *)wrenGetSlotForeign(vm, 1);
+  auto component = kube::ModelComponent{};
 
-  auto model = wrenGetSlotString(vm, 1);
-  if (streq(model, "cube")) {
-    auto cube = kube::CreateCubeModel();
-    auto component = kube::ModelComponent{};
-    component.model = std::move(cube);
-    entities.AddModelComponent(entity->id, std::move(component));
-  }
+  component.model = std::move(model->model);
+  entities.AddModelComponent(entity->id, std::move(component));
 }
 
 // -- Binding table lookup
@@ -190,8 +203,8 @@ WrenForeignClassMethods wrenBindForeignClass(WrenVM *vm, const char *module,
     methods.allocate = wrenEntityAlloc;
     methods.finalize = wrenEntityDealloc;
   } else if (streq(module, "kube") && streq(className, "Model")) {
-    methods.allocate = wrenEntityAlloc;
-    methods.finalize = wrenEntityDealloc;
+    methods.allocate = wrenModelAlloc;
+    methods.finalize = wrenModelDealloc;
   }
 
   return methods;

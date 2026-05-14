@@ -26,3 +26,7 @@ foreign class Entity {
     construct new() {}
     foreign setModel(value)
 }
+
+foreign class Model {
+    construct new(identifier) {}
+}

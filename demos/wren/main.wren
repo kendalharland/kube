@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import "kube" for Game, Entity, Window
+import "kube" for Game, Entity, Model, Window
 
 // ============================================================================
 // Window setup
@@ -30,8 +30,9 @@ Window.open(width, height, title)
 // Scene setup
 // ============================================================================
 
-var cube = Entity.new()
-cube.setModel("cube")
+var entity = Entity.new()
+var model = Model.new("@cube")
+entity.setModel(model)
 
 // ============================================================================
 // Main loop
