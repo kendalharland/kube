@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include <map>
 #include <kube/logging.h>
 #include <kube/model.h>
+#include <map>
 #include <stdexcept>
 
 namespace kube {
@@ -26,11 +26,10 @@ namespace kube {
 // ----------------------------------------------------------------------------
 // Forward declarations
 // ----------------------------------------------------------------------------
-template <typename C>
-class ComponentStore;
+template <typename C> class ComponentStore;
 
 typedef struct ModelComponent {
-    kube::Model model;
+  kube::Model model;
 } ModelComponent;
 
 // ----------------------------------------------------------------------------
@@ -45,98 +44,81 @@ typedef struct Entity {
 } Entity;
 
 class EntityStore {
-    public:
-        EntityStore();
-        ~EntityStore();
+public:
+  EntityStore();
+  ~EntityStore();
 
-        EntityID CreateEntity();
-        void AddEntity(Entity entity);
-        void AddModelComponent(EntityID entityID, ModelComponent&& component);
-        ModelComponent* GetModelComponent(EntityID entityID);
-        std::vector<Entity> GetEntitiesWithModelComponent();
+  EntityID CreateEntity();
+  void AddEntity(Entity entity);
+  void AddModelComponent(EntityID entityID, ModelComponent &&component);
+  ModelComponent *GetModelComponent(EntityID entityID);
+  std::vector<Entity> GetEntitiesWithModelComponent();
 
-    private:
-        std::vector<Entity> entities_;
-        
-        // Component Stores
-        ComponentStore<ModelComponent>* models_;
+private:
+  std::vector<Entity> entities_;
+
+  // Component Stores
+  ComponentStore<ModelComponent> *models_;
 };
 
 // ----------------------------------------------------------------------------
 // Components
 // ----------------------------------------------------------------------------
 
-template <typename C>
-class ComponentStore {
-    public:
-        void Set(C&& component, EntityID entityID);
-        C* Get(EntityID entityID);
+template <typename C> class ComponentStore {
+public:
+  void Set(C &&component, EntityID entityID);
+  C *Get(EntityID entityID);
 
-    private:
-        C storage_[MAX_ENTITIES];
+private:
+  C storage_[MAX_ENTITIES];
 };
 
-template <typename C>
-void ComponentStore<C>::Set(C&& component, EntityID entityID) {
-    if (entityID >= MAX_ENTITIES) {
-        KUBE_ERROR << "maximum number of components reached";
-        return;
-    }
+template <typename C> void ComponentStore<C>::Set(C &&component, EntityID entityID) {
+  if (entityID >= MAX_ENTITIES) {
+    KUBE_ERROR << "maximum number of components reached";
+    return;
+  }
 
-    storage_[entityID] = std::move(component);
+  storage_[entityID] = std::move(component);
 }
 
-template <typename C>
-C* ComponentStore<C>::Get(EntityID entityID) {
-    if (entityID >= MAX_ENTITIES) {
-        throw std::out_of_range("entity ID out of bounds");
-    }
+template <typename C> C *ComponentStore<C>::Get(EntityID entityID) {
+  if (entityID >= MAX_ENTITIES) {
+    throw std::out_of_range("entity ID out of bounds");
+  }
 
-    return &storage_[entityID];
+  return &storage_[entityID];
 }
 
-
-EntityStore::EntityStore() {
-    models_ = new ComponentStore<ModelComponent>();
-}
+EntityStore::EntityStore() { models_ = new ComponentStore<ModelComponent>(); }
 
 EntityStore::~EntityStore() {
-    delete models_;
-    models_ = nullptr;
+  delete models_;
+  models_ = nullptr;
 }
 
-void
-EntityStore::AddEntity(Entity entity) {
-    entities_.push_back(entity);
+void EntityStore::AddEntity(Entity entity) { entities_.push_back(entity); }
+
+EntityID EntityStore::CreateEntity() {
+  EntityID id = entities_.size();
+  entities_.push_back(Entity());
+  return id;
 }
 
-EntityID
-EntityStore::CreateEntity() {
-    EntityID id = entities_.size();
-    entities_.push_back(Entity());
-    return id;
+void EntityStore::AddModelComponent(EntityID entityID, ModelComponent &&component) {
+  models_->Set(std::move(component), entityID);
 }
 
-void
-EntityStore::AddModelComponent(EntityID entityID, ModelComponent&& component) {
-    models_->Set(std::move(component), entityID);
-}
+ModelComponent *EntityStore::GetModelComponent(EntityID entityID) { return models_->Get(entityID); }
 
-ModelComponent* 
-EntityStore::GetModelComponent(EntityID entityID) {
-    return models_->Get(entityID);
-}
-
-std::vector<Entity> 
-EntityStore::GetEntitiesWithModelComponent() {
-    // TODO: Filter
-    std::vector<Entity> entities;
-    for (auto entity : entities_) {
-        entities.push_back(entity);
-    }
-    return entities;
+std::vector<Entity> EntityStore::GetEntitiesWithModelComponent() {
+  // TODO: Filter
+  std::vector<Entity> entities;
+  for (auto entity : entities_) {
+    entities.push_back(entity);
+  }
+  return entities;
 }
 
 } // namespace kube
-
-

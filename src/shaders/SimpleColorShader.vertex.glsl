@@ -19,15 +19,15 @@
 
 #version 330 core
 
-layout(location = 0) in vec3 position;  // Vertex position in object space.
+layout(location = 0) in vec3 position; // Vertex position in object space.
 layout(location = 1) in vec3 color;
 
-out vec3 fragment_color;    // Base color.
+out vec3 fragment_color; // Base color.
 
 uniform mat4 MVP; // Model-View-Projection matrix.
 
 void main() {
-	gl_Position =  MVP * vec4(position, 1);
+  gl_Position = MVP * vec4(position, 1);
 
-	fragment_color = color;
+  fragment_color = color;
 }

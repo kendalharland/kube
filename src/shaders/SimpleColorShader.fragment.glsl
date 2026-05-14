@@ -22,7 +22,7 @@ in vec3 fragment_color;
 out vec3 FragColor;
 
 void main(void) {
-	// If this comment and the one on the next line aren't present, the shader won't compile.
-	// What's going on here?
-	FragColor = fragment_color;
+  // If this comment and the one on the next line aren't present, the shader won't compile.
+  // What's going on here?
+  FragColor = fragment_color;
 }

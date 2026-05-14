@@ -21,10 +21,10 @@
 
 #include <kube/actor.h>
 #include <kube/camera.h>
+#include <kube/entity.h>
 #include <kube/logging.h>
 #include <kube/mesh.h>
 #include <kube/model.h>
-#include <kube/entity.h>
 #include <kube/shapes.cpp>
 #include <kube/time.h>
 #include <kube/window.h>
@@ -62,7 +62,7 @@ typedef struct Entity {
   EntityID id;
 } Entity;
 
-WrenLoadModuleResult wrenLoadModule(WrenVM* vm, const char* name) {
+WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   WrenLoadModuleResult result = {0};
   char fullname[32];
   if (snprintf(fullname, 32, "demos/wren/%s.wren", name) < 0) {
@@ -70,7 +70,7 @@ WrenLoadModuleResult wrenLoadModule(WrenVM* vm, const char* name) {
   }
 
   auto source = kube::fs::readFile(fullname);
-  char* c_source = new char[source.length()+1];
+  char *c_source = new char[source.length() + 1];
   std::strcpy(c_source, source.c_str());
   result.source = c_source;
   return result;
@@ -149,18 +149,13 @@ static void wrenEntitySetModel(WrenVM *vm) {
   }
 }
 
-
 // -- Binding table lookup
 
-using NativeFn = void(*)(WrenVM* vm);  // adjust as needed
-
+using NativeFn = void (*)(WrenVM *vm); // adjust as needed
 
 // Helper to build a unique key "module|class|signature"
-inline std::string makeKey(std::string_view module,
-                           std::string_view className,
-                           std::string_view signature,
-                           bool isStatic)
-{
+inline std::string makeKey(std::string_view module, std::string_view className,
+                           std::string_view signature, bool isStatic) {
   // Encode static-ness into the key so static/instance can differ
   char staticFlag = isStatic ? 'S' : 'I';
 
@@ -178,12 +173,10 @@ inline std::string makeKey(std::string_view module,
 
 using BindingTable = std::unordered_map<std::string, NativeFn>;
 
-BindingTable& getBindingTable() {
-  static BindingTable table = {
-    { makeKey("kube", "Game", "run()",          1),  &wrenRunGame      },
-    { makeKey("kube", "Window", "open(_,_,_)",  1),  &wrenOpenWindow   },
-    { makeKey("kube", "Entity", "setModel(_)",  0),  &wrenEntitySetModel }
-  };
+BindingTable &getBindingTable() {
+  static BindingTable table = {{makeKey("kube", "Game", "run()", 1), &wrenRunGame},
+                               {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow},
+                               {makeKey("kube", "Entity", "setModel(_)", 0), &wrenEntitySetModel}};
   return table;
 }
 
@@ -196,6 +189,9 @@ WrenForeignClassMethods wrenBindForeignClass(WrenVM *vm, const char *module,
   if (streq(module, "kube") && streq(className, "Entity")) {
     methods.allocate = wrenEntityAlloc;
     methods.finalize = wrenEntityDealloc;
+  } else if (streq(module, "kube") && streq(className, "Model")) {
+    methods.allocate = wrenEntityAlloc;
+    methods.finalize = wrenEntityDealloc;
   }
 
   return methods;
@@ -205,7 +201,7 @@ WrenForeignMethodFn wrenBindForeignMethod(WrenVM *vm, const char *module, const 
                                           bool isStatic, const char *signature) {
   KUBE_DEBUG << "foreign_call:" << module << "." << className << "." << signature;
 
-  auto& table = getBindingTable();
+  auto &table = getBindingTable();
   std::string key = makeKey(module, className, signature, isStatic);
 
   auto it = table.find(key);

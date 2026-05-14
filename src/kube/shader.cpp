@@ -27,9 +27,9 @@
 #include <string>
 #include <vector>
 
+#include <kube/fs.h>
 #include <kube/logging.h>
 #include <kube/shader.h>
-#include <kube/fs.h>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>

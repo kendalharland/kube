@@ -42,7 +42,7 @@ public:
   void Close();
   void Clear();
   void Update();
-  Camera* GetCamera();
+  Camera *GetCamera();
   void SetCamera(std::unique_ptr<Camera> camera);
   void SetCamera(Camera *camera);
 

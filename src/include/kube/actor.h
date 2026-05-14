@@ -56,7 +56,7 @@ public:
 
 class ActorState {
 public:
-  virtual ~ActorState(){};
+  virtual ~ActorState() {};
   virtual std::shared_ptr<ActorCommand> HandleInput(Window *window) = 0;
   virtual void Update(double dt, Actor *actor) = 0;
 };

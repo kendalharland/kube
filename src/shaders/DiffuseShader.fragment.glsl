@@ -22,8 +22,8 @@ out vec4 FragColor;
 in vec3 fragment_color;
 in vec2 fragment_tex_coord;
 in vec4 fragment_position; // Position in world space.
-in vec4 fragment_normal; // Surface normal in world space.
-in vec4 light_direction; // Direction in which light hits this surface.
+in vec4 fragment_normal;   // Surface normal in world space.
+in vec4 light_direction;   // Direction in which light hits this surface.
 
 uniform vec4 light_color; // Light's diffuse and specular contribution.
 
@@ -32,18 +32,18 @@ uniform sampler2D sampler_ambient;
 uniform sampler2D sampler_diffuse;
 uniform sampler2D sampler_specular;
 
-void main(){
-	// BEGIN unused inputs
-	vec3 color = fragment_color;
-	vec4 pos = fragment_position;
-	// END unused inputs
+void main() {
+  // BEGIN unused inputs
+  vec3 color = fragment_color;
+  vec4 pos = fragment_position;
+  // END unused inputs
 
-	vec4 tex_ambient = texture(sampler_ambient, fragment_tex_coord);
-	vec4 tex_diffuse = texture(sampler_diffuse, fragment_tex_coord);
-	vec4 tex_specular = texture(sampler_specular, fragment_tex_coord);
+  vec4 tex_ambient = texture(sampler_ambient, fragment_tex_coord);
+  vec4 tex_diffuse = texture(sampler_diffuse, fragment_tex_coord);
+  vec4 tex_specular = texture(sampler_specular, fragment_tex_coord);
 
-	vec4 N = normalize(fragment_normal); 
-	vec4 L = normalize(light_direction);
-	vec4 diffuse_color = light_color * clamp(dot(N, L), 0.0, 1.0);
-	FragColor = (tex_ambient + tex_specular + diffuse_color) * tex_diffuse;
+  vec4 N = normalize(fragment_normal);
+  vec4 L = normalize(light_direction);
+  vec4 diffuse_color = light_color * clamp(dot(N, L), 0.0, 1.0);
+  FragColor = (tex_ambient + tex_specular + diffuse_color) * tex_diffuse;
 }
