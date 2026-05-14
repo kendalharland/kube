@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import "kube" for Game, Entity, Model, Window
+import "kube" for Game, Entity, Model, Window, Vec3
 import "random" for Random
 // ============================================================================
 // Window setup
@@ -30,20 +30,17 @@ Window.open(width, height, title)
 // Scene setup
 // ============================================================================
 
-var count = 0
 var entities = []
-var random = Random.new(123)
+var entityCount = 0
+var random = Random.new(123456789)
 
-while(count < 8) { 
+while(entityCount < 2000) { 
     var entity = Entity.new()
-    entity.setModel( Model.new("@cube") )
-    entity.setPosition(
-        random.float(-4, 4),
-        random.float(-4, 4),
-        random.float(-4, 4)
-    )
 
-    count = count + 1
+    entity.model = Model.new("@cube")
+    entity.position = Vec3.new(random.float(-4, 4), random.float(-4, 4), random.float(-4, 4))
+
+    entityCount = entityCount + 1
 }
 
 // ============================================================================

@@ -209,8 +209,8 @@ BindingTable &getBindingTable() {
   static BindingTable table = {
       {makeKey("kube", "Game", "run()", 1), &wrenRunGame},
       {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow},
-      {makeKey("kube", "Entity", "setModel(_)", 0), &wrenEntitySetModel},
-      {makeKey("kube", "Entity", "setPosition(_,_,_)", 0), &wrenEntitySetPosition}};
+      {makeKey("kube", "Entity", "setModel_(_)", 0), &wrenEntitySetModel},
+      {makeKey("kube", "Entity", "setPosition_(_,_,_)", 0), &wrenEntitySetPosition}};
   return table;
 }
 

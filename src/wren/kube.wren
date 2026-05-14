@@ -22,10 +22,36 @@ class Window {
     foreign static open(width, height, title)
 }
 
+class Vec3 {
+  construct new(x, y, z) {
+    _x = x
+    _y = y
+    _z = z
+  }
+
+  x { _x }
+  x=(value) { _x = value }
+
+  y { _y }
+  y=(value) { _y = value }
+
+  z { _z }
+  z=(value) { _z = value }
+}
+
 foreign class Entity {
+    foreign setModel_(model)
+    foreign setPosition_(x, y, z)
+
     construct new() {}
-    foreign setModel(value)
-    foreign setPosition(x, y, z)
+    
+    model=(value) {
+        setModel_(value)
+    }
+    
+    position=(vec) {
+        setPosition_(vec.x, vec.y, vec.z)
+    }
 }
 
 foreign class Model {
