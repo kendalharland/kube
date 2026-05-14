@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import "kube" for Game, Entity, Model, Window
-
+import "random" for Random
 // ============================================================================
 // Window setup
 // ============================================================================
@@ -30,15 +30,21 @@ Window.open(width, height, title)
 // Scene setup
 // ============================================================================
 
-var entity1 = Entity.new()
-var model1 = Model.new("@cube")
-entity1.setModel(model1)
-entity1.setPosition(-1, 0, 0)
+var count = 0
+var entities = []
+var random = Random.new(123)
 
-var entity2 = Entity.new()
-var model2 = Model.new("@cube")
-entity2.setModel(model2)
-entity2.setPosition(1, 0, 0)
+while(count < 8) { 
+    var entity = Entity.new()
+    entity.setModel( Model.new("@cube") )
+    entity.setPosition(
+        random.float(-4, 4),
+        random.float(-4, 4),
+        random.float(-4, 4)
+    )
+
+    count = count + 1
+}
 
 // ============================================================================
 // Main loop

@@ -68,9 +68,18 @@ typedef struct Model {
 
 WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   WrenLoadModuleResult result = {0};
-  char fullname[32];
-  if (snprintf(fullname, 32, "demos/wren/%s.wren", name) < 0) {
-    // panic.
+  char fullname[128];
+
+  if (streq(name, "random")) {
+    if (snprintf(fullname, 128, "third_party/wren/src/optional/wren_opt_%s.wren", name) < 0) {
+      // panic
+      return result;
+    }
+  } else {
+    if (snprintf(fullname, 128, "demos/wren/%s.wren", name) < 0) {
+      // panic.
+      return result;
+    }
   }
 
   auto source = kube::fs::readFile(fullname);
