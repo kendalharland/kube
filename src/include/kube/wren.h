@@ -24,6 +24,7 @@
 #include <kube/logging.h>
 #include <kube/mesh.h>
 #include <kube/model.h>
+#include <kube/entity.h>
 #include <kube/shapes.cpp>
 #include <kube/time.h>
 #include <kube/window.h>
@@ -37,9 +38,7 @@
 
 // -- Constants
 
-#define MAX_ENTITIES 100
 #define MAX_MODELS MAX_ENTITIES
-typedef int EntityID;
 typedef int ModelID;
 
 int nextEntity = 0;
@@ -50,11 +49,6 @@ kube::Actor entities[MAX_ENTITIES];
 bool streq(std::string a, std::string b) { return a.compare(b) == 0; }
 
 // -- Engine handlers
-
-typedef struct Entity {
-  int id;
-} Entity;
-
 
 void openWindow(int width, int height, char *title) {
   auto window = kube::Window::GetInstance();
@@ -131,7 +125,7 @@ void wrenOpenWindow(WrenVM *vm) {
 }
 
 void wrenEntityAlloc(WrenVM *vm) {
-  auto entity = (Entity *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Entity));
+  auto entity = (kube::Entity *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(kube::Entity));
   entity->id = nextEntity++;
   kube::Actor actor;
   entities[entity->id] = std::move(actor); // TODO: bounds check.
@@ -142,7 +136,7 @@ void wrenEntityDealloc(void *entity) {
 }
 
 static void wrenEntitySetModel(WrenVM *vm) {
-  auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
+  auto entity = (kube::Entity *)(wrenGetSlotForeign(vm, 0));
   auto model = wrenGetSlotString(vm, 1);
   if (streq(model, "cube")) {
     auto cube = kube::CreateCubeModel();

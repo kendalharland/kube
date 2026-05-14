@@ -35,7 +35,9 @@ public:
   Model();
   Model(std::unique_ptr<graphics::Mesh> mesh);
 
-  Model &operator=(Model &&other) = delete;
+  // Move assignment.
+  Model &operator=(Model &&other) = default;
+
   std::string GetName() const;
   glm::mat4 GetMatrix() const;
   void SetName(std::string name);
