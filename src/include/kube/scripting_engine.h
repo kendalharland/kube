@@ -36,13 +36,11 @@
 #include <iostream>
 #include <sstream>
 
-// -- Constants
-
 #define MAX_MODELS MAX_ENTITIES
-typedef int ModelID;
-
 
 auto entities = kube::EntityStore();
+
+namespace kube {
 
 bool streq(std::string a, std::string b) { return a.compare(b) == 0; }
 
@@ -54,32 +52,24 @@ void openWindow(int width, int height, char *title) {
   window->SetCamera(std::move(camera));
 }
 
-typedef struct Entity {
-  EntityID id;
-} Entity;
-
-typedef struct Model {
-  kube::Model model;
-} Model;
-
 // ============================================================================
 // Entity
 // ============================================================================
 
-static void entitySetModel(Entity *entity, Model* model) {
+static void entitySetModel(EntityID id, Model&& model) {
   auto component = kube::ModelComponent{};
-  component.model = std::move(model->model);
-  entities.AddModelComponent(entity->id, std::move(component));
+  component.model = std::move(model);
+  entities.AddModelComponent(id, std::move(component));
 }
 
-static void entitySetPosition(Entity* entity, glm::vec3 position) {
+static void entitySetPosition(EntityID id, glm::vec3 position) {
   auto component = kube::PositionComponent{.position = position};
-  entities.AddPositionComponent(entity->id, std::move(component));
+  entities.AddPositionComponent(id, std::move(component));
 }
 
-static void entitySetSpin(Entity* entity, glm::vec3 spin) {
+static void entitySetSpin(EntityID id, glm::vec3 spin) {
   auto component = kube::MovementComponent{.spin = spin};
-  entities.AddMovementComponent(entity->id, std::move(component));
+  entities.AddMovementComponent(id, std::move(component));
 }
 
 // ============================================================================
@@ -90,10 +80,12 @@ kube::Model loadModelFile(std::string filename) {
     throw std::logic_error("unimplemented");
 }
 
-void modelInit(Model* model, std::string identifier) {
+Model createModel(std::string identifier) {
     if (streq(identifier, "@cube")) {
-        model->model = kube::CreateCubeModel();
+        return kube::CreateCubeModel();
     } else {
-        model->model = loadModelFile(identifier);
+        return loadModelFile(identifier);
     }
 }
+
+} // namespace kube

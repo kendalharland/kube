@@ -38,6 +38,16 @@
 
 #include "wren.hpp"
 
+
+typedef struct Entity {
+  EntityID id;
+} Entity;
+
+typedef struct Model {
+  kube::Model value;
+} Model;
+
+
 WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   WrenLoadModuleResult result = {0};
   char fullname[128];
@@ -118,7 +128,7 @@ void wrenOpenWindow(WrenVM *vm) {
   auto width = (int)wrenGetSlotDouble(vm, 1);
   auto height = (int)wrenGetSlotDouble(vm, 2);
   auto title = (char *)wrenGetSlotString(vm, 3);
-  openWindow(width, height, title);
+  kube::openWindow(width, height, title);
 }
 
 void wrenEntityAlloc(WrenVM *vm) {
@@ -133,7 +143,7 @@ void wrenEntityDealloc(void *entity) {
 void wrenModelAlloc(WrenVM *vm) {
   auto model = (Model *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Model));
   auto identifier = wrenGetSlotString(vm, 1);
-  modelInit(model, identifier);
+  model->value = kube::createModel(identifier);
 }
 
 void wrenModelDealloc(void *model) {
@@ -143,7 +153,7 @@ void wrenModelDealloc(void *model) {
 static void wrenEntitySetModel(WrenVM *vm) {
   auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
   auto model = (Model *)wrenGetSlotForeign(vm, 1);
-  entitySetModel(entity, model);
+  kube::entitySetModel(entity->id, std::move(model->value));
 }
 
 static void wrenEntitySetPosition(WrenVM *vm) {
@@ -151,7 +161,7 @@ static void wrenEntitySetPosition(WrenVM *vm) {
   auto x = wrenGetSlotDouble(vm, 1);
   auto y = wrenGetSlotDouble(vm, 2);
   auto z = wrenGetSlotDouble(vm, 3);
-  entitySetPosition(entity, glm::vec3(x, y, z));
+  kube::entitySetPosition(entity->id, glm::vec3(x, y, z));
 }
 
 static void wrenEntitySetSpin(WrenVM *vm) {
@@ -159,10 +169,12 @@ static void wrenEntitySetSpin(WrenVM *vm) {
   auto x = wrenGetSlotDouble(vm, 1);
   auto y = wrenGetSlotDouble(vm, 2);
   auto z = wrenGetSlotDouble(vm, 3);
-  entitySetSpin(entity, glm::vec3(x, y, z));
+  kube::entitySetSpin(entity->id, glm::vec3(x, y, z));
 }
 
-// -- Binding table lookup
+// ============================================================================
+// Foreign method and class bindings
+// ============================================================================
 
 using NativeFn = void (*)(WrenVM *vm); // adjust as needed
 
@@ -202,10 +214,10 @@ WrenForeignClassMethods wrenBindForeignClass(WrenVM *vm, const char *module,
 
   WrenForeignClassMethods methods{};
 
-  if (streq(module, "kube") && streq(className, "Entity")) {
+  if (kube::streq(module, "kube") && kube::streq(className, "Entity")) {
     methods.allocate = wrenEntityAlloc;
     methods.finalize = wrenEntityDealloc;
-  } else if (streq(module, "kube") && streq(className, "Model")) {
+  } else if (kube::streq(module, "kube") && kube::streq(className, "Model")) {
     methods.allocate = wrenModelAlloc;
     methods.finalize = wrenModelDealloc;
   }
