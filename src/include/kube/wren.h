@@ -38,9 +38,7 @@
 
 #include "wren.hpp"
 
-kube::Game *game;
 
-void wrenInitGame() { game = kube::newGame(); }
 
 typedef struct Camera {
   CameraID id;
@@ -53,6 +51,16 @@ typedef struct Entity {
 typedef struct Model {
   kube::Model value;
 } Model;
+
+
+static kube::Game *game = nullptr;
+
+void wrenGameLoop(WrenVM *vm) {
+  if (game == nullptr) {
+    game = kube::newGame();
+    kube::gameLoop(game);
+  }
+}
 
 WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   WrenLoadModuleResult result = {0};
@@ -68,8 +76,6 @@ WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   result.source = c_source;
   return result;
 }
-
-void wrenRunGame(WrenVM *vm) { kube::runGame(game); }
 
 void wrenWriteFn(WrenVM *vm, const char *text) { printf("%s", text); }
 
@@ -95,13 +101,18 @@ void wrenOpenWindow(WrenVM *vm) {
   kube::openWindow(width, height, title);
 }
 
+// ============================================================================
+// Allocators
+// ============================================================================
+
+
 void wrenEntityAlloc(WrenVM *vm) {
   auto entity = (Entity *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Entity));
   entity->id = kube::createEntity(game);
 }
 
 void wrenEntityDealloc(void *entity) {
-  // TODO: Call the destructor explicitly; Wren will free the raw memory.
+  delete (Entity*) entity;
 }
 
 void wrenModelAlloc(WrenVM *vm) {
@@ -111,7 +122,7 @@ void wrenModelAlloc(WrenVM *vm) {
 }
 
 void wrenModelDealloc(void *model) {
-  // TODO
+  delete (Model*) model;
 }
 
 void wrenCameraAlloc(WrenVM *vm) {
@@ -120,8 +131,12 @@ void wrenCameraAlloc(WrenVM *vm) {
 }
 
 void wrenCameraDealloc(void *camera) {
-  // TODO
+  delete (Camera*) camera;
 }
+
+// ============================================================================
+// Methods
+// ============================================================================
 
 static void wrenCameraSetActive(WrenVM *vm) {
   auto camera = (Camera *)(wrenGetSlotForeign(vm, 0));
@@ -186,7 +201,7 @@ using BindingTable = std::unordered_map<std::string, NativeFn>;
 
 BindingTable &getBindingTable() {
   static BindingTable table = {
-      {makeKey("kube", "Game", "run()", 1), &wrenRunGame},
+      {makeKey("kube", "Game", "loop()", 1), &wrenGameLoop},
       {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow},
       {makeKey("kube", "Entity", "setModel_(_)", 0), &wrenEntitySetModel},
       {makeKey("kube", "Entity", "setPosition_(_,_,_)", 0), &wrenEntitySetPosition},

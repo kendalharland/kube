@@ -66,7 +66,7 @@ void freeGame(Game *game) {
   game = nullptr;
 }
 
-void runGame(Game *game) {
+void gameLoop(Game *game) {
   using namespace kube::graphics;
 
   auto window = Window::GetInstance();
@@ -77,7 +77,7 @@ void runGame(Game *game) {
   stopwatch.Start();
 
   do {
-    auto deltaSecs = stopwatch.Lap();
+    auto deltaSecs = stopwatch.ElapsedSeconds();
 
     window->Clear();
 
@@ -91,6 +91,7 @@ void runGame(Game *game) {
         continue;
       }
 
+      // Process entity movement.
       if (movement != nullptr) {
         // Update position
         position->position += position->position * movement->velocity;

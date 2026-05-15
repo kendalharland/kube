@@ -21,7 +21,7 @@ namespace kube {
 class Stopwatch final {
 public:
   void Start();
-  double Lap();
+  double ElapsedSeconds();
 
 private:
   double last_lap_;

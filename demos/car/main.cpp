@@ -70,7 +70,7 @@ int main(void) {
 
   float x = 0;
   do {
-    auto dt = stopwatch.Lap();
+    auto dt = stopwatch.ElapsedSeconds();
 
     // Add an orbiting light source to show off the shader.
     x += dt;

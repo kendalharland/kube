@@ -23,7 +23,7 @@ namespace kube {
 
 void Stopwatch::Start() { last_lap_ = glfwGetTime(); }
 
-double Stopwatch::Lap() {
+double Stopwatch::ElapsedSeconds() {
   auto now = glfwGetTime();
   auto elapsed = now - last_lap_;
   last_lap_ = now;

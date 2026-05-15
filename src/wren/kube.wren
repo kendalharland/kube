@@ -18,23 +18,32 @@
 // Foreign bindings
 // ============================================================================
 
-
 // Global singleton representing the game.
 // Run it with loop(). Can only be called once.
 class Game {
   foreign static loop()
 }
 
+// Global singleton representing the game window.
 class Window {
   foreign static open(width, height, title)
 }
 
+// Camera object.
+//
+// Multiple cameras are supported.
 foreign class Camera {
   foreign setPosition_(x, y, z)
+
+  // Set the player's perspective to this camera.
+  // 
+  // The perspective will be overridden the next time any camera instance calls
+  // setActive.
   foreign setActive()
 
   construct new() {}
 
+  // Set the camera's position.
   position=(vec) {
     setPosition_(vec.x, vec.y, vec.z)
   }
