@@ -33,6 +33,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <glm/glm.hpp>
 #include <iostream>
 #include <sstream>
 
@@ -80,25 +81,29 @@ void runGame(Game *game) {
 
     window->Clear();
 
-    // Draw entities
-    for (auto entity : game->entities->GetEntitiesWithModelComponent()) {
-      auto model = game->entities->GetModelComponent(entity.id);
+    // Draw entities.
+    for (auto entity : game->entities->GetEntitiesWithComponent(typeid(ModelComponent))) {
+      auto model = game->entities->GetComponent<ModelComponent>(entity.id);
+      auto position = game->entities->GetComponent<PositionComponent>(entity.id);
+      auto movement = game->entities->GetComponent<MovementComponent>(entity.id);
 
-      // Update position.
-      auto position = game->entities->GetPositionComponent(entity.id);
-      if (position != nullptr) {
-        model->model.SetCenter(position->position);
+      if (position == nullptr) {
+        continue;
       }
 
-      // Update rotation.
-      auto movement = game->entities->GetMovementComponent(entity.id);
       if (movement != nullptr) {
-        auto model = game->entities->GetModelComponent(entity.id);
-        model->model.Rotate(movement->spin.x * deltaSecs, X_AXIS);
-        model->model.Rotate(movement->spin.y * deltaSecs, Y_AXIS);
-        model->model.Rotate(movement->spin.z * deltaSecs, Z_AXIS);
+        // Update position
+        position->position += position->position * movement->velocity;
+
+        // Update rotation
+        auto axis = glm::vec3(movement->spin.x, movement->spin.y, movement->spin.z);
+        auto radians = (float)deltaSecs;
+        position->rotation = glm::rotate(position->rotation, radians, axis);
       }
 
+      // Update model
+      model->model.SetCenter(position->position);
+      model->model.SetRotation(position->rotation);
       model->model.Draw(window->GetCamera(), shader);
     }
 
@@ -110,6 +115,7 @@ void runGame(Game *game) {
 
 CameraID createCamera(Game *game) {
   auto cameraID = game->cameras->Create();
+  // TODO: Represent camera is entity with position and movement components.
   return cameraID;
 }
 
@@ -137,17 +143,21 @@ static EntityID createEntity(Game *game) { return game->entities->CreateEntity()
 static void entitySetModel(Game *game, EntityID id, Model &&model) {
   auto component = ModelComponent{};
   component.model = std::move(model);
-  game->entities->AddModelComponent(id, std::move(component));
+  game->entities->AddComponent<ModelComponent>(id, std::move(component));
 }
 
 static void entitySetPosition(Game *game, EntityID id, glm::vec3 position) {
   auto component = PositionComponent{.position = position};
-  game->entities->AddPositionComponent(id, std::move(component));
+  auto previous = game->entities->GetComponent<PositionComponent>(id);
+  if (previous != nullptr) {
+    component.rotation = previous->rotation;
+  }
+  game->entities->AddComponent<PositionComponent>(id, std::move(component));
 }
 
 static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
   auto component = MovementComponent{.spin = spin};
-  game->entities->AddMovementComponent(id, std::move(component));
+  game->entities->AddComponent<MovementComponent>(id, std::move(component));
 }
 
 // ============================================================================

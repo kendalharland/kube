@@ -21,12 +21,28 @@
 #include <kube/model.h>
 #include <map>
 #include <stdexcept>
+#include <typeindex>
 
 namespace kube {
+
+#define EntityID int
 
 // ----------------------------------------------------------------------------
 // Forward declarations
 // ----------------------------------------------------------------------------
+
+#define MODEL_COMPONENT_TYPE typeid(ModelComponent)
+#define POSITION_COMPONENT_TYPE typeid(PositionComponent)
+#define MOVEMENT_COMPONENT_TYPE typeid(MovementComponent)
+
+class IComponentStore {
+public:
+  IComponentStore() = default;
+  virtual ~IComponentStore() = default;
+
+  virtual bool Contains(EntityID entityID) = 0;
+};
+
 template <typename C> class ComponentStore;
 
 typedef struct ModelComponent {
@@ -34,7 +50,8 @@ typedef struct ModelComponent {
 } ModelComponent;
 
 typedef struct PositionComponent {
-  glm::vec3 position;
+  glm::vec3 position = glm::vec3(0.f);
+  glm::mat4 rotation = glm::mat4(1.f);
 } PositionComponent;
 
 typedef struct MovementComponent {
@@ -45,9 +62,6 @@ typedef struct MovementComponent {
 // ----------------------------------------------------------------------------
 // Entity
 // ----------------------------------------------------------------------------
-
-#define MAX_ENTITIES 50000
-#define EntityID int
 
 typedef struct Entity {
   EntityID id;
@@ -62,69 +76,68 @@ public:
   void AddEntity(Entity entity);
   std::vector<Entity> GetEntitiesWithModelComponent();
 
-  // Component modifiers
-  void AddModelComponent(EntityID entityID, ModelComponent &&component);
-  ModelComponent *GetModelComponent(EntityID entityID);
-  void AddPositionComponent(EntityID entityID, PositionComponent &&component);
-  PositionComponent *GetPositionComponent(EntityID entityID);
-  void AddMovementComponent(EntityID entityID, MovementComponent &&component);
-  MovementComponent *GetMovementComponent(EntityID entityID);
+  std::vector<Entity> GetEntitiesWithComponent(std::type_index t);
+  bool EntityHasComponent(EntityID entityID, std::type_index componentType);
+
+  template <typename C> void AddComponent(EntityID entityID, C &&component);
+
+  template <typename C> C *GetComponent(EntityID id);
 
 private:
+  template <typename C> ComponentStore<C> *GetStore();
+
   std::vector<Entity> entities_;
 
   // Component Stores
-  ComponentStore<ModelComponent> *models_;
-  ComponentStore<PositionComponent> *positions_;
-  ComponentStore<MovementComponent> *movements_;
+  std::map<std::type_index, std::unique_ptr<IComponentStore>> stores_;
+
+  // ComponentStore<ModelComponent> *models_;
+  // ComponentStore<PositionComponent> *positions_;
+  // ComponentStore<MovementComponent> *movements_;
 };
 
 // ----------------------------------------------------------------------------
 // Components
 // ----------------------------------------------------------------------------
 
-template <typename C> class ComponentStore {
+// Publicly inherit IComponentStore for storage in EntityStore.stores_;
+template <typename C> class ComponentStore : public IComponentStore {
 public:
   void Set(C &&component, EntityID entityID);
   C *Get(EntityID entityID);
+  bool Contains(EntityID entityID);
 
 private:
-  C storage_[MAX_ENTITIES];
+  std::map<EntityID, C> storage_;
 };
 
 template <typename C> void ComponentStore<C>::Set(C &&component, EntityID entityID) {
-  if (entityID >= MAX_ENTITIES) {
-    KUBE_ERROR << "maximum number of components reached";
-    return;
-  }
-
   storage_[entityID] = std::move(component);
 }
 
 template <typename C> C *ComponentStore<C>::Get(EntityID entityID) {
-  if (entityID >= MAX_ENTITIES) {
-    throw std::out_of_range("entity ID out of bounds");
-  }
+  auto entry = storage_.find(entityID);
+  if (entry == storage_.end())
+    return nullptr;
+  return &entry->second;
+}
 
-  return &storage_[entityID];
+template <typename C> bool ComponentStore<C>::Contains(EntityID entityID) {
+  return storage_.find(entityID) != storage_.end();
 }
 
 EntityStore::EntityStore() {
-  models_ = new ComponentStore<ModelComponent>();
-  positions_ = new ComponentStore<PositionComponent>();
-  movements_ = new ComponentStore<MovementComponent>();
+  stores_.emplace(MODEL_COMPONENT_TYPE,
+                  std::unique_ptr<IComponentStore>(new ComponentStore<ModelComponent>()));
+
+  stores_.emplace(POSITION_COMPONENT_TYPE,
+                  std::unique_ptr<IComponentStore>(new ComponentStore<PositionComponent>()));
+
+  stores_.emplace(MOVEMENT_COMPONENT_TYPE,
+                  std::unique_ptr<IComponentStore>(new ComponentStore<MovementComponent>()));
 }
 
-EntityStore::~EntityStore() {
-  delete models_;
-  models_ = nullptr;
-
-  delete positions_;
-  positions_ = nullptr;
-
-  delete movements_;
-  movements_ = nullptr;
-}
+EntityStore::~EntityStore() {}
 
 void EntityStore::AddEntity(Entity entity) { entities_.push_back(entity); }
 
@@ -134,26 +147,44 @@ EntityID EntityStore::CreateEntity() {
   return entity.id;
 }
 
-void EntityStore::AddModelComponent(EntityID entityID, ModelComponent &&component) {
-  models_->Set(std::move(component), entityID);
+template <typename C> ComponentStore<C> *EntityStore::GetStore() {
+  auto it = stores_.find(typeid(C));
+  if (it == stores_.end())
+    return nullptr;
+  return dynamic_cast<ComponentStore<C> *>(it->second.get());
 }
 
-ModelComponent *EntityStore::GetModelComponent(EntityID entityID) { return models_->Get(entityID); }
-
-void EntityStore::AddPositionComponent(EntityID entityID, PositionComponent &&component) {
-  positions_->Set(std::move(component), entityID);
+template <typename C> void EntityStore::AddComponent(EntityID entityID, C &&component) {
+  auto store = GetStore<C>();
+  if (store == nullptr) {
+    throw std::invalid_argument("component type not found");
+  }
+  store->Set(std::move(component), entityID);
 }
 
-PositionComponent *EntityStore::GetPositionComponent(EntityID entityID) {
-  return positions_->Get(entityID);
+template <typename C> C *EntityStore::GetComponent(EntityID entityID) {
+  auto store = GetStore<C>();
+  if (store == nullptr) {
+    throw std::invalid_argument("component type not found");
+  }
+  return store->Get(entityID);
 }
 
-void EntityStore::AddMovementComponent(EntityID entityID, MovementComponent &&component) {
-  movements_->Set(std::move(component), entityID);
+std::vector<Entity> EntityStore::GetEntitiesWithComponent(std::type_index componentType) {
+  std::vector<Entity> entities;
+  for (auto entity : entities_) {
+    if (EntityHasComponent(entity.id, componentType)) {
+      entities.push_back(entity);
+    }
+  }
+  return entities;
 }
 
-MovementComponent *EntityStore::GetMovementComponent(EntityID entityID) {
-  return movements_->Get(entityID);
+bool EntityStore::EntityHasComponent(EntityID entityID, std::type_index componentType) {
+  auto store = stores_.find(componentType);
+  if (store == stores_.end())
+    return false;
+  return store->second->Contains(entityID);
 }
 
 std::vector<Entity> EntityStore::GetEntitiesWithModelComponent() {
