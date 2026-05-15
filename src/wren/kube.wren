@@ -14,12 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+// ============================================================================
+// Foreign bindings
+// ============================================================================
+
+
+// Global singleton representing the game.
+// Run it with loop(). Can only be called once.
 class Game {
-    foreign static run()
+  foreign static loop()
 }
 
 class Window {
-    foreign static open(width, height, title)
+  foreign static open(width, height, title)
 }
 
 foreign class Camera {
@@ -32,6 +39,34 @@ foreign class Camera {
     setPosition_(vec.x, vec.y, vec.z)
   }
 }
+
+foreign class Entity {
+  foreign setModel_(model)
+  foreign setPosition_(x, y, z)
+  foreign setSpin_(x, y, z)
+
+  construct new() {}
+  
+  model=(value) {
+    setModel_(value)
+  }
+  
+  position=(vec) {
+    setPosition_(vec.x, vec.y, vec.z)
+  }
+
+  spin=(vec) {
+    setSpin_(vec.x, vec.y, vec.z)
+  }
+}
+
+foreign class Model {
+  construct new(identifier) {}
+}
+
+// ============================================================================
+// Helpers
+// ============================================================================
 
 class Vec3 {
   construct new(x, y, z) {
@@ -48,28 +83,4 @@ class Vec3 {
 
   z { _z }
   z=(value) { _z = value }
-}
-
-foreign class Entity {
-    foreign setModel_(model)
-    foreign setPosition_(x, y, z)
-    foreign setSpin_(x, y, z)
-
-    construct new() {}
-    
-    model=(value) {
-        setModel_(value)
-    }
-    
-    position=(vec) {
-        setPosition_(vec.x, vec.y, vec.z)
-    }
-
-    spin=(vec) {
-        setSpin_(vec.x, vec.y, vec.z)
-    }
-}
-
-foreign class Model {
-    construct new(identifier) {}
 }

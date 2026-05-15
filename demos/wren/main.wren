@@ -38,22 +38,22 @@ camera.setActive()
 var entities = []
 var random = Random.new(123456789)
 
-for(i in 1..4000) { 
-    var entity = Entity.new()
+for (i in 1..4000) {
+  var entity = Entity.new()
 
-    entity.model = Model.new("@cube")
-    
-    entity.position = Vec3.new(
-        random.float(-100, 100),
-        random.float(-100, 100),
-        random.float(-100, 100)
-    )
+  entity.model = Model.new("@cube")
+  
+  entity.position = Vec3.new(
+    random.float(-100, 100),
+    random.float(-100, 100),
+    random.float(-100, 100)
+  )
 
-    entity.spin = Vec3.new(
-        random.float(-1, 1),
-        random.float(-1, 1),
-        random.float(-1, 1)
-    )
+  entity.spin = Vec3.new(
+    random.float(-1, 1),
+    random.float(-1, 1),
+    random.float(-1, 1)
+  )
 }
 
 // ============================================================================
