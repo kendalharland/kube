@@ -46,18 +46,18 @@ void openWindow(int width, int height, char *title) {
   auto window = Window::GetInstance();
   window->Open(width, height, title);
   auto camera = std::make_unique<Camera>();
-  camera->SetPosition(100, 100, 100);
-  window->SetCamera(std::move(camera));
 }
 
 typedef struct Game {
   EntityStore *entities;
+  CameraStore *cameras;
 } Game;
 
-Game* newGame() {
-    auto game = new Game();
-    game->entities = new EntityStore();
-    return game;
+Game *newGame() {
+  auto game = new Game();
+  game->entities = new EntityStore();
+  game->cameras = new CameraStore();
+  return game;
 }
 
 void freeGame(Game *game) {
@@ -106,6 +106,26 @@ void runGame(Game *game) {
   } while (!window->ShouldClose());
 
   window->Close();
+}
+
+CameraID createCamera(Game *game) {
+  auto cameraID = game->cameras->Create();
+  return cameraID;
+}
+
+static void cameraSetActive(Game *game, CameraID cameraID) {
+  auto camera = game->cameras->Get(cameraID);
+  if (camera == nullptr)
+    return;
+  auto window = Window::GetInstance();
+  window->SetCamera(camera);
+}
+
+static void cameraSetPosition(Game *game, CameraID cameraID, glm::vec3 position) {
+  auto camera = game->cameras->Get(cameraID);
+  if (camera == nullptr)
+    return;
+  camera->SetPosition(position);
 }
 
 // ============================================================================

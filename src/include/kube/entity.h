@@ -121,6 +121,9 @@ EntityStore::~EntityStore() {
 
   delete positions_;
   positions_ = nullptr;
+
+  delete movements_;
+  movements_ = nullptr;
 }
 
 void EntityStore::AddEntity(Entity entity) { entities_.push_back(entity); }

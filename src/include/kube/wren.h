@@ -42,6 +42,10 @@ kube::Game *game;
 
 void wrenInitGame() { game = kube::newGame(); }
 
+typedef struct Camera {
+  CameraID id;
+} Camera;
+
 typedef struct Entity {
   EntityID id;
 } Entity;
@@ -110,6 +114,28 @@ void wrenModelDealloc(void *model) {
   // TODO
 }
 
+void wrenCameraAlloc(WrenVM *vm) {
+  auto camera = (Camera *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Camera));
+  camera->id = kube::createCamera(game);
+}
+
+void wrenCameraDealloc(void *camera) {
+  // TODO
+}
+
+static void wrenCameraSetActive(WrenVM *vm) {
+  auto camera = (Camera *)(wrenGetSlotForeign(vm, 0));
+  kube::cameraSetActive(game, camera->id);
+}
+
+static void wrenCameraSetPosition(WrenVM *vm) {
+  auto camera = (Camera *)(wrenGetSlotForeign(vm, 0));
+  auto x = wrenGetSlotDouble(vm, 1);
+  auto y = wrenGetSlotDouble(vm, 2);
+  auto z = wrenGetSlotDouble(vm, 3);
+  kube::cameraSetPosition(game, camera->id, glm::vec3(x, y, z));
+}
+
 static void wrenEntitySetModel(WrenVM *vm) {
   auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
   auto model = (Model *)wrenGetSlotForeign(vm, 1);
@@ -164,7 +190,9 @@ BindingTable &getBindingTable() {
       {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow},
       {makeKey("kube", "Entity", "setModel_(_)", 0), &wrenEntitySetModel},
       {makeKey("kube", "Entity", "setPosition_(_,_,_)", 0), &wrenEntitySetPosition},
-      {makeKey("kube", "Entity", "setSpin_(_,_,_)", 0), &wrenEntitySetSpin}};
+      {makeKey("kube", "Entity", "setSpin_(_,_,_)", 0), &wrenEntitySetSpin},
+      {makeKey("kube", "Camera", "setActive()", 0), &wrenCameraSetActive},
+      {makeKey("kube", "Camera", "setPosition_(_,_,_)", 0), &wrenCameraSetPosition}};
   return table;
 }
 
@@ -180,6 +208,9 @@ WrenForeignClassMethods wrenBindForeignClass(WrenVM *vm, const char *module,
   } else if (kube::streq(module, "kube") && kube::streq(className, "Model")) {
     methods.allocate = wrenModelAlloc;
     methods.finalize = wrenModelDealloc;
+  } else if (kube::streq(module, "kube") && kube::streq(className, "Camera")) {
+    methods.allocate = wrenCameraAlloc;
+    methods.finalize = wrenCameraDealloc;
   }
 
   return methods;
@@ -196,5 +227,6 @@ WrenForeignMethodFn wrenBindForeignMethod(WrenVM *vm, const char *module, const 
   if (it != table.end()) {
     return it->second;
   }
+
   return nullptr;
 }

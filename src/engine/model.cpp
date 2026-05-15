@@ -15,11 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <kube/logging.h>
+#include <kube/math.h>
 #include <kube/mesh.h>
 #include <kube/model.h>
 #include <kube/window.h>
 
-#include "math.h"
 #include "model_loader.h"
 
 #include <assimp/Importer.hpp>

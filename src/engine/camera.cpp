@@ -28,6 +28,7 @@ void Camera::SetAspectRatio(float value) { aspectRatio_ = value; }
 float Camera::GetAspsectRatio() const { return aspectRatio_; }
 
 void Camera::SetPosition(float x, float y, float z) { position_ = glm::vec3(x, y, x); }
+void Camera::SetPosition(glm::vec3 position) { position_ = position; }
 
 glm::vec3 Camera::GetPosition() const { return position_; }
 

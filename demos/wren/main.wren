@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import "kube" for Game, Entity, Model, Window, Vec3
+import "kube" for Game, Camera, Entity, Model, Window, Vec3
 import "random" for Random
 
 // ============================================================================
@@ -26,6 +26,10 @@ var width = 1600
 var height = 1200
 
 Window.open(width, height, title)
+
+var camera = Camera.new()
+camera.position = Vec3.new(100, 100, 100)
+camera.setActive()
 
 // ============================================================================
 // Scene setup

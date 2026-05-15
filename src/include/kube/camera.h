@@ -18,8 +18,11 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <map>
 
 #define GLM_FORCE_RADIANS 1
+
+#define CameraID int
 
 namespace kube {
 
@@ -33,6 +36,7 @@ public:
   void SetAspectRatio(float value);
   float GetAspsectRatio() const;
   void SetPosition(float x, float y, float z);
+  void SetPosition(glm::vec3 position);
   glm::vec3 GetPosition() const;
   void SetTarget(float x, float y, float z);
   glm::vec3 GetTarget() const;
@@ -50,5 +54,35 @@ private:
   glm::vec3 target_ = glm::vec3(0.f);
   glm::vec3 up_ = glm::vec3(0, 1, 0);
 };
+
+class CameraStore {
+public:
+  CameraStore();
+  ~CameraStore();
+
+  CameraID Create();
+  Camera *Get(CameraID cameraID);
+
+private:
+  std::map<CameraID, Camera> cameras_;
+};
+
+CameraStore::CameraStore() {}
+
+CameraStore::~CameraStore() {}
+
+CameraID CameraStore::Create() {
+  CameraID id = cameras_.size();
+  cameras_[id] = Camera();
+  return id;
+}
+
+Camera *CameraStore::Get(CameraID cameraID) {
+  auto result = cameras_.find(cameraID);
+  if (result == cameras_.end()) {
+    return nullptr;
+  }
+  return &result->second;
+}
 
 }; // namespace kube

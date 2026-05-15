@@ -17,7 +17,6 @@
 #include "engine/actor.cpp"
 #include "engine/camera.cpp"
 #include "engine/logging.cpp"
-#include "engine/math.cpp"
 #include "engine/mesh.cpp"
 #include "engine/mesh_builder.cpp"
 #include "engine/mesh_builder.h"
