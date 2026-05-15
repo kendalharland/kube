@@ -43,9 +43,9 @@ namespace kube {
 bool streq(std::string a, std::string b) { return a.compare(b) == 0; }
 
 void openWindow(int width, int height, char *title) {
-  auto window = kube::Window::GetInstance();
+  auto window = Window::GetInstance();
   window->Open(width, height, title);
-  auto camera = std::make_unique<kube::Camera>();
+  auto camera = std::make_unique<Camera>();
   camera->SetPosition(100, 100, 100);
   window->SetCamera(std::move(camera));
 }
@@ -64,11 +64,11 @@ void freeGame(Game *game) {
 void runGame(Game *game) {
   using namespace kube::graphics;
 
-  auto window = kube::Window::GetInstance();
+  auto window = Window::GetInstance();
 
   std::shared_ptr<Shader> shader = Shader::SimpleColorShader("src/shaders");
 
-  kube::Stopwatch stopwatch;
+  Stopwatch stopwatch;
   stopwatch.Start();
 
   do {
@@ -111,18 +111,18 @@ void runGame(Game *game) {
 static EntityID createEntity(Game *game) { return game->entities->CreateEntity(); }
 
 static void entitySetModel(Game *game, EntityID id, Model &&model) {
-  auto component = kube::ModelComponent{};
+  auto component = ModelComponent{};
   component.model = std::move(model);
   game->entities->AddModelComponent(id, std::move(component));
 }
 
 static void entitySetPosition(Game *game, EntityID id, glm::vec3 position) {
-  auto component = kube::PositionComponent{.position = position};
+  auto component = PositionComponent{.position = position};
   game->entities->AddPositionComponent(id, std::move(component));
 }
 
 static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
-  auto component = kube::MovementComponent{.spin = spin};
+  auto component = MovementComponent{.spin = spin};
   game->entities->AddMovementComponent(id, std::move(component));
 }
 
@@ -130,11 +130,11 @@ static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
 // Model
 // ============================================================================
 
-kube::Model loadModelFile(std::string filename) { throw std::logic_error("unimplemented"); }
+Model loadModelFile(std::string filename) { throw std::logic_error("unimplemented"); }
 
 Model createModel(std::string identifier) {
   if (streq(identifier, "@cube")) {
-    return kube::CreateCubeModel();
+    return CreateCubeModel();
   } else {
     return loadModelFile(identifier);
   }
