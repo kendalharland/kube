@@ -72,6 +72,7 @@ public:
   EntityStore();
   ~EntityStore();
 
+  std::vector<Entity>* All();
   EntityID CreateEntity();
   void AddEntity(Entity entity);
   std::vector<Entity> GetEntitiesWithModelComponent();
@@ -82,6 +83,9 @@ public:
   template <typename C> void AddComponent(EntityID entityID, C &&component);
 
   template <typename C> C *GetComponent(EntityID id);
+
+  auto begin() const { return entities_.begin(); }
+  auto end() const { return entities_.end(); }
 
 private:
   template <typename C> ComponentStore<C> *GetStore();
@@ -185,15 +189,6 @@ bool EntityStore::EntityHasComponent(EntityID entityID, std::type_index componen
   if (store == stores_.end())
     return false;
   return store->second->Contains(entityID);
-}
-
-std::vector<Entity> EntityStore::GetEntitiesWithModelComponent() {
-  // TODO: Filter
-  std::vector<Entity> entities;
-  for (auto entity : entities_) {
-    entities.push_back(entity);
-  }
-  return entities;
 }
 
 } // namespace kube

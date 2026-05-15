@@ -82,7 +82,7 @@ void runGame(Game *game) {
     window->Clear();
 
     // Draw entities.
-    for (auto entity : game->entities->GetEntitiesWithComponent(typeid(ModelComponent))) {
+    for (auto entity : *game->entities) {
       auto model = game->entities->GetComponent<ModelComponent>(entity.id);
       auto position = game->entities->GetComponent<PositionComponent>(entity.id);
       auto movement = game->entities->GetComponent<MovementComponent>(entity.id);
@@ -101,10 +101,12 @@ void runGame(Game *game) {
         position->rotation = glm::rotate(position->rotation, radians, axis);
       }
 
-      // Update model
-      model->model.SetCenter(position->position);
-      model->model.SetRotation(position->rotation);
-      model->model.Draw(window->GetCamera(), shader);
+      if (model != nullptr) {
+        // Update and draw model
+        model->model.SetCenter(position->position);
+        model->model.SetRotation(position->rotation);
+        model->model.Draw(window->GetCamera(), shader);
+      }
     }
 
     window->Update();
