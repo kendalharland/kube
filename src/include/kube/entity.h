@@ -27,9 +27,9 @@ namespace kube {
 
 #define EntityID int
 
-// ----------------------------------------------------------------------------
+// ============================================================================
 // Forward declarations
-// ----------------------------------------------------------------------------
+// ============================================================================
 
 #define MODEL_COMPONENT_TYPE typeid(ModelComponent)
 #define POSITION_COMPONENT_TYPE typeid(PositionComponent)
@@ -59,9 +59,9 @@ typedef struct MovementComponent {
   glm::vec3 velocity;
 } MovementComponent;
 
-// ----------------------------------------------------------------------------
+// ============================================================================
 // Entity
-// ----------------------------------------------------------------------------
+// ============================================================================
 
 typedef struct Entity {
   EntityID id;
@@ -96,9 +96,9 @@ private:
   std::map<std::type_index, std::unique_ptr<IComponentStore>> stores_;
 };
 
-// ----------------------------------------------------------------------------
+// ============================================================================
 // Components
-// ----------------------------------------------------------------------------
+// ============================================================================
 
 // Publicly inherit IComponentStore for storage in EntityStore.stores_;
 template <typename C> class ComponentStore : public IComponentStore {
@@ -110,6 +110,10 @@ public:
 private:
   std::map<EntityID, C> storage_;
 };
+
+// ============================================================================
+// ComponentStore impl
+// ============================================================================
 
 template <typename C> void ComponentStore<C>::Set(C &&component, EntityID entityID) {
   storage_[entityID] = std::move(component);
@@ -125,6 +129,10 @@ template <typename C> C *ComponentStore<C>::Get(EntityID entityID) {
 template <typename C> bool ComponentStore<C>::Contains(EntityID entityID) {
   return storage_.find(entityID) != storage_.end();
 }
+
+// ============================================================================
+// EntityStore impl
+// ============================================================================
 
 EntityStore::EntityStore() {
   stores_.emplace(MODEL_COMPONENT_TYPE,

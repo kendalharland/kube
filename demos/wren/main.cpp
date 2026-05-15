@@ -41,7 +41,10 @@ int main(void) {
 
   WrenVM* vm = wrenNewVM(&config);
   const char* module = "main";
+
+  wrenInitGame();
   auto source = kube::fs::readFile("demos/wren/main.wren");
+  
   WrenInterpretResult result = wrenInterpret(vm, module, source.c_str());
 
   switch (result) {

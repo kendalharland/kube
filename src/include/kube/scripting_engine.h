@@ -50,6 +50,7 @@ void openWindow(int width, int height, char *title) {
 }
 
 typedef struct Game {
+  bool running = false;
   EntityStore *entities;
   CameraStore *cameras;
 } Game;
@@ -81,17 +82,18 @@ void gameLoop(Game *game) {
 
     window->Clear();
 
-    // Draw entities.
+    // Draw entities
     for (auto entity : *game->entities) {
       auto model = game->entities->GetComponent<ModelComponent>(entity.id);
       auto position = game->entities->GetComponent<PositionComponent>(entity.id);
       auto movement = game->entities->GetComponent<MovementComponent>(entity.id);
 
+      // Skip entities that have no location in space
       if (position == nullptr) {
         continue;
       }
 
-      // Process entity movement.
+      // Process entity movement
       if (movement != nullptr) {
         // Update position
         position->position += position->position * movement->velocity;
@@ -102,8 +104,8 @@ void gameLoop(Game *game) {
         position->rotation = glm::rotate(position->rotation, radians, axis);
       }
 
+      // Update and draw model
       if (model != nullptr) {
-        // Update and draw model
         model->model.SetCenter(position->position);
         model->model.SetRotation(position->rotation);
         model->model.Draw(window->GetCamera(), shader);
@@ -145,7 +147,7 @@ static EntityID createEntity(Game *game) { return game->entities->Create(); }
 static void entitySetModel(Game *game, EntityID id, Model &&model) {
   auto component = ModelComponent{};
   component.model = std::move(model);
-  game->entities->AddComponent<ModelComponent>(id, std::move(component));
+  game->entities->AddComponent(id, std::move(component));
 }
 
 static void entitySetPosition(Game *game, EntityID id, glm::vec3 position) {
@@ -154,12 +156,12 @@ static void entitySetPosition(Game *game, EntityID id, glm::vec3 position) {
   if (previous != nullptr) {
     component.rotation = previous->rotation;
   }
-  game->entities->AddComponent<PositionComponent>(id, std::move(component));
+  game->entities->AddComponent(id, std::move(component));
 }
 
 static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
   auto component = MovementComponent{.spin = spin};
-  game->entities->AddComponent<MovementComponent>(id, std::move(component));
+  game->entities->AddComponent(id, std::move(component));
 }
 
 // ============================================================================

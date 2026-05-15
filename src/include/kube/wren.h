@@ -53,13 +53,19 @@ typedef struct Model {
 } Model;
 
 
-static kube::Game *game = nullptr;
+kube::Game *game = nullptr;
 
-void wrenGameLoop(WrenVM *vm) {
+void wrenInitGame() {
   if (game == nullptr) {
     game = kube::newGame();
-    kube::gameLoop(game);
   }
+}
+
+void wrenGameLoop(WrenVM *vm) {
+  if (game->running) {
+    return;
+  } 
+  kube::gameLoop(game);
 }
 
 WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
