@@ -40,12 +40,11 @@ int main(void) {
   config.loadModuleFn = &wrenLoadModule;
 
   WrenVM* vm = wrenNewVM(&config);
-  const char* module = "main";
 
   wrenInitGame();
   auto source = kube::fs::readFile("demos/wren/main.wren");
   
-  WrenInterpretResult result = wrenInterpret(vm, module, source.c_str());
+  WrenInterpretResult result = wrenInterpret(vm, WREN_GAME_MODULE, source.c_str());
 
   switch (result) {
   case WREN_RESULT_COMPILE_ERROR:
@@ -55,6 +54,8 @@ int main(void) {
   case WREN_RESULT_SUCCESS:
     { printf("Success!\n"); } break;
   }
+
+  wrenRunGame(vm);
   wrenFreeVM(vm);
   return 0;
 }

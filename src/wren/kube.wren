@@ -18,12 +18,6 @@
 // Foreign bindings
 // ============================================================================
 
-// Global singleton representing the game.
-// Run it with loop(). Can only be called once.
-class Game {
-  foreign static loop()
-}
-
 // Global singleton representing the game window.
 class Window {
   foreign static open(width, height, title)

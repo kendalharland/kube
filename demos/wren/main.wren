@@ -14,46 +14,58 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import "kube" for Game, Camera, Entity, Model, Window, Vec3
+import "kube" for Camera, Entity, Model, Window, Vec3
 import "random" for Random
 
-// ============================================================================
-// Window setup
-// ============================================================================
-
-var title = "Rotating Kube"
-var width = 1600
-var height = 1200
-
-Window.open(width, height, title)
-
-var camera = Camera.new()
-camera.position = Vec3.new(100, 100, 100)
-camera.setActive()
 
 // ============================================================================
 // Scene setup
 // ============================================================================
 
-var entities = []
-var random = Random.new(123456789)
 
-for (i in 1..4000) {
-  var entity = Entity.new()
+class Game {
+    entities { _entities }
+    entities=(value) { _entities = value }
 
-  entity.model = Model.new("@cube")
-  
-  entity.position = Vec3.new(
-    random.float(-100, 100),
-    random.float(-100, 100),
-    random.float(-100, 100)
-  )
+    camera { _camera }
+    camera=(value) { _camera = value }
 
-  entity.spin = Vec3.new(
-    random.float(-1, 1),
-    random.float(-1, 1),
-    random.float(-1, 1)
-  )
+    construct new() {
+        // Open the window
+        var title = "Rotating Kube"
+        var width = 1600
+        var height = 1200
+        Window.open(width, height, title)
+
+        // Initialize the camera
+        var camera = Camera.new()
+        camera.position = Vec3.new(100, 100, 100)
+        camera.setActive()
+
+        // Create some entities.
+        var entities = []
+        var random = Random.new(123456789)
+
+        for (i in 1..4000) {
+            var entity = Entity.new()
+            entity.model = Model.new("@cube")
+            entity.position = Vec3.new(
+                random.float(-100, 100),
+                random.float(-100, 100),
+                random.float(-100, 100)
+            )
+            entity.spin = Vec3.new(
+                random.float(-1, 1),
+                random.float(-1, 1),
+                random.float(-1, 1)
+            )
+            entities.add(entity)
+        }
+
+        this.camera = camera
+        this.entities = entities
+    }
+
+    update(elapsedSecs) {
+    }
 }
-
-Game.loop()

@@ -67,7 +67,7 @@ void freeGame(Game *game) {
   game = nullptr;
 }
 
-void gameLoop(Game *game) {
+void gameLoop(Game *game, std::function<void(double)> update) {
   using namespace kube::graphics;
 
   auto window = Window::GetInstance();
@@ -79,6 +79,8 @@ void gameLoop(Game *game) {
 
   do {
     auto deltaSecs = stopwatch.ElapsedSeconds();
+
+    update(deltaSecs);
 
     window->Clear();
 

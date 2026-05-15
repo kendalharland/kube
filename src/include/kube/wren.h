@@ -38,7 +38,8 @@
 
 #include "wren.hpp"
 
-
+#define WREN_GAME_MODULE "main"
+#define WREN_GAME_CLASSNAME "Game"
 
 typedef struct Camera {
   CameraID id;
@@ -52,8 +53,11 @@ typedef struct Model {
   kube::Model value;
 } Model;
 
-
 kube::Game *game = nullptr;
+
+WrenHandle *userGameClass = nullptr;
+WrenHandle *userGameInstance = nullptr;
+WrenHandle *userGameUpdateFn = nullptr;
 
 void wrenInitGame() {
   if (game == nullptr) {
@@ -61,11 +65,50 @@ void wrenInitGame() {
   }
 }
 
-void wrenGameLoop(WrenVM *vm) {
+void wrenGameUpdate(WrenVM *vm, double elapsedSeconds) {
+  wrenSetSlotHandle(vm, 0, userGameInstance);
+  wrenSetSlotDouble(vm, 1, elapsedSeconds);
+  WrenInterpretResult result = wrenCall(vm, userGameUpdateFn);
+
+  switch (result) {
+  case WREN_RESULT_COMPILE_ERROR: {
+    printf("Compile Error!\n");
+  } break;
+  case WREN_RESULT_RUNTIME_ERROR: {
+    printf("Runtime Error!\n");
+  } break;
+  case WREN_RESULT_SUCCESS:
+    break;
+  }
+}
+
+void wrenRunGame(WrenVM *vm) {
   if (game->running) {
     return;
-  } 
-  kube::gameLoop(game);
+  }
+
+  // Find the user's Game class.
+  wrenEnsureSlots(vm, 1);
+  wrenGetVariable(vm, WREN_GAME_MODULE, WREN_GAME_CLASSNAME, 0);
+  userGameClass = wrenGetSlotHandle(vm, 0);
+
+  // Call Game.new() to allocate an instance
+  wrenSetSlotHandle(vm, 0, userGameClass);
+  WrenHandle *ctor = wrenMakeCallHandle(vm, "new()");
+
+  wrenCall(vm, ctor);
+
+  // Slot 0 now contains a Game instance
+  userGameInstance = wrenGetSlotHandle(vm, 0); // really “userGameInstance” now
+  wrenReleaseHandle(vm, userGameClass);
+  wrenReleaseHandle(vm, ctor);
+
+  // Store the handle so we can call its methods later.
+
+  // Create a handle to call the game's update function.
+  userGameUpdateFn = wrenMakeCallHandle(vm, "update(_)");
+
+  kube::gameLoop(game, [vm](double elapsedSeconds) { wrenGameUpdate(vm, elapsedSeconds); });
 }
 
 WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
@@ -111,14 +154,13 @@ void wrenOpenWindow(WrenVM *vm) {
 // Allocators
 // ============================================================================
 
-
 void wrenEntityAlloc(WrenVM *vm) {
   auto entity = (Entity *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Entity));
   entity->id = kube::createEntity(game);
 }
 
 void wrenEntityDealloc(void *entity) {
-  delete (Entity*) entity;
+  // delete (Entity*) entity;
 }
 
 void wrenModelAlloc(WrenVM *vm) {
@@ -127,9 +169,7 @@ void wrenModelAlloc(WrenVM *vm) {
   model->value = kube::createModel(identifier);
 }
 
-void wrenModelDealloc(void *model) {
-  delete (Model*) model;
-}
+void wrenModelDealloc(void *model) { delete (Model *)model; }
 
 void wrenCameraAlloc(WrenVM *vm) {
   auto camera = (Camera *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Camera));
@@ -137,7 +177,7 @@ void wrenCameraAlloc(WrenVM *vm) {
 }
 
 void wrenCameraDealloc(void *camera) {
-  delete (Camera*) camera;
+  // delete (Camera*) camera;
 }
 
 // ============================================================================
@@ -207,7 +247,6 @@ using BindingTable = std::unordered_map<std::string, NativeFn>;
 
 BindingTable &getBindingTable() {
   static BindingTable table = {
-      {makeKey("kube", "Game", "loop()", 1), &wrenGameLoop},
       {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow},
       {makeKey("kube", "Entity", "setModel_(_)", 0), &wrenEntitySetModel},
       {makeKey("kube", "Entity", "setPosition_(_,_,_)", 0), &wrenEntitySetPosition},
