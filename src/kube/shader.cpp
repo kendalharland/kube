@@ -143,7 +143,7 @@ void Shader::SetUniformVec4(const char *id, glm::vec4 value) {
   glUniform4fv(location, 1, &value[0]);
 }
 
-shader_ptr Shader::DiffuseShader(std::string shader_source_root) {
+std::shared_ptr<Shader> Shader::DiffuseShader(std::string shader_source_root) {
   auto source_root = std::filesystem::path(shader_source_root);
   auto source_files = ShaderSourceFiles{
       .vertex = source_root / "DiffuseShader.vertex.glsl",
@@ -152,7 +152,7 @@ shader_ptr Shader::DiffuseShader(std::string shader_source_root) {
   return std::make_shared<Shader>(source_files);
 }
 
-shader_ptr Shader::SimpleColorShader(std::string shader_source_root) {
+std::shared_ptr<Shader> Shader::SimpleColorShader(std::string shader_source_root) {
   auto source_root = std::filesystem::path(shader_source_root);
   auto source_files = ShaderSourceFiles{
       .vertex = source_root / "SimpleColorShader.vertex.glsl",

@@ -33,13 +33,10 @@ struct ShaderSourceFiles {
   std::string fragment;
 };
 
-class Shader;
-typedef std::shared_ptr<Shader> shader_ptr;
-
 class Shader final {
 public:
-  static shader_ptr DiffuseShader(std::string shader_source_root);
-  static shader_ptr SimpleColorShader(std::string shader_source_root);
+  static std::shared_ptr<Shader> DiffuseShader(std::string shader_source_root);
+  static std::shared_ptr<Shader> SimpleColorShader(std::string shader_source_root);
 
   Shader(ShaderSourceFiles source_files);
   ~Shader();

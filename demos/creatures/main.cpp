@@ -58,7 +58,7 @@ int main(void) {
   };
   // clang-format on
 
-  shader_ptr shader = Shader::DiffuseShader("src/shaders");
+  std::shared_ptr<Shader> shader = Shader::DiffuseShader("src/shaders");
   auto light_position = glm::vec4(1, 1, 1, 1);
 
   std::vector<std::shared_ptr<kube::Model>> models;

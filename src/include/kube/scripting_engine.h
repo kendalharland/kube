@@ -62,9 +62,11 @@ void freeGame(Game *game) {
 }
 
 void runGame(Game *game) {
+  using namespace kube::graphics;
+
   auto window = kube::Window::GetInstance();
 
-  graphics::shader_ptr shader = kube::graphics::Shader::SimpleColorShader("src/shaders");
+  std::shared_ptr<Shader> shader = Shader::SimpleColorShader("src/shaders");
 
   kube::Stopwatch stopwatch;
   stopwatch.Start();
