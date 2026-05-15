@@ -133,7 +133,7 @@ static void wrenCameraSetPosition(WrenVM *vm) {
   auto x = wrenGetSlotDouble(vm, 1);
   auto y = wrenGetSlotDouble(vm, 2);
   auto z = wrenGetSlotDouble(vm, 3);
-  kube::cameraSetPosition(game, camera->id, glm::vec3(x, y, z));
+  kube::entitySetPosition(game, camera->id, glm::vec3(x, y, z));
 }
 
 static void wrenEntitySetModel(WrenVM *vm) {

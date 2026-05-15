@@ -60,7 +60,7 @@ public:
   CameraStore();
   ~CameraStore();
 
-  CameraID Create();
+  void Create(CameraID cameraID);
   Camera *Get(CameraID cameraID);
 
 private:
@@ -71,14 +71,10 @@ CameraStore::CameraStore() {}
 
 CameraStore::~CameraStore() {}
 
-CameraID CameraStore::Create() {
-  CameraID id = cameras_.size();
-  cameras_[id] = Camera();
-  return id;
-}
+void CameraStore::Create(CameraID id) { cameras_.emplace(id, Camera()); }
 
-Camera *CameraStore::Get(CameraID cameraID) {
-  auto result = cameras_.find(cameraID);
+Camera *CameraStore::Get(CameraID id) {
+  auto result = cameras_.find(id);
   if (result == cameras_.end()) {
     return nullptr;
   }

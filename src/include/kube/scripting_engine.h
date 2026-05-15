@@ -107,6 +107,11 @@ void runGame(Game *game) {
         model->model.SetRotation(position->rotation);
         model->model.Draw(window->GetCamera(), shader);
       }
+
+      auto camera = game->cameras->Get(entity.id);
+      if (camera != nullptr) {
+        camera->SetPosition(position->position);
+      }
     }
 
     window->Update();
@@ -116,31 +121,25 @@ void runGame(Game *game) {
 }
 
 CameraID createCamera(Game *game) {
-  auto cameraID = game->cameras->Create();
-  // TODO: Represent camera is entity with position and movement components.
+  auto cameraID = game->entities->Create();
+  game->cameras->Create(cameraID);
   return cameraID;
 }
 
 static void cameraSetActive(Game *game, CameraID cameraID) {
   auto camera = game->cameras->Get(cameraID);
-  if (camera == nullptr)
+  if (camera == nullptr) {
     return;
+  }
   auto window = Window::GetInstance();
   window->SetCamera(camera);
-}
-
-static void cameraSetPosition(Game *game, CameraID cameraID, glm::vec3 position) {
-  auto camera = game->cameras->Get(cameraID);
-  if (camera == nullptr)
-    return;
-  camera->SetPosition(position);
 }
 
 // ============================================================================
 // Entity
 // ============================================================================
 
-static EntityID createEntity(Game *game) { return game->entities->CreateEntity(); }
+static EntityID createEntity(Game *game) { return game->entities->Create(); }
 
 static void entitySetModel(Game *game, EntityID id, Model &&model) {
   auto component = ModelComponent{};

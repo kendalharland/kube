@@ -72,8 +72,8 @@ public:
   EntityStore();
   ~EntityStore();
 
-  std::vector<Entity>* All();
-  EntityID CreateEntity();
+  std::vector<Entity> *All();
+  EntityID Create();
   void AddEntity(Entity entity);
   std::vector<Entity> GetEntitiesWithModelComponent();
 
@@ -94,10 +94,6 @@ private:
 
   // Component Stores
   std::map<std::type_index, std::unique_ptr<IComponentStore>> stores_;
-
-  // ComponentStore<ModelComponent> *models_;
-  // ComponentStore<PositionComponent> *positions_;
-  // ComponentStore<MovementComponent> *movements_;
 };
 
 // ----------------------------------------------------------------------------
@@ -145,7 +141,7 @@ EntityStore::~EntityStore() {}
 
 void EntityStore::AddEntity(Entity entity) { entities_.push_back(entity); }
 
-EntityID EntityStore::CreateEntity() {
+EntityID EntityStore::Create() {
   Entity entity = Entity{.id = (EntityID)entities_.size()};
   entities_.push_back(entity);
   return entity.id;
