@@ -38,8 +38,6 @@
 
 #define MAX_MODELS MAX_ENTITIES
 
-auto entities = kube::EntityStore();
-
 namespace kube {
 
 bool streq(std::string a, std::string b) { return a.compare(b) == 0; }
@@ -52,40 +50,92 @@ void openWindow(int width, int height, char *title) {
   window->SetCamera(std::move(camera));
 }
 
+typedef struct Game {
+  EntityStore *entities;
+} Game;
+
+void initGame(Game *game) { game->entities = new EntityStore(); }
+
+void freeGame(Game *game) {
+  delete game->entities;
+  game = nullptr;
+}
+
+void runGame(Game *game) {
+  auto window = kube::Window::GetInstance();
+
+  graphics::shader_ptr shader = kube::graphics::Shader::SimpleColorShader("src/shaders");
+
+  kube::Stopwatch stopwatch;
+  stopwatch.Start();
+
+  do {
+    auto deltaSecs = stopwatch.Lap();
+
+    window->Clear();
+
+    // Draw entities
+    for (auto entity : game->entities->GetEntitiesWithModelComponent()) {
+      auto model = game->entities->GetModelComponent(entity.id);
+
+      // Update position.
+      auto position = game->entities->GetPositionComponent(entity.id);
+      if (position != nullptr) {
+        model->model.SetCenter(position->position);
+      }
+
+      // Update rotation.
+      auto movement = game->entities->GetMovementComponent(entity.id);
+      if (movement != nullptr) {
+        auto model = game->entities->GetModelComponent(entity.id);
+        model->model.Rotate(movement->spin.x * deltaSecs, X_AXIS);
+        model->model.Rotate(movement->spin.y * deltaSecs, Y_AXIS);
+        model->model.Rotate(movement->spin.z * deltaSecs, Z_AXIS);
+      }
+
+      model->model.Draw(window->GetCamera(), shader);
+    }
+
+    window->Update();
+  } while (!window->ShouldClose());
+
+  window->Close();
+}
+
 // ============================================================================
 // Entity
 // ============================================================================
 
-static void entitySetModel(EntityID id, Model&& model) {
+static EntityID createEntity(Game *game) { return game->entities->CreateEntity(); }
+
+static void entitySetModel(Game *game, EntityID id, Model &&model) {
   auto component = kube::ModelComponent{};
   component.model = std::move(model);
-  entities.AddModelComponent(id, std::move(component));
+  game->entities->AddModelComponent(id, std::move(component));
 }
 
-static void entitySetPosition(EntityID id, glm::vec3 position) {
+static void entitySetPosition(Game *game, EntityID id, glm::vec3 position) {
   auto component = kube::PositionComponent{.position = position};
-  entities.AddPositionComponent(id, std::move(component));
+  game->entities->AddPositionComponent(id, std::move(component));
 }
 
-static void entitySetSpin(EntityID id, glm::vec3 spin) {
+static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
   auto component = kube::MovementComponent{.spin = spin};
-  entities.AddMovementComponent(id, std::move(component));
+  game->entities->AddMovementComponent(id, std::move(component));
 }
 
 // ============================================================================
 // Model
 // ============================================================================
 
-kube::Model loadModelFile(std::string filename) {
-    throw std::logic_error("unimplemented");
-}
+kube::Model loadModelFile(std::string filename) { throw std::logic_error("unimplemented"); }
 
 Model createModel(std::string identifier) {
-    if (streq(identifier, "@cube")) {
-        return kube::CreateCubeModel();
-    } else {
-        return loadModelFile(identifier);
-    }
+  if (streq(identifier, "@cube")) {
+    return kube::CreateCubeModel();
+  } else {
+    return loadModelFile(identifier);
+  }
 }
 
 } // namespace kube

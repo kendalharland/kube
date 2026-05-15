@@ -38,6 +38,9 @@
 
 #include "wren.hpp"
 
+kube::Game *game;
+
+void wrenInitGame() { kube::initGame(game); }
 
 typedef struct Entity {
   EntityID id;
@@ -46,7 +49,6 @@ typedef struct Entity {
 typedef struct Model {
   kube::Model value;
 } Model;
-
 
 WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   WrenLoadModuleResult result = {0};
@@ -63,49 +65,7 @@ WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   return result;
 }
 
-void wrenRunGame(WrenVM *vm) {
-  using namespace kube::graphics;
-
-  auto window = kube::Window::GetInstance();
-
-  shader_ptr shader = Shader::SimpleColorShader("src/shaders");
-
-  // TODO(controls, state)
-  kube::Stopwatch stopwatch;
-  stopwatch.Start();
-
-  do {
-    auto deltaSecs = stopwatch.Lap();
-
-    window->Clear();
-
-    // Draw entities
-    for (auto entity : entities.GetEntitiesWithModelComponent()) {
-      auto model = entities.GetModelComponent(entity.id);
-
-      // Update position.
-      auto position = entities.GetPositionComponent(entity.id);
-      if (position != nullptr) {
-        model->model.SetCenter(position->position);
-      }
-
-      // Update rotation.
-      auto movement = entities.GetMovementComponent(entity.id);
-      if (movement != nullptr) {
-        auto model = entities.GetModelComponent(entity.id);
-        model->model.Rotate(movement->spin.x * deltaSecs, X_AXIS);
-        model->model.Rotate(movement->spin.y * deltaSecs, Y_AXIS);
-        model->model.Rotate(movement->spin.z * deltaSecs, Z_AXIS);
-      }
-
-      model->model.Draw(window->GetCamera(), shader);
-    }
-
-    window->Update();
-  } while (!window->ShouldClose());
-
-  window->Close();
-}
+void wrenRunGame(WrenVM *vm) { kube::runGame(game); }
 
 void wrenWriteFn(WrenVM *vm, const char *text) { printf("%s", text); }
 
@@ -133,7 +93,7 @@ void wrenOpenWindow(WrenVM *vm) {
 
 void wrenEntityAlloc(WrenVM *vm) {
   auto entity = (Entity *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Entity));
-  entity->id = entities.CreateEntity();
+  entity->id = kube::createEntity(game);
 }
 
 void wrenEntityDealloc(void *entity) {
@@ -153,7 +113,7 @@ void wrenModelDealloc(void *model) {
 static void wrenEntitySetModel(WrenVM *vm) {
   auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
   auto model = (Model *)wrenGetSlotForeign(vm, 1);
-  kube::entitySetModel(entity->id, std::move(model->value));
+  kube::entitySetModel(game, entity->id, std::move(model->value));
 }
 
 static void wrenEntitySetPosition(WrenVM *vm) {
@@ -161,7 +121,7 @@ static void wrenEntitySetPosition(WrenVM *vm) {
   auto x = wrenGetSlotDouble(vm, 1);
   auto y = wrenGetSlotDouble(vm, 2);
   auto z = wrenGetSlotDouble(vm, 3);
-  kube::entitySetPosition(entity->id, glm::vec3(x, y, z));
+  kube::entitySetPosition(game, entity->id, glm::vec3(x, y, z));
 }
 
 static void wrenEntitySetSpin(WrenVM *vm) {
@@ -169,7 +129,7 @@ static void wrenEntitySetSpin(WrenVM *vm) {
   auto x = wrenGetSlotDouble(vm, 1);
   auto y = wrenGetSlotDouble(vm, 2);
   auto z = wrenGetSlotDouble(vm, 3);
-  kube::entitySetSpin(entity->id, glm::vec3(x, y, z));
+  kube::entitySetSpin(game, entity->id, glm::vec3(x, y, z));
 }
 
 // ============================================================================
