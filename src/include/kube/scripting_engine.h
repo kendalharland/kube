@@ -27,7 +27,7 @@
 #include <kube/mesh.h>
 #include <kube/model.h>
 #include <kube/scripting_engine.h>
-#include <kube/shapes.cpp>
+#include <kube/shapes.h>
 #include <kube/time.h>
 #include <kube/window.h>
 
@@ -54,7 +54,11 @@ typedef struct Game {
   EntityStore *entities;
 } Game;
 
-void initGame(Game *game) { game->entities = new EntityStore(); }
+Game* newGame() {
+    auto game = new Game();
+    game->entities = new EntityStore();
+    return game;
+}
 
 void freeGame(Game *game) {
   delete game->entities;
@@ -134,7 +138,7 @@ Model loadModelFile(std::string filename) { throw std::logic_error("unimplemente
 
 Model createModel(std::string identifier) {
   if (streq(identifier, "@cube")) {
-    return CreateCubeModel();
+    return graphics::cubeMesh();
   } else {
     return loadModelFile(identifier);
   }

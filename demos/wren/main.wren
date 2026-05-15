@@ -22,8 +22,8 @@ import "random" for Random
 // ============================================================================
 
 var title = "Rotating Kube"
-var width = 1000
-var height = 800
+var width = 1600
+var height = 1200
 
 Window.open(width, height, title)
 

@@ -25,6 +25,7 @@
 #include <glm/glm.hpp>
 
 namespace kube {
+namespace graphics {
 
 // clang-format off
 
@@ -71,12 +72,13 @@ static unsigned int cube_indices_[]  = {
 // clang-format on
 
 // Generic, drawable cube geometry.
-Model CreateCubeModel() {
+std::unique_ptr<Mesh> cubeMesh() {
   std::vector<graphics::Vertex> vertices;
   std::vector<unsigned int> indices;
 
   for (size_t i = 0; i < sizeof(cube_vertices_) / sizeof(GLfloat); i += 3) {
     graphics::Vertex v;
+
     v.position.x = cube_vertices_[i];
     v.position.y = cube_vertices_[i + 1];
     v.position.z = cube_vertices_[i + 2];
@@ -94,7 +96,8 @@ Model CreateCubeModel() {
 
   auto vertex_array = std::make_unique<graphics::VertexArray>(vertices, indices);
   auto mesh = std::make_unique<graphics::Mesh>(std::move(vertex_array));
-  return std::move(mesh);
+  return mesh;
 }
 
-}; // namespace kube
+} // namespace graphics
+} // namespace kube

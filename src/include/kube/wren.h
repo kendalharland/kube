@@ -27,7 +27,7 @@
 #include <kube/mesh.h>
 #include <kube/model.h>
 #include <kube/scripting_engine.h>
-#include <kube/shapes.cpp>
+#include <kube/shapes.h>
 #include <kube/time.h>
 #include <kube/window.h>
 
@@ -40,7 +40,7 @@
 
 kube::Game *game;
 
-void wrenInitGame() { kube::initGame(game); }
+void wrenInitGame() { game = kube::newGame(); }
 
 typedef struct Entity {
   EntityID id;

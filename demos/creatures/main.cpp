@@ -21,7 +21,7 @@
 #include <kube/logging.h>
 #include <kube/mesh.h>
 #include <kube/model.h>
-#include <kube/shapes.cpp>
+#include <kube/shapes.h>
 #include <kube/time.h>
 #include <kube/window.h>
 
