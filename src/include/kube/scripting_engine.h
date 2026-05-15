@@ -64,6 +64,7 @@ Game *newGame() {
 
 void freeGame(Game *game) {
   delete game->entities;
+  delete game->cameras;
   game = nullptr;
 }
 
@@ -149,7 +150,7 @@ static EntityID createEntity(Game *game) { return game->entities->Create(); }
 static void entitySetModel(Game *game, EntityID id, Model &&model) {
   auto component = ModelComponent{};
   component.model = std::move(model);
-  game->entities->AddComponent(id, std::move(component));
+  game->entities->SetComponent(id, std::move(component));
 }
 
 static void entitySetPosition(Game *game, EntityID id, glm::vec3 position) {
@@ -158,12 +159,12 @@ static void entitySetPosition(Game *game, EntityID id, glm::vec3 position) {
   if (previous != nullptr) {
     component.rotation = previous->rotation;
   }
-  game->entities->AddComponent(id, std::move(component));
+  game->entities->SetComponent(id, std::move(component));
 }
 
 static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
   auto component = MovementComponent{.spin = spin};
-  game->entities->AddComponent(id, std::move(component));
+  game->entities->SetComponent(id, std::move(component));
 }
 
 // ============================================================================

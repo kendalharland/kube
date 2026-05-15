@@ -42,11 +42,7 @@ int main(void) {
   // clang-format off
   // TODO: Load assets from file.
   std::string assets[] = {
-    "demos/car/assets/models/cars/docLorean.obj",
-    "demos/car/assets/models/cars/Tristar Racer.obj",
-    "demos/car/assets/models/cars/Toyoyo Highlight.obj",
-    "demos/car/assets/models/cars/Landyroamer.obj",
-    "demos/car/assets/models/cars/Beatall.obj",
+    "demos/car/assets/models/ships/MicroRecon.obj"
   };
   // clang-format on
 

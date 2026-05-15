@@ -80,7 +80,7 @@ public:
   std::vector<Entity> GetEntitiesWithComponent(std::type_index t);
   bool EntityHasComponent(EntityID entityID, std::type_index componentType);
 
-  template <typename C> void AddComponent(EntityID entityID, C &&component);
+  template <typename C> void SetComponent(EntityID entityID, C &&component);
 
   template <typename C> C *GetComponent(EntityID id);
 
@@ -162,7 +162,7 @@ template <typename C> ComponentStore<C> *EntityStore::GetStore() {
   return dynamic_cast<ComponentStore<C> *>(it->second.get());
 }
 
-template <typename C> void EntityStore::AddComponent(EntityID entityID, C &&component) {
+template <typename C> void EntityStore::SetComponent(EntityID entityID, C &&component) {
   auto store = GetStore<C>();
   if (store == nullptr) {
     throw std::invalid_argument("component type not found");
