@@ -106,16 +106,16 @@ void gameLoop(Game *game, std::function<void(double)> update) {
         position->rotation = glm::rotate(position->rotation, radians, axis);
       }
 
+      auto camera = game->cameras->Get(entity.id);
+      if (camera != nullptr) {
+        camera->SetPosition(position->position);
+      }
+
       // Update and draw model
       if (model != nullptr) {
         model->model.SetCenter(position->position);
         model->model.SetRotation(position->rotation);
         model->model.Draw(window->GetCamera(), shader);
-      }
-
-      auto camera = game->cameras->Get(entity.id);
-      if (camera != nullptr) {
-        camera->SetPosition(position->position);
       }
     }
 

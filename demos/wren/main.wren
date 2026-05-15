@@ -17,18 +17,15 @@
 import "kube" for Camera, Entity, Model, Window, Vec3
 import "random" for Random
 
-
-// ============================================================================
-// Scene setup
-// ============================================================================
-
-
 class Game {
     entities { _entities }
     entities=(value) { _entities = value }
 
     camera { _camera }
     camera=(value) { _camera = value }
+
+    time { _time }
+    time=(value) { _time = value }
 
     construct new() {
         // Open the window
@@ -46,7 +43,7 @@ class Game {
         var entities = []
         var random = Random.new(123456789)
 
-        for (i in 1..4000) {
+        for (i in 1..20000) {
             var entity = Entity.new()
             entity.model = Model.new("@cube")
             entity.position = Vec3.new(
@@ -62,10 +59,17 @@ class Game {
             entities.add(entity)
         }
 
+        this.time = 0
         this.camera = camera
         this.entities = entities
     }
 
     update(elapsedSecs) {
+        this.time = this.time + elapsedSecs
+        var amplitude = 10
+        var frequency = 0.15
+        var angle = 2.0 * Num.pi * frequency * this.time
+        var offset = angle.sin * amplitude
+        camera.position = Vec3.new(20 + offset, 45 + offset, 100 + offset)
     }
 }
