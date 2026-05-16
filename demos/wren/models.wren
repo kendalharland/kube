@@ -14,22 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-
-namespace kube {
-namespace fs {
-
-std::string readFile(std::filesystem::path filename) {
-  std::ifstream file(filename, std::ios::in);
-  if (!file.is_open()) {
-    throw std::runtime_error("failed to open file " + filename.string());
-  }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  return buffer.str();
-}
-
-} // namespace fs
-} // namespace kube
+var MicroRecon = "demos/wren/assets/models/ships/MicroRecon.obj"

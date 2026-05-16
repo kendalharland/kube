@@ -28,13 +28,11 @@
 
 namespace kube {
 
-Model Model::LoadFromFile(std::string filename) {
-  return ModelLoader().LoadFromFile(filename);
-}
+Model Model::LoadFromFile(std::string filename) { return ModelLoader().LoadFromFile(filename); }
 
 Model::Model() {}
 
-Model::Model(graphics::Mesh&& mesh) { meshes_.push_back(std::move(mesh)); }
+Model::Model(graphics::Mesh &&mesh) { meshes_.push_back(std::move(mesh)); }
 
 void Model::DebugPrint() const {
   KUBE_DEBUG << "Model: " << name_ << std::endl
@@ -64,7 +62,7 @@ void Model::SetScale(glm::mat4 scale) { scale_ = std::move(scale); }
 //   shader.SetFloat("perspective", camera->Perspective());
 //   shader.SetFloat("view", camera->View())
 // And then we can get rid of `window` and just call shader.Use().
-void Model::Draw(const Camera *camera, kube::graphics::Shader& shader) {
+void Model::Draw(const Camera *camera, kube::graphics::Shader &shader) {
   shader.Use();
   shader.SetUniformMat4("MVP", camera->ComputeMVP(GetMatrix()));
   for (int i = 0; i < meshes_.size(); i++) {
@@ -78,7 +76,7 @@ void Model::Rotate(float radians, const glm::vec3 axis) {
 }; // namespace kube
 
 void Model::Unload() {
-  for (auto& mesh : meshes_) {
+  for (auto &mesh : meshes_) {
     mesh.Unload();
   }
 }

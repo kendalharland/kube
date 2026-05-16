@@ -33,7 +33,7 @@ public:
   static Model LoadFromFile(std::string filename);
 
   Model();
-  Model(graphics::Mesh&& mesh);
+  Model(graphics::Mesh &&mesh);
 
   // Move assignment + constructor.
   // Model &operator=(Model &&other) = default;
@@ -46,10 +46,10 @@ public:
   void SetScale(glm::mat4 scale);
   void AddMesh(graphics::Mesh mesh);
   void DebugPrint() const;
-  void Draw(const Camera *camera, graphics::Shader& shader);
+  void Draw(const Camera *camera, graphics::Shader &shader);
   void Rotate(float radians, glm::vec3 axis);
   void Unload();
-  
+
 private:
   // Model(const Model &model) = delete;
   // Model(Model &&other) = delete;

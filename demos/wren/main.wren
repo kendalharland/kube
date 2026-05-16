@@ -16,6 +16,7 @@
 
 import "kube" for Camera, Entity, Model, Window, Vec3, Shader
 import "random" for Random
+import "models" for MicroRecon
 
 class Game {
     entities { _entities }
@@ -47,7 +48,7 @@ class Game {
 
         for (i in 1..2) {
             var entity = Entity.new()
-            entity.model = Model.new("demos/wren/assets/models/ships/MicroRecon.obj")
+            entity.model = Model.new(MicroRecon)
             entity.position = Vec3.new(
                 random.float(-5, 5),
                 random.float(-5, 5),

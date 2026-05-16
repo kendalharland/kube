@@ -127,7 +127,7 @@ Shader::Shader(ShaderSourceFiles shader_files) {
   Load();
 }
 
-Shader::~Shader() { }
+Shader::~Shader() {}
 
 void Shader::Load() {
   KUBE_INFO << "Loading shader";

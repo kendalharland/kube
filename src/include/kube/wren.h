@@ -16,6 +16,10 @@
 
 #pragma once
 
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -30,11 +34,6 @@
 #include <kube/shapes.h>
 #include <kube/time.h>
 #include <kube/window.h>
-
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <sstream>
 
 #include "wren.hpp"
 
@@ -58,12 +57,12 @@ typedef struct ShaderHandle {
 } ShaderHandle;
 
 kube::Game *game = nullptr;
-
-WrenHandle *userGameClass = nullptr;
+std::string mainModulePath;
 WrenHandle *userGameInstance = nullptr;
 WrenHandle *userGameUpdateFn = nullptr;
 
-void wrenInitGame() {
+void wrenInitGame(std::string mainModulePath) {
+  ::mainModulePath = mainModulePath;
   if (game == nullptr) {
     game = kube::newGame();
   }
@@ -94,7 +93,7 @@ void wrenRunGame(WrenVM *vm) {
   // Find the user's Game class.
   wrenEnsureSlots(vm, 1);
   wrenGetVariable(vm, WREN_GAME_MODULE, WREN_GAME_CLASSNAME, 0);
-  userGameClass = wrenGetSlotHandle(vm, 0);
+  auto userGameClass = wrenGetSlotHandle(vm, 0);
 
   // Call Game.new() to allocate an instance
   wrenSetSlotHandle(vm, 0, userGameClass);
@@ -114,13 +113,34 @@ void wrenRunGame(WrenVM *vm) {
 
 WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
   WrenLoadModuleResult result = {0};
-  char fullname[128];
 
-  if (snprintf(fullname, 128, "src/wren/%s.wren", name) < 0) {
-    throw std::stol(name);
+  std::vector<std::filesystem::path> searchPaths = {
+      std::format("{}/{}.wren", mainModulePath, name),
+      std::format("./{}.wren", name),
+      // TODO: stdlib when run from the project root. embed this file.
+      std::format("src/wren/{}.wren", name),
+      std::format("/usr/local/include/{}", name),
+      std::format("/usr/include/%{}", name),
+  };
+
+  std::filesystem::path filename;
+
+  bool found = false;
+
+  for (auto path : searchPaths) {
+    filename = path.lexically_normal();
+    KUBE_INFO << "searching for module at " << filename;
+    if (std::filesystem::exists(filename)) {
+      found = true;
+      break;
+    }
   }
 
-  auto source = kube::fs::readFile(fullname);
+  if (!found) {
+    throw std::invalid_argument("module not found: " + std::string(name));
+  }
+
+  auto source = kube::fs::readFile(filename);
   char *c_source = new char[source.length() + 1];
   std::strcpy(c_source, source.c_str());
   result.source = c_source;
@@ -175,7 +195,7 @@ void wrenModelAlloc(WrenVM *vm) {
   model->value = kube::createModel(id);
 }
 
-void wrenModelDealloc(void *handle) { 
+void wrenModelDealloc(void *handle) {
   auto model = (ModelHandle *)handle;
   model->value.Unload();
   delete model;
@@ -187,8 +207,8 @@ void wrenShaderAlloc(WrenVM *vm) {
   shader->value = kube::loadShader(path);
 }
 
-void wrenShaderDealloc(void *handle) { 
-  auto shader = (ShaderHandle*) handle;
+void wrenShaderDealloc(void *handle) {
+  auto shader = (ShaderHandle *)handle;
   shader->value.Unload();
   delete (ShaderHandle *)shader;
 }

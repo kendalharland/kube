@@ -30,7 +30,13 @@
 #include "controls.hpp"
 #include "wren.hpp"
 
-int main(void) {
+int main(int argc, char** argv) {
+  if (argc < 2) {
+    return -1;
+  }
+
+  std::filesystem::path mainModule = argv[1];
+
   WrenConfiguration config;
   wrenInitConfiguration(&config);
   config.writeFn = &wrenWriteFn;
@@ -41,9 +47,10 @@ int main(void) {
 
   WrenVM* vm = wrenNewVM(&config);
 
-  wrenInitGame();
-  auto source = kube::fs::readFile("demos/wren/main.wren");
+  auto source = kube::fs::readFile(mainModule);
   
+  // This MUST be called before wrenInterpret.
+  wrenInitGame(mainModule.parent_path());
   WrenInterpretResult result = wrenInterpret(vm, WREN_GAME_MODULE, source.c_str());
 
   switch (result) {
