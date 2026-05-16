@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kube/actor.h>
 #include <kube/camera.h>
 #include <kube/entity.h>
 #include <kube/logging.h>

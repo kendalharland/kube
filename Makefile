@@ -58,7 +58,7 @@ endif
 TARGET_OBJ   := $(LIBRARY_PATH)libkube.o
 TARGET_LIB   := $(LIBRARY_PATH)libkube.$(SHLIB_EXT)
 
-.PHONY: default pull-submodules clean help format build build3p assimp wren demo demo-creatures demo-car demo-wren clean-build
+.PHONY: default pull-submodules clean help format build build3p assimp wren demo demo-wren clean-build
 
 default: demo
 
@@ -113,15 +113,7 @@ demo: build
 	@mkdir -p $(BIN_PATH)
 	@echo "=== Building demos ($(config)) ==="
 	# Ensure the linker finds libkube in src/lib
-	$(CXX) demos/car/main.cpp       -o $(BIN_PATH)/car       $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
-	$(CXX) demos/creatures/main.cpp -o $(BIN_PATH)/creatures $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
 	$(CXX) demos/wren/main.cpp      -o $(BIN_PATH)/wren      $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
-
-demo-creatures: demo
-	./bin/creatures
-
-demo-car: demo
-	./bin/car
 
 demo-wren: demo
 	./bin/wren

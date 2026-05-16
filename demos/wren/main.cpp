@@ -18,7 +18,6 @@
 #include <stdlib.h>
 
 #include <kube/camera.h>
-#include <kube/actor.h>
 #include <kube/logging.h>
 #include <kube/mesh.h>
 #include <kube/model.h>
@@ -27,7 +26,6 @@
 #include <kube/window.h>
 #include <kube/wren.h>
 
-#include "controls.hpp"
 #include "wren.hpp"
 
 int main(int argc, char** argv) {

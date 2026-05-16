@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "engine/actor.cpp"
 #include "engine/camera.cpp"
 #include "engine/logging.cpp"
 #include "engine/mesh.cpp"
