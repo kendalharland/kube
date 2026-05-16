@@ -26,8 +26,7 @@ void MeshBuilder::AddTexture(texture_ptr texture) { textures_.push_back(std::mov
 
 void MeshBuilder::SetMaterial(Material &&material) { material_ = std::move(material); }
 
-std::unique_ptr<Mesh> MeshBuilder::Build() {
+Mesh MeshBuilder::Build() {
   auto vertex_array = std::make_unique<VertexArray>(std::move(vertices_), std::move(indices_));
-  return std::make_unique<Mesh>(std::move(vertex_array), std::move(textures_),
-                                std::move(material_));
+  return Mesh(std::move(vertex_array), std::move(textures_), std::move(material_));
 }

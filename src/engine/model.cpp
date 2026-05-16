@@ -28,13 +28,13 @@
 
 namespace kube {
 
-std::shared_ptr<Model> Model::LoadFromFile(std::string filename) {
+Model Model::LoadFromFile(std::string filename) {
   return ModelLoader().LoadFromFile(filename);
 }
 
 Model::Model() {}
 
-Model::Model(std::unique_ptr<graphics::Mesh> mesh) { meshes_.push_back(std::move(mesh)); }
+Model::Model(graphics::Mesh&& mesh) { meshes_.push_back(std::move(mesh)); }
 
 void Model::DebugPrint() const {
   KUBE_DEBUG << "Model: " << name_ << std::endl
@@ -50,7 +50,7 @@ glm::mat4 Model::GetMatrix() const {
   return translation * rotation_ * scale_;
 }
 
-void Model::AddMesh(std::unique_ptr<graphics::Mesh> mesh) { meshes_.push_back(std::move(mesh)); }
+void Model::AddMesh(graphics::Mesh mesh) { meshes_.push_back(std::move(mesh)); }
 void Model::SetName(std::string name) { name_ = std::move(name); }
 void Model::SetCenter(glm::vec3 center) { center_ = std::move(center); }
 void Model::SetRotation(glm::mat4 rotation) { rotation_ = std::move(rotation); }
@@ -68,7 +68,7 @@ void Model::Draw(const Camera *camera, kube::graphics::Shader& shader) {
   shader.Use();
   shader.SetUniformMat4("MVP", camera->ComputeMVP(GetMatrix()));
   for (int i = 0; i < meshes_.size(); i++) {
-    meshes_[i]->Draw(shader);
+    meshes_[i].Draw(shader);
   }
 }
 
@@ -76,3 +76,9 @@ void Model::Rotate(float radians, const glm::vec3 axis) {
   rotation_ = glm::rotate(rotation_, radians, axis);
 }
 }; // namespace kube
+
+void Model::Unload() {
+  for (auto& mesh : meshes_) {
+    mesh.Unload();
+  }
+}

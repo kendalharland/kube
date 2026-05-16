@@ -174,13 +174,12 @@ void entitySetShader(Game *game, EntityID id, kube::graphics::Shader shader) {
 // Model
 // ============================================================================
 
-Model loadModelFile(std::string filename) { throw std::logic_error("unimplemented"); }
-
 Model createModel(std::string identifier) {
   if (streq(identifier, "@cube")) {
-    return graphics::cubeMesh();
+    return Model(graphics::cubeMesh());
   } else {
-    return loadModelFile(identifier);
+    auto filename = identifier;
+    return Model::LoadFromFile(filename);
   }
 }
 

@@ -36,22 +36,22 @@ class Game {
 
         // Initialize the camera
         var camera = Camera.new()
-        camera.position = Vec3.new(100, 100, 100)
+        camera.position = Vec3.new(10, 10, 10)
         camera.setActive()
 
         // Create some entities.
         var entities = []
         var random = Random.new(123456789)
 
-        var shader = Shader.new("demos/wren/shaders/simple_color")
+        var shader = Shader.new("demos/wren/shaders/diffuse")
 
-        for (i in 1..20000) {
+        for (i in 1..2) {
             var entity = Entity.new()
-            entity.model = Model.new("@cube")
+            entity.model = Model.new("demos/wren/assets/models/ships/MicroRecon.obj")
             entity.position = Vec3.new(
-                random.float(-100, 100),
-                random.float(-100, 100),
-                random.float(-100, 100)
+                random.float(-5, 5),
+                random.float(-5, 5),
+                random.float(-5, 5)
             )
             entity.spin = Vec3.new(
                 random.float(-1, 1),
@@ -73,6 +73,6 @@ class Game {
         var frequency = 0.15
         var angle = 2.0 * Num.pi * frequency * this.time
         var offset = angle.sin * amplitude
-        camera.position = Vec3.new(20 + offset, 45 + offset, 100 + offset)
+        camera.position = Vec3.new(10 + offset, 10 + offset, 10 + offset)
     }
 }

@@ -29,7 +29,7 @@ using namespace kube;
 
 class ModelLoader {
 public:
-  std::shared_ptr<Model> LoadFromFile(std::string filename);
+  Model LoadFromFile(std::string filename);
 
 private:
   void LoadScene_(const aiScene *scene, Model *model);

@@ -38,7 +38,7 @@ void StringReplace(std::string *input, std::string old, std::string rep) {
   }
 }
 
-std::shared_ptr<Model> ModelLoader::LoadFromFile(std::string filename) {
+Model ModelLoader::LoadFromFile(std::string filename) {
   KUBE_INFO << "Loading model from file " << filename;
 
   directory_ = filename.substr(0, filename.find_last_of('/'));
@@ -50,14 +50,14 @@ std::shared_ptr<Model> ModelLoader::LoadFromFile(std::string filename) {
     throw std::runtime_error("failed to load model");
   }
 
-  auto model = new Model();
-  LoadScene_(scene, model);
-  model->SetCenter(glm::vec3(0, 0, 0));
-  model->SetScale(glm::mat4(1.f));
-  model->SetRotation(glm::mat4(1.f));
-  model->DebugPrint();
+  auto model = Model();
+  LoadScene_(scene, &model);
+  model.SetCenter(glm::vec3(0, 0, 0));
+  model.SetScale(glm::mat4(1.f));
+  model.SetRotation(glm::mat4(1.f));
+  model.DebugPrint();
 
-  return std::shared_ptr<Model>(model);
+  return model;
 }
 
 void ModelLoader::LoadScene_(const aiScene *scene, Model *model) {

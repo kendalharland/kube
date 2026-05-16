@@ -175,7 +175,11 @@ void wrenModelAlloc(WrenVM *vm) {
   model->value = kube::createModel(id);
 }
 
-void wrenModelDealloc(void *model) { delete (ModelHandle *)model; }
+void wrenModelDealloc(void *handle) { 
+  auto model = (ModelHandle *)handle;
+  model->value.Unload();
+  delete model;
+}
 
 void wrenShaderAlloc(WrenVM *vm) {
   auto shader = (ShaderHandle *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(ShaderHandle));

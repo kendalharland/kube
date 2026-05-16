@@ -28,7 +28,7 @@ public:
   void AddIndex(unsigned int index);
   void AddTexture(texture_ptr texture);
   void SetMaterial(Material &&material);
-  std::unique_ptr<Mesh> Build();
+  Mesh Build();
 
 private:
   Material material_;

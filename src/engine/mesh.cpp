@@ -51,7 +51,7 @@ void Mesh::Load() {
   }
 }
 
-Mesh::~Mesh() {
+void Mesh::Unload() {
   vertices_->Unload();
   for (int i = 0; i < textures_.size(); i++) {
     textures_[i]->Unload();

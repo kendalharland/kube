@@ -30,13 +30,13 @@ namespace kube {
 class Model final {
 
 public:
-  static std::shared_ptr<Model> LoadFromFile(std::string filename);
+  static Model LoadFromFile(std::string filename);
 
   Model();
-  Model(std::unique_ptr<graphics::Mesh> mesh);
+  Model(graphics::Mesh&& mesh);
 
   // Move assignment + constructor.
-  Model &operator=(Model &&other) = default;
+  // Model &operator=(Model &&other) = default;
 
   std::string GetName() const;
   glm::mat4 GetMatrix() const;
@@ -44,17 +44,18 @@ public:
   void SetCenter(glm::vec3 center);
   void SetRotation(glm::mat4 rotation);
   void SetScale(glm::mat4 scale);
-  void AddMesh(std::unique_ptr<graphics::Mesh> mesh);
+  void AddMesh(graphics::Mesh mesh);
   void DebugPrint() const;
   void Draw(const Camera *camera, graphics::Shader& shader);
   void Rotate(float radians, glm::vec3 axis);
-
+  void Unload();
+  
 private:
-  Model(const Model &model) = delete;
-  Model(Model &&other) = delete;
+  // Model(const Model &model) = delete;
+  // Model(Model &&other) = delete;
 
   std::string name_ = "";
-  std::vector<std::unique_ptr<graphics::Mesh>> meshes_;
+  std::vector<graphics::Mesh> meshes_;
   glm::vec3 center_ = glm::vec3(0.0f);
   glm::mat4 scale_ = glm::mat4(1.f);
   glm::mat4 rotation_ = glm::mat4(1.f);

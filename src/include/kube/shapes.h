@@ -72,7 +72,7 @@ static unsigned int cube_indices_[]  = {
 // clang-format on
 
 // Generic, drawable cube geometry.
-std::unique_ptr<Mesh> cubeMesh() {
+Mesh cubeMesh() {
   std::vector<graphics::Vertex> vertices;
   std::vector<unsigned int> indices;
 
@@ -95,8 +95,7 @@ std::unique_ptr<Mesh> cubeMesh() {
   }
 
   auto vertex_array = std::make_unique<graphics::VertexArray>(vertices, indices);
-  auto mesh = std::make_unique<graphics::Mesh>(std::move(vertex_array));
-  return mesh;
+  return Mesh(std::move(vertex_array));
 }
 
 } // namespace graphics

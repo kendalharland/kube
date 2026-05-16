@@ -45,11 +45,10 @@ public:
   Mesh(vertex_array_ptr vertices, std::vector<texture_ptr> textures);
   Mesh(vertex_array_ptr vertices, std::vector<texture_ptr> textures, Material &&material);
   Mesh() = delete;
-  ~Mesh();
 
   void Draw(Shader& shader) const;
   void DebugPrint() const;
-
+  void Unload();
 private:
   void Load();
   vertex_array_ptr vertices_;
