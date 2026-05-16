@@ -35,7 +35,7 @@ public:
   void Unload();
 
   std::string GetFilename() const;
-  void Bind(std::shared_ptr<Shader> shader, unsigned int index) const;
+  void Bind(Shader& shader, unsigned int index) const;
 
 private:
   std::string filename_;

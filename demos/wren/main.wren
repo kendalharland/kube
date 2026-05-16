@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import "kube" for Camera, Entity, Model, Window, Vec3
+import "kube" for Camera, Entity, Model, Window, Vec3, Shader
 import "random" for Random
 
 class Game {
@@ -43,6 +43,8 @@ class Game {
         var entities = []
         var random = Random.new(123456789)
 
+        var shader = Shader.new("demos/wren/shaders/simple_color")
+
         for (i in 1..20000) {
             var entity = Entity.new()
             entity.model = Model.new("@cube")
@@ -56,6 +58,7 @@ class Game {
                 random.float(-1, 1),
                 random.float(-1, 1)
             )
+            entity.shader = shader
             entities.add(entity)
         }
 

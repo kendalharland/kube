@@ -40,6 +40,7 @@
 #define MAX_MODELS MAX_ENTITIES
 
 namespace kube {
+using namespace kube::graphics;
 
 bool streq(std::string a, std::string b) { return a.compare(b) == 0; }
 
@@ -69,11 +70,7 @@ void freeGame(Game *game) {
 }
 
 void gameLoop(Game *game, std::function<void(double)> update) {
-  using namespace kube::graphics;
-
   auto window = Window::GetInstance();
-
-  std::shared_ptr<Shader> shader = Shader::SimpleColorShader("src/shaders");
 
   Stopwatch stopwatch;
   stopwatch.Start();
@@ -114,9 +111,10 @@ void gameLoop(Game *game, std::function<void(double)> update) {
 
       // Update and draw model
       if (model != nullptr) {
+        auto graphics = game->entities->GetComponent<GraphicsComponent>(entity.id);
         model->model.SetCenter(position->position);
         model->model.SetRotation(position->rotation);
-        model->model.Draw(window->GetCamera(), shader);
+        model->model.Draw(window->GetCamera(), graphics->shader);
       }
     }
 
@@ -167,6 +165,11 @@ static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
   game->entities->SetComponent(id, std::move(component));
 }
 
+void entitySetShader(Game *game, EntityID id, kube::graphics::Shader shader) {
+  auto component = GraphicsComponent{.shader = shader};
+  game->entities->SetComponent(id, std::move(component));
+}
+
 // ============================================================================
 // Model
 // ============================================================================
@@ -179,6 +182,17 @@ Model createModel(std::string identifier) {
   } else {
     return loadModelFile(identifier);
   }
+}
+
+// ============================================================================
+// Shader
+// ============================================================================
+
+Shader loadShader(std::string path) {
+  auto shader = Shader(path);
+  shader.Load();
+  // TODO: Cache so we don't have to keep recompiling.
+  return Shader(shader);
 }
 
 } // namespace kube

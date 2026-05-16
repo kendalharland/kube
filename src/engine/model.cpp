@@ -64,9 +64,9 @@ void Model::SetScale(glm::mat4 scale) { scale_ = std::move(scale); }
 //   shader.SetFloat("perspective", camera->Perspective());
 //   shader.SetFloat("view", camera->View())
 // And then we can get rid of `window` and just call shader.Use().
-void Model::Draw(const Camera *camera, std::shared_ptr<kube::graphics::Shader> shader) {
-  shader->Use();
-  shader->SetUniformMat4("MVP", camera->ComputeMVP(GetMatrix()));
+void Model::Draw(const Camera *camera, kube::graphics::Shader& shader) {
+  shader.Use();
+  shader.SetUniformMat4("MVP", camera->ComputeMVP(GetMatrix()));
   for (int i = 0; i < meshes_.size(); i++) {
     meshes_[i]->Draw(shader);
   }

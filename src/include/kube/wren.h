@@ -41,17 +41,21 @@
 #define WREN_GAME_MODULE "main"
 #define WREN_GAME_CLASSNAME "Game"
 
-typedef struct Camera {
+typedef struct CameraHandle {
   CameraID id;
-} Camera;
+} CameraHandle;
 
-typedef struct Entity {
+typedef struct EntityHandle {
   EntityID id;
-} Entity;
+} EntityHandle;
 
-typedef struct Model {
+typedef struct ModelHandle {
   kube::Model value;
-} Model;
+} ModelHandle;
+
+typedef struct ShaderHandle {
+  kube::graphics::Shader value;
+} ShaderHandle;
 
 kube::Game *game = nullptr;
 
@@ -95,15 +99,12 @@ void wrenRunGame(WrenVM *vm) {
   // Call Game.new() to allocate an instance
   wrenSetSlotHandle(vm, 0, userGameClass);
   WrenHandle *ctor = wrenMakeCallHandle(vm, "new()");
-
   wrenCall(vm, ctor);
 
   // Slot 0 now contains a Game instance
-  userGameInstance = wrenGetSlotHandle(vm, 0); // really “userGameInstance” now
+  userGameInstance = wrenGetSlotHandle(vm, 0);
   wrenReleaseHandle(vm, userGameClass);
   wrenReleaseHandle(vm, ctor);
-
-  // Store the handle so we can call its methods later.
 
   // Create a handle to call the game's update function.
   userGameUpdateFn = wrenMakeCallHandle(vm, "update(_)");
@@ -154,30 +155,38 @@ void wrenOpenWindow(WrenVM *vm) {
 // Allocators
 // ============================================================================
 
-void wrenEntityAlloc(WrenVM *vm) {
-  auto entity = (Entity *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Entity));
-  entity->id = kube::createEntity(game);
-}
-
-void wrenEntityDealloc(void *entity) {
-  // delete (Entity*) entity;
-}
-
-void wrenModelAlloc(WrenVM *vm) {
-  auto model = (Model *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Model));
-  auto identifier = wrenGetSlotString(vm, 1);
-  model->value = kube::createModel(identifier);
-}
-
-void wrenModelDealloc(void *model) { delete (Model *)model; }
-
 void wrenCameraAlloc(WrenVM *vm) {
-  auto camera = (Camera *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(Camera));
+  auto camera = (CameraHandle *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(CameraHandle));
   camera->id = kube::createCamera(game);
 }
 
-void wrenCameraDealloc(void *camera) {
-  // delete (Camera*) camera;
+void wrenCameraDealloc(void *camera) { delete (CameraHandle *)camera; }
+
+void wrenEntityAlloc(WrenVM *vm) {
+  auto entity = (EntityHandle *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(EntityHandle));
+  entity->id = kube::createEntity(game);
+}
+
+void wrenEntityDealloc(void *entity) { delete (EntityHandle *)entity; }
+
+void wrenModelAlloc(WrenVM *vm) {
+  auto model = (ModelHandle *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(ModelHandle));
+  auto id = wrenGetSlotString(vm, 1);
+  model->value = kube::createModel(id);
+}
+
+void wrenModelDealloc(void *model) { delete (ModelHandle *)model; }
+
+void wrenShaderAlloc(WrenVM *vm) {
+  auto shader = (ShaderHandle *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(ShaderHandle));
+  auto path = wrenGetSlotString(vm, 1);
+  shader->value = kube::loadShader(path);
+}
+
+void wrenShaderDealloc(void *handle) { 
+  auto shader = (ShaderHandle*) handle;
+  shader->value.Unload();
+  delete (ShaderHandle *)shader;
 }
 
 // ============================================================================
@@ -185,12 +194,12 @@ void wrenCameraDealloc(void *camera) {
 // ============================================================================
 
 static void wrenCameraSetActive(WrenVM *vm) {
-  auto camera = (Camera *)(wrenGetSlotForeign(vm, 0));
+  auto camera = (CameraHandle *)(wrenGetSlotForeign(vm, 0));
   kube::cameraSetActive(game, camera->id);
 }
 
 static void wrenCameraSetPosition(WrenVM *vm) {
-  auto camera = (Camera *)(wrenGetSlotForeign(vm, 0));
+  auto camera = (CameraHandle *)(wrenGetSlotForeign(vm, 0));
   auto x = wrenGetSlotDouble(vm, 1);
   auto y = wrenGetSlotDouble(vm, 2);
   auto z = wrenGetSlotDouble(vm, 3);
@@ -198,13 +207,13 @@ static void wrenCameraSetPosition(WrenVM *vm) {
 }
 
 static void wrenEntitySetModel(WrenVM *vm) {
-  auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
-  auto model = (Model *)wrenGetSlotForeign(vm, 1);
+  auto entity = (EntityHandle *)(wrenGetSlotForeign(vm, 0));
+  auto model = (ModelHandle *)wrenGetSlotForeign(vm, 1);
   kube::entitySetModel(game, entity->id, std::move(model->value));
 }
 
 static void wrenEntitySetPosition(WrenVM *vm) {
-  auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
+  auto entity = (EntityHandle *)(wrenGetSlotForeign(vm, 0));
   auto x = wrenGetSlotDouble(vm, 1);
   auto y = wrenGetSlotDouble(vm, 2);
   auto z = wrenGetSlotDouble(vm, 3);
@@ -212,11 +221,17 @@ static void wrenEntitySetPosition(WrenVM *vm) {
 }
 
 static void wrenEntitySetSpin(WrenVM *vm) {
-  auto entity = (Entity *)(wrenGetSlotForeign(vm, 0));
+  auto entity = (EntityHandle *)(wrenGetSlotForeign(vm, 0));
   auto x = wrenGetSlotDouble(vm, 1);
   auto y = wrenGetSlotDouble(vm, 2);
   auto z = wrenGetSlotDouble(vm, 3);
   kube::entitySetSpin(game, entity->id, glm::vec3(x, y, z));
+}
+
+static void wrenEntitySetShader(WrenVM *vm) {
+  auto entity = (EntityHandle *)(wrenGetSlotForeign(vm, 0));
+  auto shader = (ShaderHandle *)(wrenGetSlotForeign(vm, 1));
+  kube::entitySetShader(game, entity->id, shader->value);
 }
 
 // ============================================================================
@@ -247,12 +262,13 @@ using BindingTable = std::unordered_map<std::string, NativeFn>;
 
 BindingTable &getBindingTable() {
   static BindingTable table = {
-      {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow},
+      {makeKey("kube", "Camera", "setActive()", 0), &wrenCameraSetActive},
+      {makeKey("kube", "Camera", "setPosition_(_,_,_)", 0), &wrenCameraSetPosition},
       {makeKey("kube", "Entity", "setModel_(_)", 0), &wrenEntitySetModel},
       {makeKey("kube", "Entity", "setPosition_(_,_,_)", 0), &wrenEntitySetPosition},
+      {makeKey("kube", "Entity", "setShader_(_)", 0), &wrenEntitySetShader},
       {makeKey("kube", "Entity", "setSpin_(_,_,_)", 0), &wrenEntitySetSpin},
-      {makeKey("kube", "Camera", "setActive()", 0), &wrenCameraSetActive},
-      {makeKey("kube", "Camera", "setPosition_(_,_,_)", 0), &wrenCameraSetPosition}};
+      {makeKey("kube", "Window", "open(_,_,_)", 1), &wrenOpenWindow}};
   return table;
 }
 
@@ -262,15 +278,20 @@ WrenForeignClassMethods wrenBindForeignClass(WrenVM *vm, const char *module,
 
   WrenForeignClassMethods methods{};
 
-  if (kube::streq(module, "kube") && kube::streq(className, "Entity")) {
-    methods.allocate = wrenEntityAlloc;
-    methods.finalize = wrenEntityDealloc;
-  } else if (kube::streq(module, "kube") && kube::streq(className, "Model")) {
-    methods.allocate = wrenModelAlloc;
-    methods.finalize = wrenModelDealloc;
-  } else if (kube::streq(module, "kube") && kube::streq(className, "Camera")) {
-    methods.allocate = wrenCameraAlloc;
-    methods.finalize = wrenCameraDealloc;
+  if (kube::streq(module, "kube")) {
+    if (kube::streq(className, "Entity")) {
+      methods.allocate = wrenEntityAlloc;
+      methods.finalize = wrenEntityDealloc;
+    } else if (kube::streq(className, "Model")) {
+      methods.allocate = wrenModelAlloc;
+      methods.finalize = wrenModelDealloc;
+    } else if (kube::streq(className, "Camera")) {
+      methods.allocate = wrenCameraAlloc;
+      methods.finalize = wrenCameraDealloc;
+    } else if (kube::streq(className, "Shader")) {
+      methods.allocate = wrenShaderAlloc;
+      methods.finalize = wrenShaderDealloc;
+    }
   }
 
   return methods;

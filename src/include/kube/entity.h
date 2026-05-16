@@ -31,10 +31,6 @@ namespace kube {
 // Forward declarations
 // ============================================================================
 
-#define MODEL_COMPONENT_TYPE typeid(ModelComponent)
-#define POSITION_COMPONENT_TYPE typeid(PositionComponent)
-#define MOVEMENT_COMPONENT_TYPE typeid(MovementComponent)
-
 class IComponentStore {
 public:
   IComponentStore() = default;
@@ -58,6 +54,10 @@ typedef struct MovementComponent {
   glm::vec3 spin;
   glm::vec3 velocity;
 } MovementComponent;
+
+typedef struct GraphicsComponent {
+  kube::graphics::Shader shader;
+} GraphicsComponent;
 
 // ============================================================================
 // Entity
@@ -135,14 +135,14 @@ template <typename C> bool ComponentStore<C>::Contains(EntityID entityID) {
 // ============================================================================
 
 EntityStore::EntityStore() {
-  stores_.emplace(MODEL_COMPONENT_TYPE,
+  stores_.emplace(typeid(ModelComponent),
                   std::unique_ptr<IComponentStore>(new ComponentStore<ModelComponent>()));
-
-  stores_.emplace(POSITION_COMPONENT_TYPE,
+  stores_.emplace(typeid(PositionComponent),
                   std::unique_ptr<IComponentStore>(new ComponentStore<PositionComponent>()));
-
-  stores_.emplace(MOVEMENT_COMPONENT_TYPE,
+  stores_.emplace(typeid(MovementComponent),
                   std::unique_ptr<IComponentStore>(new ComponentStore<MovementComponent>()));
+  stores_.emplace(typeid(GraphicsComponent),
+                  std::unique_ptr<IComponentStore>(new ComponentStore<GraphicsComponent>()));
 }
 
 EntityStore::~EntityStore() {}

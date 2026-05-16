@@ -47,6 +47,7 @@ foreign class Entity {
   foreign setModel_(model)
   foreign setPosition_(x, y, z)
   foreign setSpin_(x, y, z)
+  foreign setShader_(value)
 
   construct new() {}
   
@@ -54,6 +55,10 @@ foreign class Entity {
     setModel_(value)
   }
   
+  shader=(value) {
+    setShader_(value)
+  }
+
   position=(vec) {
     setPosition_(vec.x, vec.y, vec.z)
   }
@@ -64,7 +69,11 @@ foreign class Entity {
 }
 
 foreign class Model {
-  construct new(identifier) {}
+  construct new(id) {}
+}
+
+foreign class Shader {
+  construct new(directory) {}
 }
 
 // ============================================================================

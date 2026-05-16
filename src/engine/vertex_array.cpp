@@ -29,7 +29,7 @@ VertexArray::VertexArray(std::vector<Vertex> vertices, std::vector<unsigned int>
 }
 
 void VertexArray::Load() {
-  KUBE_INFO << "Allocating vertex array";
+  // KUBE_INFO << "Allocating vertex array";
   glGenVertexArrays(1, &VAO_);
   glBindVertexArray(VAO_);
 

@@ -47,7 +47,7 @@ public:
   Mesh() = delete;
   ~Mesh();
 
-  void Draw(std::shared_ptr<Shader> shader) const;
+  void Draw(Shader& shader) const;
   void DebugPrint() const;
 
 private:

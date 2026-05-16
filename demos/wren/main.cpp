@@ -48,11 +48,14 @@ int main(void) {
 
   switch (result) {
   case WREN_RESULT_COMPILE_ERROR:
-    { printf("Compile Error!\n"); } break;
+    KUBE_ERROR << "Wren compile error";
+    break;
   case WREN_RESULT_RUNTIME_ERROR:
-    { printf("Runtime Error!\n"); } break;
+    KUBE_ERROR << "Wren runtime Error";
+    break;
   case WREN_RESULT_SUCCESS:
-    { printf("Success!\n"); } break;
+    KUBE_ERROR << "Wren compiled";
+    break;
   }
 
   wrenRunGame(vm);

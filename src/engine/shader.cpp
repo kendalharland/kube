@@ -112,12 +112,22 @@ GLuint CompileShaderProgram(ShaderSourceFiles files) {
   return program_id;
 }
 
+Shader::Shader(std::string path) {
+  auto rootPath = std::filesystem::path(path);
+  shader_files_ = ShaderSourceFiles{
+      .vertex = rootPath / "vertex.glsl",
+      .fragment = rootPath / "fragment.glsl",
+  };
+  KUBE_DEBUG << "Shader file: " << shader_files_.vertex;
+  KUBE_DEBUG << "Shader file: " << shader_files_.fragment;
+}
+
 Shader::Shader(ShaderSourceFiles shader_files) {
   shader_files_ = std::move(shader_files);
   Load();
 }
 
-Shader::~Shader() { Unload(); }
+Shader::~Shader() { }
 
 void Shader::Load() {
   KUBE_INFO << "Loading shader";

@@ -46,7 +46,7 @@ public:
   void SetScale(glm::mat4 scale);
   void AddMesh(std::unique_ptr<graphics::Mesh> mesh);
   void DebugPrint() const;
-  void Draw(const Camera *camera, std::shared_ptr<graphics::Shader> shader);
+  void Draw(const Camera *camera, graphics::Shader& shader);
   void Rotate(float radians, glm::vec3 axis);
 
 private:

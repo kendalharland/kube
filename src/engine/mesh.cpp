@@ -70,8 +70,8 @@ void Mesh::DebugPrint() const {
   // clang-format on
 }
 
-void Mesh::Draw(std::shared_ptr<Shader> shader) const {
-  shader->SetUniformVec4("light_color", glm::vec4(material_.color_diffuse, 1));
+void Mesh::Draw(Shader& shader) const {
+  shader.SetUniformVec4("light_color", glm::vec4(material_.color_diffuse, 1));
   for (int i = 0; i < textures_.size(); i++) {
     textures_[i]->Bind(shader, i);
   }

@@ -39,8 +39,10 @@ public:
   static std::shared_ptr<Shader> SimpleColorShader(std::string shader_source_root);
 
   Shader(ShaderSourceFiles source_files);
+  Shader(std::string path);
+
   ~Shader();
-  Shader() = delete;
+  Shader() = default;
 
   void Load();
   void Unload();

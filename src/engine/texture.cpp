@@ -70,8 +70,8 @@ void Texture::Unload() {
   glDeleteTextures(1, &ID_);
 }
 
-void Texture::Bind(std::shared_ptr<Shader> shader, unsigned int index) const {
-  auto location = glGetUniformLocation(shader->GetProgramID(), type_.c_str());
+void Texture::Bind(Shader& shader, unsigned int index) const {
+  auto location = glGetUniformLocation(shader.GetProgramID(), type_.c_str());
   glActiveTexture(GL_TEXTURE0 + index);
   glUniform1i(location, index);
   glBindTexture(GL_TEXTURE_2D, ID_);
