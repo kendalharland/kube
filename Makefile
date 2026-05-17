@@ -58,7 +58,7 @@ endif
 TARGET_OBJ   := $(LIBRARY_PATH)libkube.o
 TARGET_LIB   := $(LIBRARY_PATH)libkube.$(SHLIB_EXT)
 
-.PHONY: default pull-submodules clean help format build build3p assimp kube demo-wren clean-build
+.PHONY: default pull-submodules clean help format build build3p assimp kube demo-ships clean-build
 
 default: kube
 
@@ -115,8 +115,8 @@ kube: build
 	# Ensure the linker finds libkube in src/lib
 	$(CXX) cmd/main.cpp -o $(BIN_PATH)/kube $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS)
 
-demo-wren: kube
-	./bin/wren demos/wren/main.wren
+demo-ships: kube
+	./bin/wren demos/main-ships.wren
 
 help:
 	@echo "Usage: make [target]"

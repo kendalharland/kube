@@ -14,4 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-var MicroRecon = "demos/wren/assets/models/ships/MicroRecon.obj"
+var MicroRecon = "demos/assets/models/ships/MicroRecon.obj"
