@@ -40,7 +40,9 @@ class Game {
         camera.position = Vec3.new(3, 3, 3)
         camera.setActive()
 
-        var shader = Shader.new("demos/shaders/sdf")
+        var sdfShader = Shader.new("demos/shaders/sdf")
+        var shipShader = Shader.new("demos/shaders/diffuse")
+        var cubeShader = Shader.new("demos/shaders/simple_color")
 
         var entities = [] 
         for (i in 1..3) {
@@ -48,14 +50,22 @@ class Game {
             entity.model = Model.new(MicroRecon)
             entity.position = Vec3.new(i,0,0)
             entity.spin = Vec3.new(1+i,-1,1)
-            entity.shader = shader
+            entity.shader = shipShader
+            entities.add(entity)
+        }
+        for (i in 1..3) {
+            var entity = Entity.new()
+            entity.model = Model.new("@cube")
+            entity.position = Vec3.new(i,i*2,-1)
+            entity.spin = Vec3.new(1+i,-1,1)
+            entity.shader = cubeShader
             entities.add(entity)
         }
         {
             var entity = Entity.new()
             entity.model = Model.new("@quad")
             entity.position = Vec3.new(3, 0, 0)
-            entity.shader = shader
+            entity.shader = sdfShader
             entities.add(entity)
         }
 
