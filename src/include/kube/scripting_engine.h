@@ -94,15 +94,11 @@ void gameLoop(Game *game, std::function<void(double)> update) {
 
       // Process entity movement
       if (movement != nullptr) {
-        // Update position
         position->position += position->position * movement->velocity;
-
-        // Update rotation
-        auto axis = glm::vec3(movement->spin.x, movement->spin.y, movement->spin.z);
-        auto radians = (float)deltaSecs;
-        position->rotation = glm::rotate(position->rotation, radians, axis);
+        position->rotation = glm::rotate(position->rotation, float(deltaSecs), movement->spin);
       }
 
+      // Update camera position
       auto camera = game->cameras->Get(entity.id);
       if (camera != nullptr) {
         camera->SetPosition(position->position);
