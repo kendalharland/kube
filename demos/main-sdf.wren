@@ -40,20 +40,21 @@ class Game {
         camera.position = Vec3.new(3, 3, 3)
         camera.setActive()
 
-        var entities = []
-        {
+        var entities = [] 
+        for (i in 1..3) {
             var entity = Entity.new()
-            entity.position = Vec3.new(0, 0, 0)
-            entity.model = Model.new("@quad")
+            entity.model = Model.new(MicroRecon)
+            entity.position = Vec3.new(i,0,0)
+            entity.spin = Vec3.new(1+i,-1,1)
+            // BUG: Shader program isn't assigned if we resuse the value.
             entity.shader = Shader.new("demos/shaders/sdf")
             entities.add(entity)
         }
         {
             var entity = Entity.new()
-            entity.model = Model.new(MicroRecon)
-            entity.position = Vec3.new(5,5,5)
-            entity.spin = Vec3.new(1,-1,1)
-            entity.shader = Shader.new("demos/shaders/diffuse")
+            entity.model = Model.new("@quad")
+            entity.position = Vec3.new(3, 0, 0)
+            entity.shader = Shader.new("demos/shaders/sdf")
             entities.add(entity)
         }
 
@@ -64,7 +65,7 @@ class Game {
 
     update(elapsedSecs) {
         this.time = this.time + elapsedSecs
-        var amplitude = 10
+        var amplitude = 3
         var frequency = 0.15
         var angle = 2.0 * Num.pi * frequency * this.time
         var offset = angle.sin * amplitude

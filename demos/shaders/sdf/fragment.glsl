@@ -19,12 +19,14 @@
 //   5. Write the final color to FragColor              (main)
 // =============================================================================
 
-// 'in' from the vertex shader — screen-space UV in [-1, 1].
-in vec2 frag_uv;
+// 'in' from the vertex shader.
+in vec2 frag_uv; // screen-space UV in [-1, 1].
+in vec4 frag_normal; // fragment normal vector.
+in vec2 frag_tex_coord;
 
 // The one required output: the RGBA color for this pixel.
 // We declared it as vec3 (RGB) so the alpha channel defaults to 1.0 (opaque).
-out vec3 FragColor;
+out vec4 FragColor;
 
 // -----------------------------------------------------------------------------
 // Uniforms
@@ -44,6 +46,13 @@ uniform vec3  u_camera_pos;  // world-space camera position, from Camera::GetPos
 uniform vec3  u_camera_tgt;  // Point the camera looks at
 uniform vec2  u_resolution;  // viewport size in pixels, for aspect-ratio correction
 uniform float u_time;        // seconds since startup, for animation
+
+// Samplers for lighting.
+// For now, we only support one type of each sampler.
+uniform sampler2D sampler_ambient;
+uniform sampler2D sampler_diffuse;
+uniform sampler2D sampler_specular;
+uniform vec4 light_color; // Light's diffuse and specular contribution.
 
 // =============================================================================
 // SIGNED DISTANCE FUNCTIONS (SDFs)
@@ -139,6 +148,8 @@ vec3 calcNormal(vec3 p) {
 // MAIN — builds the ray for this pixel, marches it, then shades the result
 // =============================================================================
 void main() {
+    vec3 light_dir = normalize(vec3(1.0, 2.0, 3.0)); // arbitrary directional light
+
     // -------------------------------------------------------------------------
     // Step 1: Convert this pixel's screen UV into a properly-proportioned 2D
     // coordinate, correcting for the window's aspect ratio.
@@ -205,20 +216,28 @@ void main() {
         vec3 normal = calcNormal(p);
 
         // Simple Lambertian (diffuse) lighting:
-        //   brightness = max(dot(normal, lightDir), 0)
+        //   brightness = max(dot(normal, light_dir), 0)
         //
         // dot(N, L) is the cosine of the angle between the surface normal and
         // the light direction. When they point the same way (surface faces the
         // light) it's 1.0 (fully lit). At 90° it's 0 (grazing). We clamp
         // negatives to 0 so back-facing surfaces don't go dark-negative.
-        vec3  lightDir = normalize(vec3(1.0, 2.0, 3.0)); // arbitrary directional light
-        float diffuse  = max(dot(normal, lightDir), 0.0);
+        float diffuse  = max(dot(normal, light_dir), 0.0);
         float ambient  = 0.1; // small constant so shadowed areas aren't pure black
 
-        vec3 sphereColor = vec3(0.2, 0.5, 1.0); // base blue color of the sphere
-        FragColor = sphereColor * (ambient + diffuse);
+        vec3 sphereColor = vec3(0.9, 0.5, 1.0); // base blue color of the sphere
+        vec3 color = sphereColor * (ambient + diffuse);
+        FragColor = vec4(color, 0);
     } else {
         // The ray escaped without hitting anything — draw the background.
-        FragColor = vec3(0.05);
+        // FragColor = vec3(0.05);
+        vec4 tex_ambient = texture(sampler_ambient, frag_tex_coord);
+        vec4 tex_diffuse = texture(sampler_diffuse, frag_tex_coord);
+        vec4 tex_specular = texture(sampler_specular, frag_tex_coord);
+
+        vec4 N = normalize(frag_normal);
+        vec4 L = normalize(vec4(light_dir, 1));
+        vec4 diffuse_color = light_color * clamp(dot(N, L), 0.0, 1.0);
+        FragColor = (tex_ambient + tex_specular + diffuse_color) * tex_diffuse;
     }
 }

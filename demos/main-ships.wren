@@ -44,7 +44,7 @@ class Game {
         var entities = []
         var random = Random.new(123456789)
 
-        var shader = Shader.new("demos/shaders/diffuse")
+        var shader = Shader.new("demos/shaders/sdf")
 
         for (i in 1..2) {
             var entity = Entity.new()
