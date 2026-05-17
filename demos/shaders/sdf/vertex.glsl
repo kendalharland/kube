@@ -43,15 +43,13 @@ layout(location = 3) in vec2 v_tex_coord;
 layout(location = 4) in vec3 v_tagent;
 layout(location = 5) in vec3 v_bitangent;
 
+// Model-View-Projection matrix.
+uniform mat4 MVP;
+
 // 'out' variables are interpolated by the GPU and passed to the fragment shader.
 // Because the quad fills the screen, frag_uv smoothly sweeps from (-1,-1) at
 // the bottom-left pixel to (1,1) at the top-right pixel.
 out vec2 frag_uv;
-out vec4 frag_normal;
-out vec2 frag_tex_coord;
-
-// Model-View-Projection matrix.
-uniform mat4 MVP;
 
 void main() {
     // gl_Position is the built-in output that tells the GPU where this vertex
@@ -61,6 +59,4 @@ void main() {
 
     // Pass XY through as screen-space UV. Z is irrelevant for 2D screen coords.
     frag_uv = v_position.xy;
-    frag_normal = normalize(vec4(v_normal, 1));
-    frag_tex_coord = v_tex_coord;
 }

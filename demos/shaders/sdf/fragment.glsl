@@ -21,8 +21,6 @@
 
 // 'in' from the vertex shader.
 in vec2 frag_uv; // screen-space UV in [-1, 1].
-in vec4 frag_normal; // fragment normal vector.
-in vec2 frag_tex_coord;
 
 // The one required output: the RGBA color for this pixel.
 // We declared it as vec3 (RGB) so the alpha channel defaults to 1.0 (opaque).
@@ -46,13 +44,6 @@ uniform vec3  u_camera_pos;  // world-space camera position, from Camera::GetPos
 uniform vec3  u_camera_tgt;  // Point the camera looks at
 uniform vec2  u_resolution;  // viewport size in pixels, for aspect-ratio correction
 uniform float u_time;        // seconds since startup, for animation
-
-// Samplers for lighting.
-// For now, we only support one type of each sampler.
-uniform sampler2D sampler_ambient;
-uniform sampler2D sampler_diffuse;
-uniform sampler2D sampler_specular;
-uniform vec4 light_color; // Light's diffuse and specular contribution.
 
 // =============================================================================
 // SIGNED DISTANCE FUNCTIONS (SDFs)
@@ -228,16 +219,5 @@ void main() {
         vec3 sphereColor = vec3(0.9, 0.5, 1.0); // base blue color of the sphere
         vec3 color = sphereColor * (ambient + diffuse);
         FragColor = vec4(color, 0);
-    } else {
-        // The ray escaped without hitting anything — draw the background.
-        // FragColor = vec3(0.05);
-        vec4 tex_ambient = texture(sampler_ambient, frag_tex_coord);
-        vec4 tex_diffuse = texture(sampler_diffuse, frag_tex_coord);
-        vec4 tex_specular = texture(sampler_specular, frag_tex_coord);
-
-        vec4 N = normalize(frag_normal);
-        vec4 L = normalize(vec4(light_dir, 1));
-        vec4 diffuse_color = light_color * clamp(dot(N, L), 0.0, 1.0);
-        FragColor = (tex_ambient + tex_specular + diffuse_color) * tex_diffuse;
     }
 }
