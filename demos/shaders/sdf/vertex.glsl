@@ -43,8 +43,6 @@ layout(location = 3) in vec2 v_tex_coord;
 layout(location = 4) in vec3 v_tagent;
 layout(location = 5) in vec3 v_bitangent;
 
-// Model-View-Projection matrix.
-uniform mat4 MVP;
 
 // 'out' variables are interpolated by the GPU and passed to the fragment shader.
 // Because the quad fills the screen, frag_uv smoothly sweeps from (-1,-1) at
@@ -55,7 +53,7 @@ void main() {
     // gl_Position is the built-in output that tells the GPU where this vertex
     // sits on screen. The w component (1.0) means no perspective divide —
     // the XYZ values are used as-is in NDC.
-    gl_Position = MVP * vec4(v_position, 1.0);
+    gl_Position = vec4(v_position, 1.0);
 
     // Pass XY through as screen-space UV. Z is irrelevant for 2D screen coords.
     frag_uv = v_position.xy;

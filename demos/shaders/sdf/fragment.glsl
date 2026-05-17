@@ -152,7 +152,7 @@ void main() {
     // horizontal range so that equal distances on screen map to equal angles.
     // -------------------------------------------------------------------------
     float aspect = u_resolution.x / u_resolution.y; // e.g. 1600/1200 ≈ 1.333
-    vec2  uv     = frag_uv * vec2(aspect, 1.0);     // uv.x now spans ~[-1.33, 1.33]
+    vec2 uv = frag_uv * vec2(aspect, 1.0);     // uv.x now spans ~[-1.33, 1.33]
 
     // -------------------------------------------------------------------------
     // Step 2: Build the camera basis vectors for a "look-at" setup.
@@ -219,5 +219,24 @@ void main() {
         vec3 sphereColor = vec3(0.9, 0.5, 1.0); // base blue color of the sphere
         vec3 color = sphereColor * (ambient + diffuse);
         FragColor = vec4(color, 0);
+    } else {
+        // Discard the shader output if we didn't intersect the SDF.
+        //
+        // Some other things we could do for more sophisticated miss-handling:
+        // * Write gl_FragDepth on hits
+        // When a ray hits, you can compute the actual 3D hit position and write
+        // a proper depth value to gl_FragDepth. That lets the GPU's depth test
+        // work normally — rasterized objects closer to the camera will
+        // naturally occlude the SDF surface, and the SDF surface will occlude
+        // things behind it. Without this, the SDF ignores depth entirely.
+        //
+        // * Don't use a fullscreen quad
+        // Instead of covering the whole screen, you render the SDF onto a
+        // bounding volume (a box or sphere that tightly wraps the SDF scene).
+        // The fragment shader only runs on pixels covered by that volume, so
+        // the rest of the screen is untouched. This is more complex but the
+        // most physically correct approach — it also naturally clips rays that
+        // couldn't possibly hit the SDF object.
+        discard;
     }
 }
