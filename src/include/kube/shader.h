@@ -44,6 +44,11 @@ public:
   ~Shader();
   Shader() = default;
 
+  Shader(Shader &&other) noexcept;
+  Shader(const Shader &) = delete;
+  Shader &operator=(Shader &&other) noexcept;
+  Shader &operator=(const Shader &) = delete;
+
   void Load();
   void Unload();
 

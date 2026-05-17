@@ -254,7 +254,7 @@ static void wrenEntitySetSpin(WrenVM *vm) {
 static void wrenEntitySetShader(WrenVM *vm) {
   auto entity = (EntityHandle *)(wrenGetSlotForeign(vm, 0));
   auto shader = (ShaderHandle *)(wrenGetSlotForeign(vm, 1));
-  kube::entitySetShader(game, entity->id, shader->value);
+  kube::entitySetShader(game, entity->id, std::move(shader->value));
 }
 
 // ============================================================================

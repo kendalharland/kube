@@ -129,14 +129,31 @@ Shader::Shader(ShaderSourceFiles shader_files) {
 
 Shader::~Shader() {}
 
+Shader::Shader(Shader &&other) noexcept
+    : shader_files_(std::move(other.shader_files_)), program_id_(other.program_id_) {
+  other.program_id_ = 0;
+}
+
+Shader &Shader::operator=(Shader &&other) noexcept {
+  if (this != &other) {
+    shader_files_ = std::move(other.shader_files_);
+    program_id_ = other.program_id_;
+    other.program_id_ = 0;
+  }
+  return *this;
+}
+
 void Shader::Load() {
   KUBE_INFO << "Loading shader";
   program_id_ = CompileShaderProgram(shader_files_);
 }
 
 void Shader::Unload() {
-  KUBE_INFO << "Unloading shader " << program_id_;
-  glDeleteProgram(program_id_);
+  if (program_id_ != 0) {
+    KUBE_INFO << "Unloading shader " << program_id_;
+    glDeleteProgram(program_id_);
+    program_id_ = 0;
+  }
 }
 
 GLuint Shader::GetProgramID() { return program_id_; }

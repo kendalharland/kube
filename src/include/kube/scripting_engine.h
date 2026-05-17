@@ -164,8 +164,8 @@ static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
   game->entities->SetComponent(id, std::move(component));
 }
 
-void entitySetShader(Game *game, EntityID id, kube::graphics::Shader shader) {
-  auto component = GraphicsComponent{.shader = shader};
+void entitySetShader(Game *game, EntityID id, kube::graphics::Shader &&shader) {
+  auto component = GraphicsComponent{.shader = std::move(shader)};
   game->entities->SetComponent(id, std::move(component));
 }
 
@@ -190,7 +190,7 @@ Shader loadShader(std::string path) {
   auto shader = Shader(path);
   shader.Load();
   // TODO: Cache so we don't have to keep recompiling.
-  return Shader(shader);
+  return shader;
 }
 
 } // namespace kube
