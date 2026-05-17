@@ -40,7 +40,7 @@ struct Material {
 
 class Mesh final {
 public:
-  UNCOPYABLE(Mesh);
+  MOVE_ONLY(Mesh);
   Mesh(vertex_array_ptr vertices);
   Mesh(vertex_array_ptr vertices, std::vector<texture_ptr> textures);
   Mesh(vertex_array_ptr vertices, std::vector<texture_ptr> textures, Material &&material);

@@ -36,7 +36,7 @@ struct Vertex {
 
 class VertexArray final {
 public:
-  UNCOPYABLE(VertexArray);
+  MOVE_ONLY(VertexArray);
   VertexArray() {}
   VertexArray(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
   ~VertexArray() {}

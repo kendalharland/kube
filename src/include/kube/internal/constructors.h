@@ -16,7 +16,7 @@
 
 #pragma once
 
-#define UNCOPYABLE(NAME)                                                                           \
+#define MOVE_ONLY(NAME)                                                                            \
   NAME &operator=(NAME &&) = default;                                                              \
   NAME(NAME &&) = default;                                                                         \
   NAME(NAME &) = delete;                                                                           \

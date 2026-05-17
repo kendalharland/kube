@@ -27,7 +27,7 @@ namespace graphics {
 
 class Texture final {
 public:
-  UNCOPYABLE(Texture);
+  MOVE_ONLY(Texture);
   Texture(std::string filename, std::string type);
   ~Texture() {}
 
