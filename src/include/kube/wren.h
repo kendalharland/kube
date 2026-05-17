@@ -119,7 +119,7 @@ WrenLoadModuleResult wrenLoadModule(WrenVM *vm, const char *name) {
       // TODO: stdlib when run from the project root. embed this file.
       std::format("src/wren/{}.wren", name),
       std::format("/usr/local/include/{}", name),
-      std::format("/usr/include/%{}", name),
+      std::format("/usr/include/{}", name),
   };
 
   std::filesystem::path filename;
