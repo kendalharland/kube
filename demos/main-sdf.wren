@@ -56,5 +56,11 @@ class Game {
     }
 
     update(elapsedSecs) {
+        this.time = this.time + elapsedSecs
+        var amplitude = 10
+        var frequency = 0.15
+        var angle = 2.0 * Num.pi * frequency * this.time
+        var offset = angle.sin * amplitude
+        camera.position = Vec3.new(10 + offset, 10 + offset, 10 + offset)
     }
 }
