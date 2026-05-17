@@ -40,19 +40,26 @@ class Game {
         camera.position = Vec3.new(3, 3, 3)
         camera.setActive()
 
-        // Create some entities.
-        var entity = Entity.new()
-        entity.position = Vec3.new(0, 0, 0)
-
-        var model = Model.new("@quad")
-        entity.model = model
-
-        var shader = Shader.new("demos/shaders/sdf")
-        entity.shader = shader
+        var entities = []
+        {
+            var entity = Entity.new()
+            entity.position = Vec3.new(0, 0, 0)
+            entity.model = Model.new("@quad")
+            entity.shader = Shader.new("demos/shaders/sdf")
+            entities.add(entity)
+        }
+        {
+            var entity = Entity.new()
+            entity.model = Model.new(MicroRecon)
+            entity.position = Vec3.new(5,5,5)
+            entity.spin = Vec3.new(1,-1,1)
+            entity.shader = Shader.new("demos/shaders/diffuse")
+            entities.add(entity)
+        }
 
         this.time = 0
         this.camera = camera
-        this.entities = [entity]
+        this.entities = entities
     }
 
     update(elapsedSecs) {

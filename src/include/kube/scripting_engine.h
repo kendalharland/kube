@@ -118,6 +118,7 @@ void gameLoop(Game *game, std::function<void(double)> update) {
     }
 
     window->Update();
+
   } while (!window->ShouldClose());
 
   window->Close();

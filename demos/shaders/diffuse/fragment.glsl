@@ -19,9 +19,7 @@
 out vec4 FragColor;
 
 // Interpolated values from the vertex shaders
-in vec3 fragment_color;
 in vec2 fragment_tex_coord;
-in vec4 fragment_position; // Position in world space.
 in vec4 fragment_normal;   // Surface normal in world space.
 in vec4 light_direction;   // Direction in which light hits this surface.
 
@@ -33,11 +31,6 @@ uniform sampler2D sampler_diffuse;
 uniform sampler2D sampler_specular;
 
 void main() {
-  // BEGIN unused inputs
-  vec3 color = fragment_color;
-  vec4 pos = fragment_position;
-  // END unused inputs
-
   vec4 tex_ambient = texture(sampler_ambient, fragment_tex_coord);
   vec4 tex_diffuse = texture(sampler_diffuse, fragment_tex_coord);
   vec4 tex_specular = texture(sampler_specular, fragment_tex_coord);
