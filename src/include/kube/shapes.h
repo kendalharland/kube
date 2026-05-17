@@ -71,6 +71,35 @@ static unsigned int cube_indices_[]  = {
 };
 // clang-format on
 
+std::vector<Vertex> collectVertices(const GLfloat *coords, const GLfloat *colors, size_t n) {
+  std::vector<Vertex> vertices;
+
+  for (size_t i = 0; i < n; i += 3) {
+    graphics::Vertex v;
+    v.position = glm::vec3(coords[i], coords[i + 1], coords[i + 2]);
+    v.colors = glm::vec3(0);
+    v.normal = glm::vec3(0);
+    v.tex_coords = glm::vec2(0);
+    v.tangent = glm::vec3(0);
+    v.bitangent = glm::vec3(0);
+    vertices.push_back(std::move(v));
+  }
+
+  return vertices;
+}
+
+Mesh quadMesh() {
+  const float coords[] = {
+      -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0,
+  };
+
+  std::vector<unsigned int> indices = {0, 1, 2, 3, 4, 5};
+
+  auto vertices = collectVertices(coords, NULL, 18);
+
+  return Mesh(std::make_unique<graphics::VertexArray>(vertices, indices));
+}
+
 // Generic, drawable cube geometry.
 Mesh cubeMesh() {
   std::vector<graphics::Vertex> vertices;

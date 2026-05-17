@@ -64,7 +64,11 @@ void Model::SetScale(glm::mat4 scale) { scale_ = std::move(scale); }
 // And then we can get rid of `window` and just call shader.Use().
 void Model::Draw(const Camera *camera, kube::graphics::Shader &shader) {
   shader.Use();
-  shader.SetUniformMat4("MVP", camera->ComputeMVP(GetMatrix()));
+  // shader.SetUniformMat4("MVP", camera->ComputeMVP(GetMatrix()));
+  shader.SetUniform3f("u_camera_pos", camera->GetPosition());
+  shader.SetUniform2f("u_resolution", glm::vec2(1600, 1200));
+  shader.SetUniform1f("u_time", (float)glfwGetTime());
+
   for (int i = 0; i < meshes_.size(); i++) {
     meshes_[i].Draw(shader);
   }

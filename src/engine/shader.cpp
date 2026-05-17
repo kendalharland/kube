@@ -170,6 +170,21 @@ void Shader::SetUniformVec4(const char *id, glm::vec4 value) {
   glUniform4fv(location, 1, &value[0]);
 }
 
+void Shader::SetUniform3f(const char *id, glm::vec3 value) {
+  GLuint location = glGetUniformLocation(program_id_, id);
+  glUniform3fv(location, 1, &value[0]);
+}
+
+void Shader::SetUniform2f(const char *id, glm::vec2 value) {
+  GLuint location = glGetUniformLocation(program_id_, id);
+  glUniform2fv(location, 1, &value[0]);
+}
+
+void Shader::SetUniform1f(const char *id, float value) {
+  GLuint location = glGetUniformLocation(program_id_, id);
+  glUniform1f(location, value);
+}
+
 std::shared_ptr<Shader> Shader::DiffuseShader(std::string shader_source_root) {
   auto source_root = std::filesystem::path(shader_source_root);
   auto source_files = ShaderSourceFiles{

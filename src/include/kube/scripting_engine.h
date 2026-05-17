@@ -176,6 +176,8 @@ void entitySetShader(Game *game, EntityID id, kube::graphics::Shader &&shader) {
 Model createModel(std::string identifier) {
   if (streq(identifier, "@cube")) {
     return Model(graphics::cubeMesh());
+  } else if (streq(identifier, "@quad")) {
+    return Model(graphics::quadMesh());
   } else {
     auto filename = identifier;
     return Model::LoadFromFile(filename);

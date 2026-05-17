@@ -58,6 +58,9 @@ public:
   // Sets the value of a uniform mat4 of floating point values in this shader.
   void SetUniformMat4(const char *id, glm::mat4 value);
   void SetUniformVec4(const char *id, glm::vec4 value);
+  void SetUniform3f(const char *id, glm::vec3 value);
+  void SetUniform2f(const char *id, glm::vec2 value);
+  void SetUniform1f(const char *id, float value);
 
 private:
   ShaderSourceFiles shader_files_;
