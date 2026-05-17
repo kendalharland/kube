@@ -56,7 +56,7 @@ typedef struct MovementComponent {
 } MovementComponent;
 
 typedef struct GraphicsComponent {
-  kube::graphics::Shader shader;
+  std::shared_ptr<kube::graphics::Shader> shader;
 } GraphicsComponent;
 
 // ============================================================================

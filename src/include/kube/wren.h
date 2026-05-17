@@ -52,7 +52,7 @@ typedef struct ModelHandle {
 } ModelHandle;
 
 typedef struct ShaderHandle {
-  kube::graphics::Shader value;
+  std::shared_ptr<kube::graphics::Shader> value;
 } ShaderHandle;
 
 kube::Game *game = nullptr;
@@ -203,13 +203,13 @@ void wrenModelDealloc(void *handle) {
 void wrenShaderAlloc(WrenVM *vm) {
   auto shader = (ShaderHandle *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(ShaderHandle));
   auto path = wrenGetSlotString(vm, 1);
-  shader->value = kube::loadShader(path);
+  shader->value = std::make_shared<kube::Shader>(kube::loadShader(path));
 }
 
 void wrenShaderDealloc(void *handle) {
   auto shader = (ShaderHandle *)handle;
-  shader->value.Unload();
-  delete (ShaderHandle *)shader;
+  shader->value->Unload();
+  delete shader;
 }
 
 // ============================================================================
@@ -254,7 +254,7 @@ static void wrenEntitySetSpin(WrenVM *vm) {
 static void wrenEntitySetShader(WrenVM *vm) {
   auto entity = (EntityHandle *)(wrenGetSlotForeign(vm, 0));
   auto shader = (ShaderHandle *)(wrenGetSlotForeign(vm, 1));
-  kube::entitySetShader(game, entity->id, std::move(shader->value));
+  kube::entitySetShader(game, entity->id, shader->value);
 }
 
 // ============================================================================

@@ -113,7 +113,8 @@ void gameLoop(Game *game, std::function<void(double)> update) {
         auto graphics = game->entities->GetComponent<GraphicsComponent>(entity.id);
         model->model.SetCenter(position->position);
         model->model.SetRotation(position->rotation);
-        model->model.Draw(window->GetCamera(), graphics->shader);
+        auto shader = graphics->shader.get();
+        model->model.Draw(window->GetCamera(), *shader);
       }
     }
 
@@ -165,8 +166,8 @@ static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
   game->entities->SetComponent(id, std::move(component));
 }
 
-void entitySetShader(Game *game, EntityID id, kube::graphics::Shader &&shader) {
-  auto component = GraphicsComponent{.shader = std::move(shader)};
+void entitySetShader(Game *game, EntityID id, std::shared_ptr<kube::graphics::Shader> shader) {
+  auto component = GraphicsComponent{.shader = shader};
   game->entities->SetComponent(id, std::move(component));
 }
 

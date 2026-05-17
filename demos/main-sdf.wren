@@ -40,21 +40,22 @@ class Game {
         camera.position = Vec3.new(3, 3, 3)
         camera.setActive()
 
+        var shader = Shader.new("demos/shaders/sdf")
+
         var entities = [] 
         for (i in 1..3) {
             var entity = Entity.new()
             entity.model = Model.new(MicroRecon)
             entity.position = Vec3.new(i,0,0)
             entity.spin = Vec3.new(1+i,-1,1)
-            // BUG: Shader program isn't assigned if we resuse the value.
-            entity.shader = Shader.new("demos/shaders/sdf")
+            entity.shader = shader
             entities.add(entity)
         }
         {
             var entity = Entity.new()
             entity.model = Model.new("@quad")
             entity.position = Vec3.new(3, 0, 0)
-            entity.shader = Shader.new("demos/shaders/sdf")
+            entity.shader = shader
             entities.add(entity)
         }
 
