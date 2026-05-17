@@ -58,9 +58,9 @@ endif
 TARGET_OBJ   := $(LIBRARY_PATH)libkube.o
 TARGET_LIB   := $(LIBRARY_PATH)libkube.$(SHLIB_EXT)
 
-.PHONY: default pull-submodules clean help format build build3p assimp wren demo demo-wren clean-build
+.PHONY: default pull-submodules clean help format build build3p assimp kube demo-wren clean-build
 
-default: demo
+default: kube
 
 format:
 	@echo "=== Formatting code ==="
@@ -109,14 +109,14 @@ pull-submodules:
 	@echo "=== Fetching submodules ==="
 	git submodule update --init --recursive
 
-demo: build
+kube: build
 	@mkdir -p $(BIN_PATH)
 	@echo "=== Building demos ($(config)) ==="
 	# Ensure the linker finds libkube in src/lib
-	$(CXX) demos/wren/main.cpp      -o $(BIN_PATH)/wren      $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS) -Idemos/common/
+	$(CXX) cmd/main.cpp -o $(BIN_PATH)/kube $(CXXFLAGS) $(INC) -L$(LIBRARY_PATH) -lkube $(LDFLAGS) $(LIBS)
 
-demo-wren: demo
-	./bin/wren
+demo-wren: kube
+	./bin/wren demos/wren/main.wren
 
 help:
 	@echo "Usage: make [target]"
