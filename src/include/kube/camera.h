@@ -29,7 +29,7 @@ namespace kube {
 typedef struct camera {
   float aspectRatio = 4.0f / 3.0f;
   float far = 100.f;
-  float fov = glm::radians(160.0f);
+  float fov = glm::radians(45.0f);
   float near = 0.1f;
   float zoomSpeed = 0.05f;
   glm::vec3 position = glm::vec3(10.0f);

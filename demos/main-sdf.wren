@@ -28,6 +28,8 @@ class Game {
     time { _time }
     time=(value) { _time = value }
 
+    startCameraFov { 67 }
+
     construct new() {
         // Open the window
         Window.open(1600, 1200, "kube")
@@ -36,6 +38,7 @@ class Game {
         var camera = Camera.new()
         camera.position = Vec3.new(0, -10, 0)
         camera.target = Vec3.new(0, 0, 0)
+        camera.fov = startCameraFov
         camera.activate()
 
         var sdfShader = Shader.new("demos/shaders/sdf")
@@ -55,5 +58,13 @@ class Game {
         this.entities = entities
     }
 
-    update(elapsedSecs) {}
+    update(elapsedSecs) {
+        this.time = this.time + elapsedSecs
+
+        var zoomSpeed = 1.5
+        var maxZoom = 20
+        var zoom = maxZoom * (time * zoomSpeed).sin
+
+        this.camera.fov = startCameraFov + zoom
+    }
 }

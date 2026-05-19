@@ -234,6 +234,18 @@ static void wrenCameraSetTarget(WrenVM *vm) {
   kube::cameraSetTarget(game, camera->id, glm::vec3(x, y, z));
 }
 
+static void wrenCameraSetFov(WrenVM* vm) {
+  auto camera = (CameraHandle *)(wrenGetSlotForeign(vm, 0));
+  auto fov = wrenGetSlotDouble(vm, 1);
+  kube::cameraSetFov(game, camera->id, (float)fov);
+}
+
+static void wrenCameraGetFov(WrenVM* vm) {
+  auto camera = (CameraHandle *)(wrenGetSlotForeign(vm, 0));
+  float fov = kube::cameraGetFov(game, camera->id);
+  wrenSetSlotDouble(vm, 0, (double)fov);
+}
+
 static void wrenEntitySetModel(WrenVM *vm) {
   auto entity = (EntityHandle *)(wrenGetSlotForeign(vm, 0));
   auto model = (ModelHandle *)wrenGetSlotForeign(vm, 1);
@@ -293,6 +305,8 @@ BindingTable &getBindingTable() {
       {makeKey("kube", "Camera", "activate()", 0), &wrenCameraActivate},
       {makeKey("kube", "Camera", "setPosition_(_,_,_)", 0), &wrenCameraSetPosition},
       {makeKey("kube", "Camera", "setTarget_(_,_,_)", 0), &wrenCameraSetTarget},
+      {makeKey("kube", "Camera", "setFov_(_)", 0), &wrenCameraSetFov},
+      {makeKey("kube", "Camera", "getFov_()", 0), &wrenCameraGetFov},
       {makeKey("kube", "Entity", "setModel_(_)", 0), &wrenEntitySetModel},
       {makeKey("kube", "Entity", "setPosition_(_,_,_)", 0), &wrenEntitySetPosition},
       {makeKey("kube", "Entity", "setShader_(_)", 0), &wrenEntitySetShader},

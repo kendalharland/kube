@@ -133,12 +133,6 @@ static void cameraActivate(Game *game, CameraID id) {
   windowSetCamera(game->window, camera);
 }
 
-// How is an object's "rotation" different from its "target"?
-// Well, its target is a vector that the object is pointing at, in world-space.
-// Its rotation is the results of rotating the object to point at that target.
-// For a camera you'd need to store the target vector on the object to pass it to the shader.
-// For any other object, you'd just store the rotation, using the target to compute it
-// one time.
 static void cameraSetTarget(Game *game, CameraID id, glm::vec3 target) {
   auto camera = game->cameras->Get(id);
   if (camera == nullptr) {
@@ -146,6 +140,24 @@ static void cameraSetTarget(Game *game, CameraID id, glm::vec3 target) {
     return;
   }
   camera->target = target;
+}
+
+static void cameraSetFov(Game *game, CameraID id, float fov) {
+  auto camera = game->cameras->Get(id);
+  if (camera == nullptr) {
+    KUBE_ERROR << "camera not found: " << id;
+    return;
+  }
+  camera->fov = glm::radians(fov);
+}
+
+float cameraGetFov(Game *game, CameraID id) {
+  auto camera = game->cameras->Get(id);
+  if (camera == nullptr) {
+    KUBE_ERROR << "camera not found: " << id;
+    return 0;
+  }
+  return glm::degrees(camera->fov);
 }
 
 // ============================================================================

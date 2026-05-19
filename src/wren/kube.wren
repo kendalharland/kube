@@ -29,6 +29,8 @@ class Window {
 foreign class Camera {
   foreign setPosition_(x, y, z)
   foreign setTarget_(x, y, z)
+  foreign setFov_(value)
+  foreign getFov_()
 
   // Set the player's perspective to this camera.
   // 
@@ -37,6 +39,11 @@ foreign class Camera {
   foreign activate()
 
   construct new() {}
+
+  fov { getFov_() }
+  fov=(value) {
+    setFov_(value)
+  }
 
   // Set the camera's position.
   position=(vec) {

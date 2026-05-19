@@ -72,6 +72,24 @@ vec3 rotate(vec3 v, vec3 axis, float angle) {
 }
 
 // =============================================================================
+// SIGNED DISTANCE FUNCTION OPERATORS
+// =============================================================================
+float opUnion(float a, float b) {
+    return min(a, b);
+}
+
+float opSubtraction(float a, float b) {
+    return max(a, b);
+}
+
+float opSmoothUnion( float d1, float d2, float k )
+{
+    k *= 4.0;
+    float h = max(k-abs(d1-d2),0.0);
+    return min(d1, d2) - h*h*0.25/k;
+}
+
+// =============================================================================
 // SIGNED DISTANCE FUNCTIONS (SDFs)
 //
 // An SDF is a function f(p) that, given any point p in 3D space, returns the
@@ -91,21 +109,6 @@ vec3 rotate(vec3 v, vec3 axis, float angle) {
 // If p is 3 units from origin and radius is 1, we're 2 units outside (> 0).
 // If p is 0.5 units from origin and radius is 1, we're 0.5 units inside (< 0).
 // =============================================================================
-float opUnion(float a, float b) {
-    return min(a, b);
-}
-
-float opSubtraction(float a, float b) {
-    return max(a, b);
-}
-
-float opSmoothUnion( float d1, float d2, float k )
-{
-    k *= 4.0;
-    float h = max(k-abs(d1-d2),0.0);
-    return min(d1, d2) - h*h*0.25/k;
-}
-
 float sdSphere(vec3 p, float radius) {
     return length(p) - radius;
 }
@@ -164,19 +167,29 @@ float sdScene(vec3 p) {
     return d;
 }
 
-float softShadows(vec3 ro, vec3 rd, float mint, float maxt, float k ) {
-  float resultingShadowColor = 1.0;
-  float t = mint;
-  for(int i = 0; i < 50 && t < maxt; i++) {
-      float h = sdScene(ro + rd*t);
-      if( h < 0.001 )
-          return 0.0;
-      resultingShadowColor = min(resultingShadowColor, k*h/t );
-      t += h;
-  }
-  return resultingShadowColor ;
+// =============================================================================
+// SURFACE NORMALS VIA CENTRAL DIFFERENCES
+//
+// To light a surface we need its outward-facing normal vector at the hit point.
+// For analytic shapes we could compute this mathematically, but there's a
+// general trick that works for ANY SDF: the gradient of the SDF at a point is
+// perpendicular to the surface there — i.e., it IS the normal.
+//
+// We approximate the gradient numerically using central differences:
+//   dF/dx ≈ (F(p + ε·x̂) - F(p - ε·x̂)) / 2ε
+//
+// We skip dividing by 2ε because we immediately normalize the result — the
+// magnitude cancels out. A tiny ε (0.001) gives accurate normals without
+// introducing visible stepping artifacts.
+// =============================================================================
+vec3 calcNormal(vec3 p) {
+    const float e = 0.001;
+    return normalize(vec3(
+        sdScene(p + vec3(e,0,0)) - sdScene(p - vec3(e,0,0)), // dF/dx
+        sdScene(p + vec3(0,e,0)) - sdScene(p - vec3(0,e,0)), // dF/dy
+        sdScene(p + vec3(0,0,e)) - sdScene(p - vec3(0,0,e))  // dF/dz
+    ));
 }
-
 
 // =============================================================================
 // RAYMARCHING
@@ -218,31 +231,9 @@ float raymarch(vec3 ro, vec3 rd) {
     return dist; // if dist >= MAX_DIST, the ray missed everything
 }
 
-
 // =============================================================================
-// SURFACE NORMALS VIA CENTRAL DIFFERENCES
-//
-// To light a surface we need its outward-facing normal vector at the hit point.
-// For analytic shapes we could compute this mathematically, but there's a
-// general trick that works for ANY SDF: the gradient of the SDF at a point is
-// perpendicular to the surface there — i.e., it IS the normal.
-//
-// We approximate the gradient numerically using central differences:
-//   dF/dx ≈ (F(p + ε·x̂) - F(p - ε·x̂)) / 2ε
-//
-// We skip dividing by 2ε because we immediately normalize the result — the
-// magnitude cancels out. A tiny ε (0.001) gives accurate normals without
-// introducing visible stepping artifacts.
+// LIGHTING
 // =============================================================================
-vec3 calcNormal(vec3 p) {
-    const float e = 0.001;
-    return normalize(vec3(
-        sdScene(p + vec3(e,0,0)) - sdScene(p - vec3(e,0,0)), // dF/dx
-        sdScene(p + vec3(0,e,0)) - sdScene(p - vec3(0,e,0)), // dF/dy
-        sdScene(p + vec3(0,0,e)) - sdScene(p - vec3(0,0,e))  // dF/dz
-    ));
-}
-
 
 // Tweaked Cosine color palette function from Inigo Quilez
 vec3 getColor(float amount) {
@@ -250,6 +241,18 @@ vec3 getColor(float amount) {
   return color * amount;
 }
 
+float softShadows(vec3 ro, vec3 rd, float mint, float maxt, float k ) {
+  float resultingShadowColor = 1.0;
+  float t = mint;
+  for(int i = 0; i < 50 && t < maxt; i++) {
+      float h = sdScene(ro + rd*t);
+      if( h < 0.001 )
+          return 0.0;
+      resultingShadowColor = min(resultingShadowColor, k*h/t );
+      t += h;
+  }
+  return resultingShadowColor ;
+}
 
 // =============================================================================
 // MAIN — builds the ray for this pixel, marches it, then shades the result
