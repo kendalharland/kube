@@ -26,9 +26,6 @@
 #include <kube/camera.h>
 #include <kube/entity.h>
 #include <kube/logging.h>
-#include <kube/math.h>
-#include <kube/mesh.h>
-#include <kube/model.h>
 #include <kube/scripting_engine.h>
 #include <kube/shapes.h>
 #include <kube/time.h>
@@ -48,11 +45,11 @@ typedef struct EntityHandle {
 } EntityHandle;
 
 typedef struct ModelHandle {
-  kube::Model value;
+  kube::model value;
 } ModelHandle;
 
 typedef struct ShaderHandle {
-  std::shared_ptr<kube::graphics::Shader> value;
+  std::shared_ptr<kube::shader> value;
 } ShaderHandle;
 
 kube::Game *game = nullptr;
@@ -196,19 +193,19 @@ void wrenModelAlloc(WrenVM *vm) {
 
 void wrenModelDealloc(void *handle) {
   auto model = (ModelHandle *)handle;
-  model->value.Unload();
+  kube::modelUnload(model->value);
   delete model;
 }
 
 void wrenShaderAlloc(WrenVM *vm) {
   auto shader = (ShaderHandle *)wrenSetSlotNewForeign(vm, 0, 0, sizeof(ShaderHandle));
   auto path = wrenGetSlotString(vm, 1);
-  shader->value = std::make_shared<kube::Shader>(kube::loadShader(path));
+  shader->value = std::make_shared<kube::shader>(kube::loadShader(path));
 }
 
 void wrenShaderDealloc(void *handle) {
   auto shader = (ShaderHandle *)handle;
-  shader->value->Unload();
+  kube::shaderUnload(*shader->value);
   delete shader;
 }
 

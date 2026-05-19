@@ -17,8 +17,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <map>
+#include <numbers>
 
 #define GLM_FORCE_RADIANS 1
 
@@ -26,34 +26,24 @@
 
 namespace kube {
 
-class Camera final {
-public:
-  Camera() {}
-  Camera(const Camera &camera) = delete;
-  Camera(Camera &&other) = default;
-  Camera &operator=(Camera &&other) = default;
+typedef struct camera {
+  float aspectRatio = 4.0f / 3.0f;
+  float far = 100.f;
+  float fov = glm::radians(45.0f);
+  float near = 0.1f;
+  float zoomSpeed = 0.05f;
+  glm::vec3 position = glm::vec3(10.0f);
+  glm::vec3 target = glm::vec3(0.f);
+  glm::vec3 up = glm::vec3(0, 1, 0);
+} camera;
 
-  void SetAspectRatio(float value);
-  float GetAspsectRatio() const;
-  void SetPosition(float x, float y, float z);
-  void SetPosition(glm::vec3 position);
-  glm::vec3 GetPosition() const;
-  void SetTarget(float x, float y, float z);
-  glm::vec3 GetTarget() const;
+void cameraSetPosition(camera *camera, glm::vec3 position) { camera->position = position; }
 
-  glm::mat4 ComputeMVP(const glm::mat4 model) const;
-  void Zoom(bool in);
-
-private:
-  float aspectRatio_ = 4.0f / 3.0f;
-  float far_ = 100.f;
-  float fov_ = glm::radians(45.0f);
-  float near_ = 0.1f;
-  float zoomSpeed_ = 0.05f;
-  glm::vec3 position_ = glm::vec3(10.0f);
-  glm::vec3 target_ = glm::vec3(0.f);
-  glm::vec3 up_ = glm::vec3(0, 1, 0);
-};
+void cameraZoom(camera &camera, bool in) {
+  camera.fov += in ? -camera.zoomSpeed : camera.zoomSpeed;
+  camera.fov = std::min(camera.fov, (float)std::numbers::pi);
+  camera.fov = std::max(camera.fov, (float)M_2_PI);
+}
 
 class CameraStore {
 public:
@@ -61,19 +51,19 @@ public:
   ~CameraStore();
 
   void Create(CameraID cameraID);
-  Camera *Get(CameraID cameraID);
+  camera *Get(CameraID cameraID);
 
 private:
-  std::map<CameraID, Camera> cameras_;
+  std::map<CameraID, camera> cameras_;
 };
 
 CameraStore::CameraStore() {}
 
 CameraStore::~CameraStore() {}
 
-void CameraStore::Create(CameraID id) { cameras_.emplace(id, Camera()); }
+void CameraStore::Create(CameraID id) { cameras_.emplace(id, camera()); }
 
-Camera *CameraStore::Get(CameraID id) {
+camera *CameraStore::Get(CameraID id) {
   auto result = cameras_.find(id);
   if (result == cameras_.end()) {
     return nullptr;

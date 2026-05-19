@@ -18,21 +18,21 @@
 
 #include <memory>
 
-#include <kube/mesh.h>
+#include <kube/graphics.h>
 
-using namespace kube::graphics;
+using namespace kube;
 
 class MeshBuilder {
 public:
   void AddVertex(Vertex &&vertex);
   void AddIndex(unsigned int index);
-  void AddTexture(texture_ptr texture);
+  void AddTexture(texture texture);
   void SetMaterial(Material &&material);
-  Mesh Build();
+  mesh Build();
 
 private:
   Material material_;
   std::vector<Vertex> vertices_;
   std::vector<unsigned int> indices_;
-  std::vector<texture_ptr> textures_;
+  std::vector<texture> textures_;
 };

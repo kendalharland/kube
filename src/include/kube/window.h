@@ -34,7 +34,7 @@ private:
 
   static void glfw_scroll(GLFWwindow *window, double xoffset, double yoffset) {
     Window *instance = Window::GetInstance();
-    instance->camera_->Zoom(yoffset > 0);
+    cameraZoom(*instance->camera_, yoffset > 0);
   }
 
 public:
@@ -42,9 +42,9 @@ public:
   void Close();
   void Clear();
   void Update();
-  Camera *GetCamera();
-  void SetCamera(std::unique_ptr<Camera> camera);
-  void SetCamera(Camera *camera);
+  camera *GetCamera();
+  void SetCamera(std::unique_ptr<camera> camera);
+  void SetCamera(camera *camera);
 
   bool IsKeyPressed(uint key);
   bool ShouldClose();
@@ -52,7 +52,7 @@ public:
 private:
   bool is_open_;
   GLFWwindow *window_;
-  std::unique_ptr<Camera> camera_;
+  std::unique_ptr<camera> camera_;
   GLuint VAO_;
 };
 

@@ -18,8 +18,7 @@
 
 #include <memory>
 
-#include <kube/mesh.h>
-#include <kube/model.h>
+#include <kube/graphics.h>
 
 #include "mesh_builder.h"
 
@@ -29,14 +28,14 @@ using namespace kube;
 
 class ModelLoader {
 public:
-  Model LoadFromFile(std::string filename);
+  model LoadFromFile(std::string filename);
 
 private:
-  void LoadScene_(const aiScene *scene, Model *model);
-  void LoadNode_(aiNode *node, const aiScene *scene, Model *model);
+  void LoadScene_(const aiScene *scene, model *model);
+  void LoadNode_(aiNode *node, const aiScene *scene, model *model);
   void LoadMesh_(aiMesh *m, const aiScene *scene, MeshBuilder *mesh);
-  void LoadVertex_(aiMesh *m, unsigned int i, graphics::Vertex *vertex);
-  void LoadMaterial_(aiMaterial *mat, const aiScene *scene, graphics::Material *material);
+  void LoadVertex_(aiMesh *m, unsigned int i, kube::Vertex *vertex);
+  void LoadMaterial_(aiMaterial *mat, const aiScene *scene, Material *material);
   void LoadMaterialTextures_(aiMaterial *mat, aiTextureType type, std::string type_name,
                              MeshBuilder *mesh);
   std::string directory_;

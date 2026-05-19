@@ -15,8 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <kube/logging.h>
-#include <kube/mesh.h>
-#include <kube/model.h>
+#include <kube/graphics.h>
 #include <kube/window.h>
 
 #include "math.h"
@@ -38,7 +37,7 @@ void StringReplace(std::string *input, std::string old, std::string rep) {
   }
 }
 
-Model ModelLoader::LoadFromFile(std::string filename) {
+model ModelLoader::LoadFromFile(std::string filename) {
   KUBE_INFO << "Loading model from file " << filename;
 
   directory_ = filename.substr(0, filename.find_last_of('/'));
@@ -50,33 +49,32 @@ Model ModelLoader::LoadFromFile(std::string filename) {
     throw std::runtime_error("failed to load model");
   }
 
-  auto model = Model();
+  model model;
   LoadScene_(scene, &model);
-  model.SetCenter(glm::vec3(0, 0, 0));
-  model.SetScale(glm::mat4(1.f));
-  model.SetRotation(glm::mat4(1.f));
-  model.DebugPrint();
+  model.center = glm::vec3(0, 0, 0);
+  model.scale = glm::mat4(1.f);
+  model.rotation = glm::mat4(1.f);
 
   return model;
 }
 
-void ModelLoader::LoadScene_(const aiScene *scene, Model *model) {
+void ModelLoader::LoadScene_(const aiScene *scene, model *model) {
   LoadNode_(scene->mRootNode, scene, model);
 }
 
-void ModelLoader::LoadNode_(aiNode *node, const aiScene *scene, Model *model) {
-  model->SetName(node->mName.C_Str());
+void ModelLoader::LoadNode_(aiNode *node, const aiScene *scene, model *model) {
+  model->name = node->mName.C_Str();
   for (unsigned int i = 0; i < node->mNumMeshes; i++) {
     MeshBuilder mesh;
     LoadMesh_(scene->mMeshes[node->mMeshes[i]], scene, &mesh);
-    model->AddMesh(mesh.Build());
+    model->meshes.push_back(mesh.Build());
   }
   for (unsigned int i = 0; i < node->mNumChildren; i++) {
     LoadNode_(node->mChildren[i], scene, model);
   }
 }
 
-void ModelLoader::LoadVertex_(aiMesh *m, unsigned int i, graphics::Vertex *vertex) {
+void ModelLoader::LoadVertex_(aiMesh *m, unsigned int i, kube::Vertex *vertex) {
   glm::vec3 position;
   position.x = m->mVertices[i].x;
   position.y = m->mVertices[i].y;
@@ -128,12 +126,15 @@ void ModelLoader::LoadMaterialTextures_(aiMaterial *mat, aiTextureType type, std
     // TODO: Some textures are loaded twice - the filenames match. Skip those ones.
     auto filename = directory_ + '/' + texture_path.C_Str();
     StringReplace(&filename, "\\", "/");
-    auto texture = std::make_unique<Texture>(filename, type_name);
+
+    texture texture;
+    texture.filename = std::move(filename);
+    texture.type = std::move(type_name);
     mesh->AddTexture(std::move(texture));
   }
 }
 
-void ModelLoader::LoadMaterial_(aiMaterial *m, const aiScene *scene, graphics::Material *material) {
+void ModelLoader::LoadMaterial_(aiMaterial *m, const aiScene *scene, Material *material) {
   aiColor3D ambient(0.f, 0.f, 0.f);
   aiColor3D diffuse(0.f, 0.f, 0.f);
   aiColor3D emissive(0.f, 0.f, 0.f);
@@ -160,14 +161,14 @@ void ModelLoader::LoadMaterial_(aiMaterial *m, const aiScene *scene, graphics::M
 
 void ModelLoader::LoadMesh_(aiMesh *m, const aiScene *scene, MeshBuilder *mesh) {
   for (unsigned int i = 0; i < m->mNumVertices; i++) {
-    graphics::Vertex vertex;
+    kube::Vertex vertex;
     LoadVertex_(m, i, &vertex);
     mesh->AddVertex(std::move(vertex));
   }
 
   if (m->mMaterialIndex >= 0) {
     aiMaterial *mat = scene->mMaterials[m->mMaterialIndex];
-    graphics::Material material;
+    Material material;
     LoadMaterial_(mat, scene, &material);
     mesh->SetMaterial(std::move(material));
 

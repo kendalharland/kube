@@ -16,16 +16,9 @@
 
 #pragma once
 
-#include <memory>
-
-#include <kube/mesh.h>
-#include <kube/model.h>
-#include <kube/shader.h>
-
-#include <glm/glm.hpp>
+#include <kube/graphics.h>
 
 namespace kube {
-namespace graphics {
 
 // clang-format off
 
@@ -75,7 +68,7 @@ std::vector<Vertex> collectVertices(const GLfloat *coords, const GLfloat *colors
   std::vector<Vertex> vertices;
 
   for (size_t i = 0; i < n; i += 3) {
-    graphics::Vertex v;
+    kube::Vertex v;
     v.position = glm::vec3(coords[i], coords[i + 1], coords[i + 2]);
     v.colors = glm::vec3(0);
     v.normal = glm::vec3(0);
@@ -88,7 +81,7 @@ std::vector<Vertex> collectVertices(const GLfloat *coords, const GLfloat *colors
   return vertices;
 }
 
-Mesh quadMesh() {
+mesh quadMesh() {
   const float coords[] = {
       -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0,
   };
@@ -97,16 +90,19 @@ Mesh quadMesh() {
 
   auto vertices = collectVertices(coords, NULL, 18);
 
-  return Mesh(std::make_unique<graphics::VertexArray>(vertices, indices));
+  mesh mesh;
+  mesh.vertices.vertices = std::move(vertices);
+  mesh.vertices.indices = std::move(indices);
+  return mesh;
 }
 
 // Generic, drawable cube geometry.
-Mesh cubeMesh() {
-  std::vector<graphics::Vertex> vertices;
+mesh cubeMesh() {
+  std::vector<kube::Vertex> vertices;
   std::vector<unsigned int> indices;
 
   for (size_t i = 0; i < sizeof(cube_vertices_) / sizeof(GLfloat); i += 3) {
-    graphics::Vertex v;
+    kube::Vertex v;
 
     v.position.x = cube_vertices_[i];
     v.position.y = cube_vertices_[i + 1];
@@ -123,9 +119,10 @@ Mesh cubeMesh() {
     indices.push_back(cube_indices_[i]);
   }
 
-  auto vertex_array = std::make_unique<graphics::VertexArray>(vertices, indices);
-  return Mesh(std::move(vertex_array));
+  mesh mesh;
+  mesh.vertices.vertices = std::move(vertices);
+  mesh.vertices.indices = std::move(indices);
+  return mesh;
 }
 
-} // namespace graphics
 } // namespace kube

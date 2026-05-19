@@ -14,19 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <kube/mesh.h>
+#include <kube/graphics.h>
 
 #include "mesh_builder.h"
+
+using namespace kube;
 
 void MeshBuilder::AddVertex(Vertex &&vertex) { vertices_.push_back(std::move(vertex)); }
 
 void MeshBuilder::AddIndex(unsigned int index) { indices_.push_back(std::move(index)); }
 
-void MeshBuilder::AddTexture(texture_ptr texture) { textures_.push_back(std::move(texture)); }
+void MeshBuilder::AddTexture(texture texture) { textures_.push_back(std::move(texture)); }
 
 void MeshBuilder::SetMaterial(Material &&material) { material_ = std::move(material); }
 
-Mesh MeshBuilder::Build() {
-  auto vertex_array = std::make_unique<VertexArray>(std::move(vertices_), std::move(indices_));
-  return Mesh(std::move(vertex_array), std::move(textures_), std::move(material_));
+mesh MeshBuilder::Build() {
+  mesh mesh;
+  mesh.vertices.vertices = std::move(vertices_);
+  mesh.vertices.indices = std::move(indices_);
+  mesh.textures = std::move(textures_);
+  mesh.material = std::move(material_);
+  return mesh;
 }

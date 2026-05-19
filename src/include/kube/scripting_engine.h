@@ -21,10 +21,8 @@
 
 #include <kube/camera.h>
 #include <kube/entity.h>
+#include <kube/graphics.h>
 #include <kube/logging.h>
-#include <kube/math.h>
-#include <kube/mesh.h>
-#include <kube/model.h>
 #include <kube/scripting_engine.h>
 #include <kube/shapes.h>
 #include <kube/time.h>
@@ -39,14 +37,12 @@
 #define MAX_MODELS MAX_ENTITIES
 
 namespace kube {
-using namespace kube::graphics;
 
 bool streq(std::string a, std::string b) { return a.compare(b) == 0; }
 
 void openWindow(int width, int height, char *title) {
   auto window = Window::GetInstance();
   window->Open(width, height, title);
-  auto camera = std::make_unique<Camera>();
 }
 
 typedef struct Game {
@@ -101,16 +97,20 @@ void gameLoop(Game *game, std::function<void(double)> update) {
       // Update camera position
       auto camera = game->cameras->Get(entity.id);
       if (camera != nullptr) {
-        camera->SetPosition(position->position);
+        cameraSetPosition(camera, position->position);
       }
 
       // Update and draw model
       if (model != nullptr) {
         auto graphics = game->entities->GetComponent<GraphicsComponent>(entity.id);
-        model->model.SetCenter(position->position);
-        model->model.SetRotation(position->rotation);
+        model->model.center = position->position;
+        model->model.rotation = position->rotation;
         auto shader = graphics->shader.get();
-        model->model.Draw(window->GetCamera(), *shader);
+
+        // Hack: draw
+        // kube::camera camera = Window->GetCamera();
+        kube::draw(*window, *window->GetCamera(), model->model, *shader);
+        // model->model.Draw(window->GetCamera(), *shader);
       }
     }
 
@@ -142,7 +142,7 @@ static void cameraSetActive(Game *game, CameraID cameraID) {
 
 static EntityID createEntity(Game *game) { return game->entities->Create(); }
 
-static void entitySetModel(Game *game, EntityID id, Model &&model) {
+static void entitySetModel(Game *game, EntityID id, model &&model) {
   auto component = ModelComponent{};
   component.model = std::move(model);
   game->entities->SetComponent(id, std::move(component));
@@ -162,33 +162,47 @@ static void entitySetSpin(Game *game, EntityID id, glm::vec3 spin) {
   game->entities->SetComponent(id, std::move(component));
 }
 
-void entitySetShader(Game *game, EntityID id, std::shared_ptr<kube::graphics::Shader> shader) {
+void entitySetShader(Game *game, EntityID id, std::shared_ptr<kube::shader> shader) {
   auto component = GraphicsComponent{.shader = shader};
   game->entities->SetComponent(id, std::move(component));
 }
 
 // ============================================================================
-// Model
+// model
 // ============================================================================
 
-Model createModel(std::string identifier) {
+mesh createMesh(std::string identifier) {
   if (streq(identifier, "@cube")) {
-    return Model(graphics::cubeMesh());
+    return cubeMesh();
   } else if (streq(identifier, "@quad")) {
-    return Model(graphics::quadMesh());
+    return quadMesh();
   } else {
-    auto filename = identifier;
-    return Model::LoadFromFile(filename);
+    throw std::invalid_argument("invalid mesh identifier");
   }
 }
 
+model createModel(std::string identifier) {
+  model model;
+  if (identifier[0] == '@') {
+    model.meshes.push_back(createMesh(identifier));
+  } else {
+    model = loadModelFromFile(identifier);
+  }
+
+  for (auto &mesh : model.meshes) {
+    meshLoad(mesh);
+  }
+
+  return model;
+}
+
 // ============================================================================
-// Shader
+// shader
 // ============================================================================
 
-Shader loadShader(std::string path) {
-  auto shader = Shader(path);
-  shader.Load();
+shader loadShader(std::string path) {
+  shader shader = shaderLoadFrom(std::filesystem::path(path));
+  shaderLoad(shader);
   // TODO: Cache so we don't have to keep recompiling.
   return shader;
 }

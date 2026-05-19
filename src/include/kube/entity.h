@@ -18,7 +18,7 @@
 
 #include <glm/glm.hpp>
 #include <kube/logging.h>
-#include <kube/model.h>
+#include <kube/graphics.h>
 #include <map>
 #include <stdexcept>
 #include <typeindex>
@@ -42,7 +42,7 @@ public:
 template <typename C> class ComponentStore;
 
 typedef struct ModelComponent {
-  kube::Model model;
+  kube::model model;
 } ModelComponent;
 
 typedef struct PositionComponent {
@@ -56,7 +56,7 @@ typedef struct MovementComponent {
 } MovementComponent;
 
 typedef struct GraphicsComponent {
-  std::shared_ptr<kube::graphics::Shader> shader;
+  std::shared_ptr<kube::shader> shader;
 } GraphicsComponent;
 
 // ============================================================================

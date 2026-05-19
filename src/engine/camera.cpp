@@ -23,29 +23,29 @@
 
 namespace kube {
 
-void Camera::SetAspectRatio(float value) { aspectRatio_ = value; }
+// void Camera::SetAspectRatio(float value) { aspectRatio_ = value; }
 
-float Camera::GetAspsectRatio() const { return aspectRatio_; }
+// float Camera::GetAspsectRatio() const { return aspectRatio_; }
 
-void Camera::SetPosition(float x, float y, float z) { position_ = glm::vec3(x, y, x); }
-void Camera::SetPosition(glm::vec3 position) { position_ = position; }
+// void Camera::SetPosition(float x, float y, float z) { position_ = glm::vec3(x, y, x); }
+// void Camera::SetPosition(glm::vec3 position) { position_ = position; }
 
-glm::vec3 Camera::GetPosition() const { return position_; }
+// glm::vec3 Camera::GetPosition() const { return position_; }
 
-void Camera::SetTarget(float x, float y, float z) { target_ = glm::vec3(x, y, z); }
+// void Camera::SetTarget(float x, float y, float z) { target_ = glm::vec3(x, y, z); }
 
-glm::vec3 Camera::GetTarget() const { return target_; }
+// glm::vec3 Camera::GetTarget() const { return target_; }
 
-glm::mat4 Camera::ComputeMVP(const glm::mat4 model) const {
-  auto projection = glm::perspective(fov_, aspectRatio_, near_, far_);
-  auto view = glm::lookAt(position_, target_, up_);
-  return projection * view * model;
-}
+// glm::mat4 Camera::ComputeMVP(const glm::mat4 model) const {
+//   auto projection = glm::perspective(fov_, aspectRatio_, near_, far_);
+//   auto view = glm::lookAt(position_, target_, up_);
+//   return projection * view * model;
+// }
 
-void Camera::Zoom(bool in) {
-  fov_ += in ? -zoomSpeed_ : zoomSpeed_;
-  fov_ = std::min(fov_, (float)std::numbers::pi);
-  fov_ = std::max(fov_, (float)M_2_PI);
-}
+// void Camera::Zoom(bool in) {
+//   fov_ += in ? -zoomSpeed_ : zoomSpeed_;
+//   fov_ = std::min(fov_, (float)std::numbers::pi);
+//   fov_ = std::max(fov_, (float)M_2_PI);
+// }
 
 } // namespace kube

@@ -15,15 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "engine/camera.cpp"
+#include "engine/graphics.cpp"
 #include "engine/logging.cpp"
-#include "engine/mesh.cpp"
 #include "engine/mesh_builder.cpp"
 #include "engine/mesh_builder.h"
-#include "engine/model.cpp"
 #include "engine/model_loader.cpp"
 #include "engine/model_loader.h"
-#include "engine/shader.cpp"
-#include "engine/texture.cpp"
 #include "engine/time.cpp"
-#include "engine/vertex_array.cpp"
 #include "engine/window.cpp"

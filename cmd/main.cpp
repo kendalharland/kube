@@ -19,8 +19,6 @@
 
 #include <kube/camera.h>
 #include <kube/logging.h>
-#include <kube/mesh.h>
-#include <kube/model.h>
 #include <kube/fs.h>
 #include <kube/time.h>
 #include <kube/window.h>
