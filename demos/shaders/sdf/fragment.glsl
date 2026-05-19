@@ -43,6 +43,7 @@ out vec4 FragColor;
 // -----------------------------------------------------------------------------
 uniform vec3  u_camera_pos;  // world-space camera position, from Camera::GetPosition()
 uniform vec3  u_camera_tgt;  // Point the camera looks at
+uniform float u_camera_fov;  // Camera field of view (how wide the spray of light from the camera is).
 uniform vec2  u_resolution;  // viewport size in pixels, for aspect-ratio correction
 uniform float u_time;        // seconds since startup, for animation
 
@@ -317,12 +318,24 @@ void main() {
     //                 + right * uv.x          <- shift left/right per pixel
     //                 + up    * uv.y )         <- shift up/down per pixel
     //
-    // A larger focal length (e.g. 3.0) makes the image plane farther away,
-    // compressing the angular spread of rays — that's a narrower (zoom) FOV.
-    // A smaller value (e.g. 0.8) widens the FOV like a wide-angle lens.
-    // 1.5 gives roughly 67°, a natural-looking perspective.
+    // A larger fov results in a smaller focal which makes the image plane
+    // closer, expanding the angular spread of rays like a wide angle lens.
+    // This makes the image appear smaller. A smaller fov results in a larger
+    // focal which makes the image larger.
+    //
+    // We look directly at the center of the image plane, so half of our fov
+    // covers the bottom half of the screen while the other half covers the top.
+    // Since screen-space spans [-1, 1] half of the image plane is always height 1.
+    // 
+    // To find focal, imagine a triangle with one vertex at the camera's position,
+    // another at the center of the image plane and another at the top-center of
+    // the image plane, the angle at the camera's position is fov/2, the far-side
+    // (half the image plane) has length 1, and the focal distance is given by:
+    //    
+    //   focal = 1 / tan(fov / 2)
     // -------------------------------------------------------------------------
-    vec3 rd = normalize(fwd * 1.5 + right * uv.x + up * uv.y);
+    float focal = 1.0 / tan(u_camera_fov/2);
+    vec3 rd = normalize(fwd * focal + right * uv.x + up * uv.y);
 
     // -------------------------------------------------------------------------
     // Step 4: March the ray and interpret the result.

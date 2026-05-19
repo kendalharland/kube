@@ -328,6 +328,7 @@ void draw(const Window &window, const camera &camera, const model &model, const 
   kubegl::setUniformMat4(shader, "MVP", computeMVP(camera, model));
   kubegl::setUniform3f(shader, "u_camera_pos", camera.position);
   kubegl::setUniform3f(shader, "u_camera_tgt", camera.target);
+  kubegl::setUniform1f(shader, "u_camera_fov", camera.fov);
   kubegl::setUniform2f(shader, "u_resolution", glm::vec2(1600, 1200));
   kubegl::setUniform1f(shader, "u_time", (float)glfwGetTime());
 

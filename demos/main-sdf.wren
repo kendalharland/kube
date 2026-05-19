@@ -34,7 +34,7 @@ class Game {
 
         // Initialize the camera
         var camera = Camera.new()
-        camera.position = Vec3.new(0, -20, 0)
+        camera.position = Vec3.new(0, -10, 0)
         camera.target = Vec3.new(0, 0, 0)
         camera.activate()
 
@@ -46,7 +46,7 @@ class Game {
         {
             var entity = Entity.new()
             entity.model = Model.new("@quad")
-            entity.position = Vec3.new(3, 0, 0)
+            entity.position = Vec3.new(0, 0, 0)
             entity.shader = sdfShader
             entities.add(entity)
         }
