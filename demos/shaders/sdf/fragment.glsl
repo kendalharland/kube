@@ -69,8 +69,15 @@ float sdfSphere(vec3 p, float radius) {
     return length(p) - radius;
 }
 
+float sdfSin(vec3 p) {
+  return 1.0 - (sin(p.x) + sin(p.y) + sin(p.z))/3.0;
+}
+
 float sdfScene(vec3 p) {
-    return sdfSphere(p, 5.0);
+    float dSphere = sdfSphere(p, 5.0);
+    float scale = 8.0 + 6.0 * sin(u_time * 0.5);
+    float dSin = (0.8 - sdfSin(p * scale))/(scale * 2.0);
+    return max(dSphere, dSin);
 }
 
 // =============================================================================

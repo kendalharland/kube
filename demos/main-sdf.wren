@@ -45,19 +45,19 @@ class Game {
         var cubeShader = Shader.new("demos/shaders/simple_color")
 
         var entities = [] 
-        for (i in 1..3) {
+        {
             var entity = Entity.new()
             entity.model = Model.new(MicroRecon)
-            entity.position = Vec3.new(i,0,0)
-            entity.spin = Vec3.new(1+i,-1,1)
+            entity.position = Vec3.new(1,0,0)
+            entity.spin = Vec3.new(1,1,1)
             entity.shader = shipShader
             entities.add(entity)
         }
-        for (i in 1..3) {
+        {
             var entity = Entity.new()
             entity.model = Model.new("@cube")
-            entity.position = Vec3.new(i,i*2,-1)
-            entity.spin = Vec3.new(1+i,-1,1)
+            entity.position = Vec3.new(1,5,0)
+            entity.spin = Vec3.new(2,2,2)
             entity.shader = cubeShader
             entities.add(entity)
         }
@@ -68,7 +68,6 @@ class Game {
             entity.shader = sdfShader
             entities.add(entity)
         }
-
         this.time = 0
         this.camera = camera
         this.entities = entities
