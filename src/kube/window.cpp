@@ -68,7 +68,7 @@ void windowOpen(std::shared_ptr<Window> window, int width, int height, const cha
   glfwSetInputMode(window->glfw_window, GLFW_STICKY_KEYS, GL_FALSE);
 
   // TODO: Make this configurable.
-  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glGenVertexArrays(1, &window->VAO);
   glBindVertexArray(window->VAO);
 }

@@ -89,21 +89,96 @@ vec3 rotate(vec3 v, vec3 axis, float angle) {
 // If p is 3 units from origin and radius is 1, we're 2 units outside (> 0).
 // If p is 0.5 units from origin and radius is 1, we're 0.5 units inside (< 0).
 // =============================================================================
-float sdfSphere(vec3 p, float radius) {
+float opUnion(float a, float b) {
+    return min(a, b);
+}
+
+float opSubtraction(float a, float b) {
+    return max(a, b);
+}
+
+float opSmoothUnion( float d1, float d2, float k )
+{
+    k *= 4.0;
+    float h = max(k-abs(d1-d2),0.0);
+    return min(d1, d2) - h*h*0.25/k;
+}
+
+float sdSphere(vec3 p, float radius) {
     return length(p) - radius;
 }
 
-float sdfSin(vec3 p) {
+float sdTorus( vec3 p, vec2 t ) {
+  vec2 q = vec2(length(p.xz)-t.x,p.y);
+  return length(q)-t.y;
+}
+
+float sdHexPrism( vec3 p, vec2 h )
+{
+  const vec3 k = vec3(-0.8660254, 0.5, 0.57735);
+  p = abs(p);
+  p.xy -= 2.0*min(dot(k.xy, p.xy), 0.0)*k.xy;
+  vec2 d = vec2(
+       length(p.xy-vec2(clamp(p.x,-k.z*h.x,k.z*h.x), h.x))*sign(p.y-h.x),
+       p.z-h.y );
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+}
+
+float sdSin(vec3 p) {
   return 1.0 - (sin(p.x) + sin(p.y) + sin(p.z))/3.0;
 }
 
-float sdfScene(vec3 p) {
-    p = rotate(p, vec3(1, 1, 1), u_time / 0.5);
-    float dSphere = sdfSphere(p, 5.0);
-    float scale = 8.0 + 6.0 * sin(u_time * 0.5);
-    float dSin = (0.8 - sdfSin(p * scale))/(scale * 2.0);
-    return max(dSphere, dSin);
+float sdScene(vec3 p) {
+    float d = 1e10;
+    vec3 axis = vec3(10 * sin(u_time), -15 * cos(u_time), 50*sin(u_time));
+
+    // Sphere
+    // {
+    //     vec3 center = vec3(-1);
+    //     p = rotate(p + center, vec3(1), u_time * 0.5);
+    //     float dSphere = sdSphere(p, 2);
+    //     d = opUnion(d, dSphere);
+    // }
+
+    // Torus
+    // {
+    //     vec3 center = vec3(1);
+    //     p = rotate(p + center, axis, u_time * 0.7);
+    //     float dTorus = sdTorus(p, vec2(3, 1));
+    //     d = opUnion(d, dTorus);
+    // }
+
+    // Hex prism
+    {
+        vec3 center = vec3(-1);
+        p = rotate(p + center, axis, u_time * 0.7);
+        float dHexPrism = sdHexPrism(p, vec2(2, 1));
+        d = opUnion(d, dHexPrism);
+    }
+    
+    // Sin wave
+    {
+        float scale = 8.0 + 6.0 * sin(u_time * 0.1);
+        float dSin = (0.8 - sdSin(p * scale))/(scale * 2.0);
+        d = opSubtraction(d, dSin);
+    }
+
+    return d;
 }
+
+float softShadows(vec3 ro, vec3 rd, float mint, float maxt, float k ) {
+  float resultingShadowColor = 1.0;
+  float t = mint;
+  for(int i = 0; i < 50 && t < maxt; i++) {
+      float h = sdScene(ro + rd*t);
+      if( h < 0.001 )
+          return 0.0;
+      resultingShadowColor = min(resultingShadowColor, k*h/t );
+      t += h;
+  }
+  return resultingShadowColor ;
+}
+
 
 // =============================================================================
 // RAYMARCHING
@@ -128,7 +203,7 @@ float sdfScene(vec3 p) {
 // to render any shape you can write an SDF for — including combinations,
 // smooth blends, and fractals.
 // =============================================================================
-const int   MAX_STEPS = 100;   // max iterations before giving up
+const int   MAX_STEPS = 120;   // max iterations before giving up
 const float MAX_DIST  = 100.0; // ray is considered "missed" beyond this distance
 const float SURF_DIST = 0.001; // close enough to the surface to count as a hit
 
@@ -137,7 +212,7 @@ float raymarch(vec3 ro, vec3 rd) {
 
     for (int i = 0; i < MAX_STEPS; i++) {
         vec3  p = ro + rd * dist;        // current position along the ray
-        float d = sdfScene(p);           // nearest surface distance from here
+        float d = sdScene(p);           // nearest surface distance from here
         dist   += d;                     // safe to advance by exactly d
         if (d < SURF_DIST || dist > MAX_DIST) break;
     }
@@ -164,10 +239,17 @@ float raymarch(vec3 ro, vec3 rd) {
 vec3 calcNormal(vec3 p) {
     const float e = 0.001;
     return normalize(vec3(
-        sdfSphere(p + vec3(e,0,0), 1.0) - sdfSphere(p - vec3(e,0,0), 1.0), // dF/dx
-        sdfSphere(p + vec3(0,e,0), 1.0) - sdfSphere(p - vec3(0,e,0), 1.0), // dF/dy
-        sdfSphere(p + vec3(0,0,e), 1.0) - sdfSphere(p - vec3(0,0,e), 1.0)  // dF/dz
+        sdSphere(p + vec3(e,0,0), 1.0) - sdSphere(p - vec3(e,0,0), 1.0), // dF/dx
+        sdSphere(p + vec3(0,e,0), 1.0) - sdSphere(p - vec3(0,e,0), 1.0), // dF/dy
+        sdSphere(p + vec3(0,0,e), 1.0) - sdSphere(p - vec3(0,0,e), 1.0)  // dF/dz
     ));
+}
+
+
+// Tweaked Cosine color palette function from Inigo Quilez
+vec3 getColor(float amount) {
+  vec3 color = vec3(0.3, 0.5, 0.9) +vec3(0.9, 0.4, 0.2) * cos(6.2831 * (vec3(0.30, 0.20, 0.20) + amount * vec3(1.0)));
+  return color * amount;
 }
 
 
@@ -175,8 +257,6 @@ vec3 calcNormal(vec3 p) {
 // MAIN — builds the ray for this pixel, marches it, then shades the result
 // =============================================================================
 void main() {
-    vec3 light_dir = normalize(vec3(1.0, 2.0, 3.0)); // arbitrary directional light
-
     // -------------------------------------------------------------------------
     // Step 1: Convert this pixel's screen UV into a properly-proportioned 2D
     // coordinate, correcting for the window's aspect ratio.
@@ -249,11 +329,16 @@ void main() {
         // the light direction. When they point the same way (surface faces the
         // light) it's 1.0 (fully lit). At 90° it's 0 (grazing). We clamp
         // negatives to 0 so back-facing surfaces don't go dark-negative.
+        vec3 light_pos = vec3(5.0, 5.0, 5.0);
+        vec3 light_dir = normalize(light_pos - p); // arbitrary directional light
+
         float diffuse  = max(dot(normal, light_dir), 0.0);
         float ambient  = 0.1; // small constant so shadowed areas aren't pure black
+        float shadows = softShadows(p, light_dir, 0.1, 5.0, 64.0);
 
-        vec3 sphereColor = vec3(0.9, 0.5, 1.0); // base blue color of the sphere
-        vec3 color = sphereColor * (ambient + diffuse);
+        vec3 color = vec3(1.0, 1.0, 1.0) * getColor(ambient + diffuse * shadows);
+        //vec3 sphereColor = vec3(0.1, 0.5, 1.0); // base blue color of the sphere
+        //vec3 color = sphereColor * (ambient + diffuse * shadows);
         FragColor = vec4(color, 0);
     } else {
         // Discard the shader output if we didn't intersect the SDF.

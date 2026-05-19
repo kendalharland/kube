@@ -37,7 +37,7 @@ class Game {
 
         // Initialize the camera
         var camera = Camera.new()
-        camera.position = Vec3.new(3, 3, 3)
+        camera.position = Vec3.new(2, 2, 2)
         camera.setActive()
 
         var sdfShader = Shader.new("demos/shaders/sdf")
@@ -75,7 +75,7 @@ class Game {
 
     update(elapsedSecs) {
         this.time = this.time + elapsedSecs
-        var amplitude = 3
+        var amplitude = 1
         var frequency = 0.15
         var angle = 2.0 * Num.pi * frequency * this.time
         var offset = angle.sin * amplitude
