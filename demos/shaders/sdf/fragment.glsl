@@ -46,6 +46,30 @@ uniform vec2  u_resolution;  // viewport size in pixels, for aspect-ratio correc
 uniform float u_time;        // seconds since startup, for animation
 
 // =============================================================================
+// MATRIX TRANSFORMS
+//
+// Useful transforms for simulating motion.
+// =============================================================================
+mat4 rotation3d(vec3 axis, float angle) {
+    axis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float oc = 1.0 - c;
+
+    return mat4(
+        oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
+        oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+        oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+        0.0,                                0.0,                                0.0,                                1.0
+  );
+}
+
+vec3 rotate(vec3 v, vec3 axis, float angle) {
+  mat4 m = rotation3d(axis, angle);
+  return (m * vec4(v, 1.0)).xyz;
+}
+
+// =============================================================================
 // SIGNED DISTANCE FUNCTIONS (SDFs)
 //
 // An SDF is a function f(p) that, given any point p in 3D space, returns the
@@ -74,6 +98,7 @@ float sdfSin(vec3 p) {
 }
 
 float sdfScene(vec3 p) {
+    p = rotate(p, vec3(1, 1, 1), u_time / 0.5);
     float dSphere = sdfSphere(p, 5.0);
     float scale = 8.0 + 6.0 * sin(u_time * 0.5);
     float dSin = (0.8 - sdfSin(p * scale))/(scale * 2.0);
