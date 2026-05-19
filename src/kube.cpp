@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "engine/camera.cpp"
-#include "engine/graphics.cpp"
-#include "engine/logging.cpp"
-#include "engine/mesh_builder.cpp"
-#include "engine/mesh_builder.h"
-#include "engine/model_loader.cpp"
-#include "engine/model_loader.h"
-#include "engine/time.cpp"
-#include "engine/window.cpp"
+#include "kube/camera.cpp"
+#include "kube/graphics.cpp"
+#include "kube/logging.cpp"
+#include "kube/mesh_builder.cpp"
+#include "kube/mesh_builder.h"
+#include "kube/model_loader.cpp"
+#include "kube/model_loader.h"
+#include "kube/time.cpp"
+#include "kube/window.cpp"
