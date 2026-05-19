@@ -132,30 +132,26 @@ float sdScene(vec3 p) {
     float d = 1e10;
     vec3 axis = vec3(10 * sin(u_time), -15 * cos(u_time), 50*sin(u_time));
 
-    // Sphere
-    // {
-    //     vec3 center = vec3(-1);
-    //     p = rotate(p + center, vec3(1), u_time * 0.5);
-    //     float dSphere = sdSphere(p, 2);
-    //     d = opUnion(d, dSphere);
-    // }
-
     // Torus
-    // {
-    //     vec3 center = vec3(1);
-    //     p = rotate(p + center, axis, u_time * 0.7);
-    //     float dTorus = sdTorus(p, vec2(3, 1));
-    //     d = opUnion(d, dTorus);
-    // }
-
+    {
+        vec3 center = vec3(0);
+        p = rotate(p + center, -axis, u_time * 0.9);
+        float dTorus = sdTorus(p, vec2(3, .4));
+        d = opSmoothUnion(d, dTorus, 0.1);
+    }
+    {
+        vec3 center = vec3(0);
+        p = rotate(p + center, axis, u_time * 0.8);
+        float dTorus = sdTorus(p, vec2(3, .4));
+        d = opSmoothUnion(d, dTorus, 0.1);
+    }
     // Hex prism
     {
-        vec3 center = vec3(-1);
+        vec3 center = vec3(0);
         p = rotate(p + center, axis, u_time * 0.7);
-        float dHexPrism = sdHexPrism(p, vec2(2, 1));
-        d = opUnion(d, dHexPrism);
+        float dHexPrism = sdHexPrism(p, vec2(.5, 7));
+        d = opSmoothUnion(d, dHexPrism, 0.1);
     }
-    
     // Sin wave
     {
         float scale = 8.0 + 6.0 * sin(u_time * 0.1);
@@ -239,9 +235,9 @@ float raymarch(vec3 ro, vec3 rd) {
 vec3 calcNormal(vec3 p) {
     const float e = 0.001;
     return normalize(vec3(
-        sdSphere(p + vec3(e,0,0), 1.0) - sdSphere(p - vec3(e,0,0), 1.0), // dF/dx
-        sdSphere(p + vec3(0,e,0), 1.0) - sdSphere(p - vec3(0,e,0), 1.0), // dF/dy
-        sdSphere(p + vec3(0,0,e), 1.0) - sdSphere(p - vec3(0,0,e), 1.0)  // dF/dz
+        sdScene(p + vec3(e,0,0)) - sdScene(p - vec3(e,0,0)), // dF/dx
+        sdScene(p + vec3(0,e,0)) - sdScene(p - vec3(0,e,0)), // dF/dy
+        sdScene(p + vec3(0,0,e)) - sdScene(p - vec3(0,0,e))  // dF/dz
     ));
 }
 
