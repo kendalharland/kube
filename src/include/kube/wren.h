@@ -164,7 +164,7 @@ void wrenOpenWindow(WrenVM *vm) {
   auto width = (int)wrenGetSlotDouble(vm, 1);
   auto height = (int)wrenGetSlotDouble(vm, 2);
   auto title = (char *)wrenGetSlotString(vm, 3);
-  kube::openWindow(width, height, title);
+  kube::openWindow(game, width, height, title);
 }
 
 // ============================================================================

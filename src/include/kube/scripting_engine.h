@@ -40,22 +40,23 @@ namespace kube {
 
 bool streq(std::string a, std::string b) { return a.compare(b) == 0; }
 
-void openWindow(int width, int height, char *title) {
-  auto window = Window::GetInstance();
-  window->Open(width, height, title);
-}
-
 typedef struct Game {
   bool running = false;
+  std::shared_ptr<Window> window;
   EntityStore *entities;
   CameraStore *cameras;
 } Game;
 
 Game *newGame() {
   auto game = new Game();
+  game->window = std::make_shared<Window>();
   game->entities = new EntityStore();
   game->cameras = new CameraStore();
   return game;
+}
+
+void openWindow(Game *game, int width, int height, char *title) {
+  windowOpen(game->window, width, height, title);
 }
 
 void freeGame(Game *game) {
@@ -65,7 +66,7 @@ void freeGame(Game *game) {
 }
 
 void gameLoop(Game *game, std::function<void(double)> update) {
-  auto window = Window::GetInstance();
+  auto window = game->window;
 
   Stopwatch stopwatch;
   stopwatch.Start();
@@ -75,7 +76,7 @@ void gameLoop(Game *game, std::function<void(double)> update) {
 
     update(deltaSecs);
 
-    window->Clear();
+    windowClear(window);
 
     // Draw entities
     for (auto entity : *game->entities) {
@@ -106,19 +107,15 @@ void gameLoop(Game *game, std::function<void(double)> update) {
         model->model.center = position->position;
         model->model.rotation = position->rotation;
         auto shader = graphics->shader.get();
-
-        // Hack: draw
-        // kube::camera camera = Window->GetCamera();
-        kube::draw(*window, *window->GetCamera(), model->model, *shader);
-        // model->model.Draw(window->GetCamera(), *shader);
+        kube::draw(*window, *window->active_camera, model->model, *shader);
       }
     }
 
-    window->Update();
+    windowUpdate(window);
 
-  } while (!window->ShouldClose());
+  } while (!windowShouldClose(window));
 
-  window->Close();
+  windowClose(window);
 }
 
 CameraID createCamera(Game *game) {
@@ -132,8 +129,7 @@ static void cameraSetActive(Game *game, CameraID cameraID) {
   if (camera == nullptr) {
     return;
   }
-  auto window = Window::GetInstance();
-  window->SetCamera(camera);
+  windowSetCamera(game->window, camera);
 }
 
 // ============================================================================

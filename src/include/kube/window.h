@@ -16,44 +16,28 @@
 
 #pragma once
 
-#include <functional>
 #include <memory>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <kube/camera.h>
-#include <kube/singleton.h>
 
 namespace kube {
 
-// Window opens a window on the host machine.
-class Window final : public Singleton<Window> {
-private:
-  SINGLETON(Window) : is_open_(false) {}
-
-  static void glfw_scroll(GLFWwindow *window, double xoffset, double yoffset) {
-    Window *instance = Window::GetInstance();
-    cameraZoom(*instance->camera_, yoffset > 0);
-  }
-
-public:
-  void Open(int width, int height, const char *title);
-  void Close();
-  void Clear();
-  void Update();
-  camera *GetCamera();
-  void SetCamera(std::unique_ptr<camera> camera);
-  void SetCamera(camera *camera);
-
-  bool IsKeyPressed(uint key);
-  bool ShouldClose();
-
-private:
-  bool is_open_;
-  GLFWwindow *window_;
-  std::unique_ptr<camera> camera_;
-  GLuint VAO_;
+struct Window {
+  bool is_open = false;
+  GLFWwindow *glfw_window = nullptr;
+  camera *active_camera = nullptr;
+  GLuint VAO = 0;
 };
 
-}; // namespace kube
+void windowOpen(std::shared_ptr<Window> window, int width, int height, const char *title);
+void windowClose(std::shared_ptr<Window> window);
+void windowClear(std::shared_ptr<Window> window);
+void windowUpdate(std::shared_ptr<Window> window);
+bool windowShouldClose(std::shared_ptr<Window> window);
+bool windowIsKeyPressed(std::shared_ptr<Window> window, uint key);
+void windowSetCamera(std::shared_ptr<Window> window, camera *camera);
+
+} // namespace kube

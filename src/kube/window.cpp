@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <cassert>
 #include <memory>
 #include <stdexcept>
 
@@ -22,28 +23,19 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 
 namespace kube {
 
-void Window::SetCamera(std::unique_ptr<camera> camera) {
-  assert(is_open_);
-  camera_ = std::move(camera);
-  glfwSetScrollCallback(window_, Window::glfw_scroll);
+static void glfw_scroll(GLFWwindow *glfw_window, double xoffset, double yoffset) {
+  auto *window = static_cast<Window *>(glfwGetWindowUserPointer(glfw_window));
+  if (window->active_camera) {
+    cameraZoom(*window->active_camera, yoffset > 0);
+  }
 }
 
-void Window::SetCamera(camera *raw) {
-  assert(is_open_);
-  std::unique_ptr<camera> camera(raw);
-  camera_ = std::move(camera);
-  glfwSetScrollCallback(window_, Window::glfw_scroll);
-}
-
-camera *Window::GetCamera() { return camera_.get(); }
-
-void Window::Open(int width, int height, const char *title) {
-  assert(!is_open_);
-  is_open_ = true;
+void windowOpen(std::shared_ptr<Window> window, int width, int height, const char *title) {
+  assert(!window->is_open);
+  window->is_open = true;
 
   if (!glfwInit()) {
     throw std::runtime_error("Failed to initialize GLFW");
@@ -52,19 +44,19 @@ void Window::Open(int width, int height, const char *title) {
   glfwWindowHint(GLFW_SAMPLES, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  // GL_TRUE makes MacOS happy; should not be needed
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  // Open a window and create its OpenGL context
-  window_ = glfwCreateWindow(width, height, title, NULL, NULL);
-  if (window_ == NULL) {
+  window->glfw_window = glfwCreateWindow(width, height, title, NULL, NULL);
+  if (window->glfw_window == NULL) {
     glfwTerminate();
     throw std::runtime_error("Failed to open GLFW window. If you have an Intel GPU, they are not "
                              "3.3 compatible. Try version 2.1");
   }
 
-  glfwMakeContextCurrent(window_);
+  glfwMakeContextCurrent(window->glfw_window);
+  glfwSetWindowUserPointer(window->glfw_window, window.get());
+  glfwSetScrollCallback(window->glfw_window, glfw_scroll);
 
   if (glewInit() != GLEW_OK) {
     glfwTerminate();
@@ -73,38 +65,42 @@ void Window::Open(int width, int height, const char *title) {
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
-  glfwSetInputMode(window_, GLFW_STICKY_KEYS, GL_FALSE);
+  glfwSetInputMode(window->glfw_window, GLFW_STICKY_KEYS, GL_FALSE);
 
   // TODO: Make this configurable.
-  // Dark blue background
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-  glGenVertexArrays(1, &VAO_);
-  glBindVertexArray(VAO_);
-};
-
-void Window::Clear() {
-  // Save the initial ModelView matrix before modifying ModelView matrix.
-  glPushMatrix();
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-};
-
-void Window::Update() {
-  // Restore initial ModelView matrix.
-  glPopMatrix();
-  glfwSwapBuffers(window_);
-  glfwPollEvents();
-};
-
-bool Window::IsKeyPressed(uint key) { return glfwGetKey(window_, key) == GLFW_PRESS; }
-
-bool Window::ShouldClose() {
-  return IsKeyPressed(GLFW_KEY_ESCAPE) || glfwWindowShouldClose(window_);
+  glGenVertexArrays(1, &window->VAO);
+  glBindVertexArray(window->VAO);
 }
 
-void Window::Close() {
-  // Clean VBO
-  glDeleteVertexArrays(1, &VAO_);
+void windowClose(std::shared_ptr<Window> window) {
+  glDeleteVertexArrays(1, &window->VAO);
   glfwTerminate();
 }
 
-}; // namespace kube
+void windowClear(std::shared_ptr<Window> window) {
+  glPushMatrix();
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void windowUpdate(std::shared_ptr<Window> window) {
+  glPopMatrix();
+  glfwSwapBuffers(window->glfw_window);
+  glfwPollEvents();
+}
+
+bool windowIsKeyPressed(std::shared_ptr<Window> window, uint key) {
+  return glfwGetKey(window->glfw_window, key) == GLFW_PRESS;
+}
+
+bool windowShouldClose(std::shared_ptr<Window> window) {
+  return windowIsKeyPressed(window, GLFW_KEY_ESCAPE) ||
+         glfwWindowShouldClose(window->glfw_window);
+}
+
+void windowSetCamera(std::shared_ptr<Window> window, camera *camera) {
+  assert(window->is_open);
+  window->active_camera = camera;
+}
+
+} // namespace kube

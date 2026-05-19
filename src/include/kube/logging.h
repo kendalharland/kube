@@ -18,8 +18,6 @@
 
 #include <iostream>
 
-#include <kube/singleton.h>
-
 namespace kube {
 
 enum LogLevel {

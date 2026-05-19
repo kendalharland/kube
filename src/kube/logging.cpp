@@ -20,18 +20,19 @@
 
 namespace {
 
-class NullBuffer final : public std::streambuf, public kube::Singleton<NullBuffer> {
-private:
-  SINGLETON(NullBuffer) {}
-
+class NullBuffer final : public std::streambuf {
 public:
   int overflow(int c) override { return c; }
 };
 
-class NullStream final : public std::ostream, public kube::Singleton<NullStream> {
+class NullStream final : public std::ostream {
 public:
-  SINGLETON(NullStream) : std::ostream(NullBuffer::GetInstance()) {}
+  NullStream() : std::ostream(&buffer_) {}
+private:
+  NullBuffer buffer_;
 };
+
+static NullStream null_stream;
 
 } // namespace
 
@@ -49,8 +50,7 @@ Logger::~Logger() {
 
 std::ostream &Logger::Log(const char *file, int line, LogLevel level) {
   if (level < global_log_level_) {
-    auto null_stream = NullStream::GetInstance();
-    return *null_stream;
+    return null_stream;
   }
 
   newline_on_destruct_ = true;
