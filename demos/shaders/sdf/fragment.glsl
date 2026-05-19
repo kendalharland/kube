@@ -69,6 +69,10 @@ float sdfSphere(vec3 p, float radius) {
     return length(p) - radius;
 }
 
+float sdfScene(vec3 p) {
+    return sdfSphere(p, 5.0);
+}
+
 // =============================================================================
 // RAYMARCHING
 //
@@ -101,7 +105,7 @@ float raymarch(vec3 ro, vec3 rd) {
 
     for (int i = 0; i < MAX_STEPS; i++) {
         vec3  p = ro + rd * dist;        // current position along the ray
-        float d = sdfSphere(p, 1.0);     // nearest surface distance from here
+        float d = sdfScene(p);           // nearest surface distance from here
         dist   += d;                     // safe to advance by exactly d
         if (d < SURF_DIST || dist > MAX_DIST) break;
     }
