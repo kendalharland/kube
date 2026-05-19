@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "kube/camera.cpp"
 #include "kube/graphics.cpp"
 #include "kube/logging.cpp"
 #include "kube/mesh_builder.cpp"

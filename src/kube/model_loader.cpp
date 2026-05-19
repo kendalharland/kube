@@ -18,7 +18,6 @@
 #include <kube/graphics.h>
 #include <kube/window.h>
 
-#include "math.h"
 #include "mesh_builder.h"
 #include "model_loader.h"
 
