@@ -98,7 +98,7 @@ void gameLoop(Game *game, std::function<void(double)> update) {
       // Update camera position
       auto camera = game->cameras->Get(entity.id);
       if (camera != nullptr) {
-        cameraSetPosition(camera, position->position);
+        camera->position = position->position;
       }
 
       // Update and draw model
@@ -124,12 +124,28 @@ CameraID createCamera(Game *game) {
   return cameraID;
 }
 
-static void cameraSetActive(Game *game, CameraID cameraID) {
-  auto camera = game->cameras->Get(cameraID);
+static void cameraActivate(Game *game, CameraID id) {
+  auto camera = game->cameras->Get(id);
   if (camera == nullptr) {
+    KUBE_ERROR << "camera not found: " << id;
     return;
   }
   windowSetCamera(game->window, camera);
+}
+
+// How is an object's "rotation" different from its "target"?
+// Well, its target is a vector that the object is pointing at, in world-space.
+// Its rotation is the results of rotating the object to point at that target.
+// For a camera you'd need to store the target vector on the object to pass it to the shader.
+// For any other object, you'd just store the rotation, using the target to compute it
+// one time.
+static void cameraSetTarget(Game *game, CameraID id, glm::vec3 target) {
+  auto camera = game->cameras->Get(id);
+  if (camera == nullptr) {
+    KUBE_ERROR << "camera not found: " << id;
+    return;
+  }
+  camera->target = target;
 }
 
 // ============================================================================

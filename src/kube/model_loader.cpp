@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <kube/logging.h>
 #include <kube/graphics.h>
+#include <kube/logging.h>
 #include <kube/window.h>
 
 #include "mesh_builder.h"

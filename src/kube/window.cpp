@@ -94,8 +94,7 @@ bool windowIsKeyPressed(std::shared_ptr<Window> window, uint key) {
 }
 
 bool windowShouldClose(std::shared_ptr<Window> window) {
-  return windowIsKeyPressed(window, GLFW_KEY_ESCAPE) ||
-         glfwWindowShouldClose(window->glfw_window);
+  return windowIsKeyPressed(window, GLFW_KEY_ESCAPE) || glfwWindowShouldClose(window->glfw_window);
 }
 
 void windowSetCamera(std::shared_ptr<Window> window, camera *camera) {

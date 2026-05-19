@@ -213,9 +213,9 @@ void wrenShaderDealloc(void *handle) {
 // Methods
 // ============================================================================
 
-static void wrenCameraSetActive(WrenVM *vm) {
+static void wrenCameraActivate(WrenVM *vm) {
   auto camera = (CameraHandle *)(wrenGetSlotForeign(vm, 0));
-  kube::cameraSetActive(game, camera->id);
+  kube::cameraActivate(game, camera->id);
 }
 
 static void wrenCameraSetPosition(WrenVM *vm) {
@@ -224,6 +224,14 @@ static void wrenCameraSetPosition(WrenVM *vm) {
   auto y = wrenGetSlotDouble(vm, 2);
   auto z = wrenGetSlotDouble(vm, 3);
   kube::entitySetPosition(game, camera->id, glm::vec3(x, y, z));
+}
+
+static void wrenCameraSetTarget(WrenVM *vm) {
+  auto camera = (CameraHandle *)(wrenGetSlotForeign(vm, 0));
+  auto x = wrenGetSlotDouble(vm, 1);
+  auto y = wrenGetSlotDouble(vm, 2);
+  auto z = wrenGetSlotDouble(vm, 3);
+  kube::cameraSetTarget(game, camera->id, glm::vec3(x, y, z));
 }
 
 static void wrenEntitySetModel(WrenVM *vm) {
@@ -282,8 +290,9 @@ using BindingTable = std::unordered_map<std::string, NativeFn>;
 
 BindingTable &getBindingTable() {
   static BindingTable table = {
-      {makeKey("kube", "Camera", "setActive()", 0), &wrenCameraSetActive},
+      {makeKey("kube", "Camera", "activate()", 0), &wrenCameraActivate},
       {makeKey("kube", "Camera", "setPosition_(_,_,_)", 0), &wrenCameraSetPosition},
+      {makeKey("kube", "Camera", "setTarget_(_,_,_)", 0), &wrenCameraSetTarget},
       {makeKey("kube", "Entity", "setModel_(_)", 0), &wrenEntitySetModel},
       {makeKey("kube", "Entity", "setPosition_(_,_,_)", 0), &wrenEntitySetPosition},
       {makeKey("kube", "Entity", "setShader_(_)", 0), &wrenEntitySetShader},

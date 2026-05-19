@@ -28,18 +28,23 @@ class Window {
 // Multiple cameras are supported.
 foreign class Camera {
   foreign setPosition_(x, y, z)
+  foreign setTarget_(x, y, z)
 
   // Set the player's perspective to this camera.
   // 
   // The perspective will be overridden the next time any camera instance calls
-  // setActive.
-  foreign setActive()
+  // activate.
+  foreign activate()
 
   construct new() {}
 
   // Set the camera's position.
   position=(vec) {
     setPosition_(vec.x, vec.y, vec.z)
+  }
+
+  target=(vec) {
+    setTarget_(vec.x, vec.y, vec.z)
   }
 }
 

@@ -38,7 +38,7 @@ class Game {
         // Initialize the camera
         var camera = Camera.new()
         camera.position = Vec3.new(10, 10, 10)
-        camera.setActive()
+        camera.activate()
 
         // Create some entities.
         var entities = []

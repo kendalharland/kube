@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <kube/fs.h>
-#include <kube/logging.h>
 #include <kube/graphics.h>
+#include <kube/logging.h>
 #include <kube/window.h>
 
 #include "model_loader.h"
@@ -41,7 +41,7 @@ static void setUniformMat4(const shader &shader, const char *id, glm::mat4 value
   glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
 }
 
-static void setUniformVec4(const shader &shader, const char *id, glm::vec4 value) {
+static void setUniform4f(const shader &shader, const char *id, glm::vec4 value) {
   auto location = glGetUniformLocation(shader.programID, id);
   glUniform4fv(location, 1, &value[0]);
 }

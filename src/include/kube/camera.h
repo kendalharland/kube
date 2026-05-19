@@ -37,8 +37,6 @@ typedef struct camera {
   glm::vec3 up = glm::vec3(0, 1, 0);
 } camera;
 
-void cameraSetPosition(camera *camera, glm::vec3 position) { camera->position = position; }
-
 void cameraZoom(camera &camera, bool in) {
   camera.fov += in ? -camera.zoomSpeed : camera.zoomSpeed;
   camera.fov = std::min(camera.fov, (float)std::numbers::pi);

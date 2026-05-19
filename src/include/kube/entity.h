@@ -17,8 +17,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <kube/logging.h>
 #include <kube/graphics.h>
+#include <kube/logging.h>
 #include <map>
 #include <stdexcept>
 #include <typeindex>

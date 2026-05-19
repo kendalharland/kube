@@ -20,17 +20,18 @@
 // =============================================================================
 
 // 'in' from the vertex shader.
-in vec2 frag_uv; // screen-space UV in [-1, 1].
+// This is just the xy coordinates of the fragment in screen-space which
+// spans [-1, 1] inclusive on the x and y axes.
+in vec2 frag_uv; 
 
-// The one required output: the RGBA color for this pixel.
-// We declared it as vec3 (RGB) so the alpha channel defaults to 1.0 (opaque).
+// The output RGBA color for this pixel.
 out vec4 FragColor;
 
 // -----------------------------------------------------------------------------
 // Uniforms
 //
 // Uniforms are values set from C++ that stay constant for the entire draw call.
-// They're the bridge between your engine and the shader. In model.cpp, inside
+// They're the bridge between the engine and the shader. In model.cpp, inside
 // Model::Draw(), you'll see:
 //
 //   shader.SetUniform3f("u_camera_pos", camera->GetPosition());
@@ -61,7 +62,7 @@ mat4 rotation3d(vec3 axis, float angle) {
         oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
         oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
         0.0,                                0.0,                                0.0,                                1.0
-  );
+    );
 }
 
 vec3 rotate(vec3 v, vec3 axis, float angle) {
@@ -196,7 +197,7 @@ float softShadows(vec3 ro, vec3 rd, float mint, float maxt, float k ) {
 //
 // This is different from classic raytracing, which solves the ray-surface
 // intersection analytically. Raymarching trades some precision for the ability
-// to render any shape you can write an SDF for — including combinations,
+// to render any shape we can write an SDF for — including combinations,
 // smooth blends, and fractals.
 // =============================================================================
 const int   MAX_STEPS = 120;   // max iterations before giving up
@@ -221,7 +222,7 @@ float raymarch(vec3 ro, vec3 rd) {
 // SURFACE NORMALS VIA CENTRAL DIFFERENCES
 //
 // To light a surface we need its outward-facing normal vector at the hit point.
-// For analytic shapes you could compute this mathematically, but there's a
+// For analytic shapes we could compute this mathematically, but there's a
 // general trick that works for ANY SDF: the gradient of the SDF at a point is
 // perpendicular to the surface there — i.e., it IS the normal.
 //
@@ -275,10 +276,14 @@ void main() {
     //
     //   fwd   — the direction the camera is facing (toward the target)
     //   right — points to the camera's right (perpendicular to fwd and world-up)
+    //           note that world-up and fwd are not perpendicular if the camera
+    //           and its target not both parallel to the xz-plane (y is up). thus
+    //           we also need to compute the up vector.
     //   up    — points upward relative to the camera's view
     //
-    // This works for any camera position, unlike the old hardcoded (0,0,-1)
-    // direction which only worked when the camera sat on the +Z axis.
+    // Recall that the cross product of two vectors gives their orthogonal
+    // counterpart following the right hand rule. This works for any camera
+    // position.
     //
     // The only degenerate case is when the camera is directly above or below
     // the target (fwd is parallel to world-up), which makes the cross product
@@ -340,15 +345,16 @@ void main() {
         // Discard the shader output if we didn't intersect the SDF.
         //
         // Some other things we could do for more sophisticated miss-handling:
-        // * Write gl_FragDepth on hits
-        // When a ray hits, you can compute the actual 3D hit position and write
+        // 
+        // # Write gl_FragDepth on hits
+        // When a ray hits, we can compute the actual 3D hit position and write
         // a proper depth value to gl_FragDepth. That lets the GPU's depth test
         // work normally — rasterized objects closer to the camera will
         // naturally occlude the SDF surface, and the SDF surface will occlude
         // things behind it. Without this, the SDF ignores depth entirely.
         //
-        // * Don't use a fullscreen quad
-        // Instead of covering the whole screen, you render the SDF onto a
+        // # Don't use a fullscreen quad
+        // Instead of covering the whole screen, we render the SDF onto a
         // bounding volume (a box or sphere that tightly wraps the SDF scene).
         // The fragment shader only runs on pixels covered by that volume, so
         // the rest of the screen is untouched. This is more complex but the

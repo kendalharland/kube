@@ -37,8 +37,9 @@ class Game {
 
         // Initialize the camera
         var camera = Camera.new()
-        camera.position = Vec3.new(2, 2, 2)
-        camera.setActive()
+        camera.position = Vec3.new(0, 6, 0)
+        camera.target = Vec3.new(0, 4, 0)
+        camera.activate()
 
         var sdfShader = Shader.new("demos/shaders/sdf")
         var shipShader = Shader.new("demos/shaders/diffuse")

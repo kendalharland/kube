@@ -28,6 +28,7 @@ public:
 class NullStream final : public std::ostream {
 public:
   NullStream() : std::ostream(&buffer_) {}
+
 private:
   NullBuffer buffer_;
 };
