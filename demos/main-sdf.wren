@@ -30,15 +30,12 @@ class Game {
 
     construct new() {
         // Open the window
-        var title = "Rotating Kube"
-        var width = 1600
-        var height = 1200
-        Window.open(width, height, title)
+        Window.open(1600, 1200, "kube")
 
         // Initialize the camera
         var camera = Camera.new()
-        camera.position = Vec3.new(0, 6, 0)
-        camera.target = Vec3.new(0, 4, 0)
+        camera.position = Vec3.new(0, -20, 0)
+        camera.target = Vec3.new(0, 0, 0)
         camera.activate()
 
         var sdfShader = Shader.new("demos/shaders/sdf")
@@ -46,22 +43,6 @@ class Game {
         var cubeShader = Shader.new("demos/shaders/simple_color")
 
         var entities = [] 
-        {
-            var entity = Entity.new()
-            entity.model = Model.new(MicroRecon)
-            entity.position = Vec3.new(1,0,0)
-            entity.spin = Vec3.new(1,1,1)
-            entity.shader = shipShader
-            entities.add(entity)
-        }
-        {
-            var entity = Entity.new()
-            entity.model = Model.new("@cube")
-            entity.position = Vec3.new(1,5,0)
-            entity.spin = Vec3.new(2,2,2)
-            entity.shader = cubeShader
-            entities.add(entity)
-        }
         {
             var entity = Entity.new()
             entity.model = Model.new("@quad")
@@ -74,12 +55,5 @@ class Game {
         this.entities = entities
     }
 
-    update(elapsedSecs) {
-        this.time = this.time + elapsedSecs
-        var amplitude = 1
-        var frequency = 0.15
-        var angle = 2.0 * Num.pi * frequency * this.time
-        var offset = angle.sin * amplitude
-        camera.position = Vec3.new(10 + offset, 10 + offset, 10 + offset)
-    }
+    update(elapsedSecs) {}
 }

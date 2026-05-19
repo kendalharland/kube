@@ -277,8 +277,8 @@ void main() {
     //   fwd   — the direction the camera is facing (toward the target)
     //   right — points to the camera's right (perpendicular to fwd and world-up)
     //           note that world-up and fwd are not perpendicular if the camera
-    //           and its target not both parallel to the xz-plane (y is up). thus
-    //           we also need to compute the up vector.
+    //           and its target not aligned parallel to the xz-plane (y is up).
+    //           Thus we also need to compute the up vector.
     //   up    — points upward relative to the camera's view
     //
     // Recall that the cross product of two vectors gives their orthogonal
@@ -287,13 +287,24 @@ void main() {
     //
     // The only degenerate case is when the camera is directly above or below
     // the target (fwd is parallel to world-up), which makes the cross product
-    // zero. For this demo the camera is always off to the side so it's fine.
+    // zero. In this case, we compute right using the cross product of fwd and
+    // world-fwd (positive z), which always points in the positive x direction.
+    // 
+    // This formula discards camera roll. To account for that, we need to rotate
+    // the fwd, right, and up basis vectors by the camera's rotation matrix.
     // -------------------------------------------------------------------------
     vec3 ro     = u_camera_pos;               // ray origin = camera position
     vec3 target = u_camera_tgt;               // point the camera looks at
     vec3 fwd    = normalize(target - ro);     // forward: camera → target
-    vec3 right  = normalize(cross(fwd, vec3(0,1,0))); // right: perpendicular to fwd and world-up
-    vec3 up     = cross(right, fwd);          // up: completes the right-handed basis
+    
+    // Handle the case where fwd is parallel world-up or world-down.
+    vec3 right = vec3(0);
+    if (fwd.y == -1 || fwd.y == 1) {
+        right = normalize(cross(fwd, vec3(0,0,1))); // right: perpendicular to fwd and world-fwd
+    } else {
+        right = normalize(cross(fwd, vec3(0,1,0))); // right: perpendicular to fwd and world-up
+    }
+    vec3 up = cross(right, fwd);          // up: completes the right-handed basis
 
     // -------------------------------------------------------------------------
     // Step 3: Compute the ray direction for this specific pixel.
@@ -330,7 +341,7 @@ void main() {
         // the light direction. When they point the same way (surface faces the
         // light) it's 1.0 (fully lit). At 90° it's 0 (grazing). We clamp
         // negatives to 0 so back-facing surfaces don't go dark-negative.
-        vec3 light_pos = vec3(5.0, 5.0, 5.0);
+        vec3 light_pos = vec3(0, -5.0, 0);
         vec3 light_dir = normalize(light_pos - p); // arbitrary directional light
 
         float diffuse  = max(dot(normal, light_dir), 0.0);
